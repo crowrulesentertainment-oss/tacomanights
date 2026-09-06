@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Creators — CrowRules</title>
+<link rel="stylesheet" href="assets/creators.css">
+</head>
+
+<body>
+
+<header class="topbar">
+<a class="brand" href="index.html">
+<span class="brand-mark">CR</span>
+<span>CROWRULES <b>CREATORS</b></span>
+</a>
+
+<nav class="topnav">
+<a class="active" href="creators.html">Creators</a>
+<a href="creator-shows.html">Shows</a>
+<a href="creator-podcasts.html">Podcasts</a>
+<a href="creator-live.html">Live</a>
+</nav>
+
+<button class="menu-btn" onclick="toggleSidebar()">☰</button>
+</header>
+
+<div class="site-layout">
+
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-label">DISCOVER</div>
+<a href="index.html">⌂ Dashboard</a>
+<a class="active" href="creators.html">◉ Creators</a>
+<a href="creator.html">◎ Creator Profile</a>
+
+<div class="sidebar-label">CREATOR STUDIO</div>
+<a href="creator-studio.html">▦ Studio</a>
+<a href="creator-content.html">▤ My Content</a>
+<a href="creator-upload.html">↑ Upload</a>
+<a href="creator-shows.html">▣ My Shows</a>
+<a href="creator-podcasts.html">♫ Podcasts</a>
+<a href="creator-live.html">● Live Studio</a>
+
+<div class="sidebar-label">GROW</div>
+<a href="creator-analytics.html">◒ Analytics</a>
+<a href="creator-community.html">☷ Community</a>
+<a href="creator-monetization.html">$ Earnings</a>
+
+<div class="sidebar-label">ACCOUNT</div>
+<a href="creator-settings.html">⚙ Settings</a>
+
+<div class="sidebar-label">STAFF</div>
+<a href="creator-admin.html">◆ Creator Admin</a>
+</aside>
+
+<main class="main">
+
+<div class="page-header">
+<div>
+<div class="eyebrow">DISCOVERY</div>
+<h1>CREATOR DIRECTORY</h1>
+<p>Find the voices behind CrowRules programming.</p>
+</div>
+
+<input
+class="search"
+id="creatorSearch"
+oninput="filterCreators()"
+placeholder="Search creators..."
+>
+
+</div>
+
+<div class="filter-row">
+<button class="filter active">All</button>
+<button class="filter">Featured</button>
+<button class="filter">Video</button>
+<button class="filter">Podcast</button>
+<button class="filter">Live</button>
+</div>
+
+<div class="creator-grid">
+
+<article class="creator-card"
+data-search="crowrules originals entertainment">
+<div class="creator-avatar">CR</div>
+<div class="verified">VERIFIED</div>
+<h3>CrowRules Originals</h3>
+<p>@crowrulesoriginals</p>
+<span>Entertainment</span>
+<a href="creator.html" class="btn secondary">View Channel</a>
+</article>
+
+<article class="creator-card"
+data-search="tacoma nights tacoma">
+<div class="creator-avatar">TN</div>
+<div class="verified">SHOW</div>
+<h3>Tacoma Nights</h3>
+<p>@tacomanights</p>
+<span>Local Stories</span>
+<a href="creator.html" class="btn secondary">View Channel</a>
+</article>
+
+<article class="creator-card"
+data-search="back deck live">
+<div class="creator-avatar">BD</div>
+<div class="verified">LIVE</div>
+<h3>Back Deck Live</h3>
+<p>@backdecklive</p>
+<span>Live Shows</span>
+<a href="creator.html" class="btn secondary">View Channel</a>
+</article>
+
+<article class="creator-card"
+data-search="gaming creator">
+<div class="creator-avatar">GC</div>
+<div class="verified">NEW</div>
+<h3>Gaming Creator</h3>
+<p>@gamingcreator</p>
+<span>Gaming</span>
+<a href="creator.html" class="btn secondary">View Channel</a>
+</article>
+
+</div>
+
+</main>
+</div>
+
+<footer>
+CrowRules Entertainment · Creator Directory
+</footer>
+
+<script src="assets/creators.js"></script>
+</body>
+</html>
