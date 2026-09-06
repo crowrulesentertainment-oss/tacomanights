@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Creator Settings — CrowRules</title>
+<link rel="stylesheet" href="assets/creators.css">
+</head>
+
+<body>
+
+<header class="topbar">
+<a class="brand" href="index.html">
+<span class="brand-mark">CR</span>
+<span>CROWRULES <b>CREATORS</b></span>
+</a>
+<button class="menu-btn" onclick="toggleSidebar()">☰</button>
+</header>
+
+<div class="site-layout">
+
+<aside class="sidebar" id="sidebar">
+
+<div class="sidebar-label">ACCOUNT</div>
+
+<a class="active" href="creator-settings.html">⚙ Settings</a>
+
+<div class="sidebar-label">STUDIO</div>
+
+<a href="creator-studio.html">▦ Studio</a>
+<a href="creator-content.html">▤ Content</a>
+<a href="creator-upload.html">↑ Upload</a>
+
+</aside>
+
+<main class="main">
+
+<div class="page-header">
+
+<div>
+<div class="eyebrow">ACCOUNT</div>
+<h1>SETTINGS</h1>
+<p>Manage your creator identity and channel.</p>
+</div>
+
+</div>
+
+<form
+class="panel form"
+onsubmit="saveSettings(event)"
+>
+
+<label>
+Display Name
+<input value="CrowRules Creator">
+</label>
+
+<label>
+Creator Handle
+<input value="@creator">
+</label>
+
+<label>
+Bio
+<textarea rows="5"></textarea>
+</label>
+
+<label>
+Avatar
+<input type="file" accept="image/*">
+</label>
+
+<label>
+Banner
+<input type="file" accept="image/*">
+</label>
+
+<label>
+Website
+<input type="url">
+</label>
+
+<label>
+Social Links
+<textarea rows="4"
+placeholder="One link per line"></textarea>
+</label>
+
+<label class="checkbox">
+<input type="checkbox" checked>
+Allow followers
+</label>
+
+<label class="checkbox">
+<input type="checkbox" checked>
+Receive creator notifications
+</label>
+
+<button class="btn primary">
+Save Changes
+</button>
+
+</form>
+
+</main>
+</div>
+
+<footer>CrowRules Entertainment · Creator Settings</footer>
+
+<script src="assets/creators.js"></script>
+</body>
+</html>

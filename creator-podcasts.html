@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Podcast Studio — CrowRules</title>
+<link rel="stylesheet" href="assets/creators.css">
+</head>
+
+<body>
+
+<header class="topbar">
+<a class="brand" href="index.html">
+<span class="brand-mark">CR</span>
+<span>CROWRULES <b>CREATORS</b></span>
+</a>
+<button class="menu-btn" onclick="toggleSidebar()">☰</button>
+</header>
+
+<div class="site-layout">
+
+<aside class="sidebar" id="sidebar">
+
+<div class="sidebar-label">CREATOR STUDIO</div>
+<a href="creator-studio.html">▦ Studio</a>
+<a href="creator-content.html">▤ My Content</a>
+<a href="creator-upload.html">↑ Upload</a>
+<a href="creator-shows.html">▣ My Shows</a>
+<a class="active" href="creator-podcasts.html">♫ Podcasts</a>
+<a href="creator-live.html">● Live Studio</a>
+
+</aside>
+
+<main class="main">
+
+<div class="page-header">
+
+<div>
+<div class="eyebrow">AUDIO</div>
+<h1>PODCAST STUDIO</h1>
+<p>Build audio-first original programming.</p>
+</div>
+
+<button class="btn primary" onclick="toast('Podcast creator ready')">
++ New Podcast
+</button>
+
+</div>
+
+<div class="card-grid">
+
+<div class="feature-card">
+<div class="feature-icon">♫</div>
+<h3>My Podcasts</h3>
+<p>Your podcast series.</p>
+</div>
+
+<div class="feature-card">
+<div class="feature-icon">▶</div>
+<h3>Episodes</h3>
+<p>Manage individual episodes.</p>
+</div>
+
+<div class="feature-card">
+<div class="feature-icon">RSS</div>
+<h3>RSS</h3>
+<p>Podcast distribution settings.</p>
+</div>
+
+<div class="feature-card">
+<div class="feature-icon">TXT</div>
+<h3>Show Notes</h3>
+<p>Descriptions and episode notes.</p>
+</div>
+
+</div>
+
+<section class="panel">
+<h2>Podcast Library</h2>
+<div class="empty-state">
+No podcasts created yet.
+</div>
+</section>
+
+</main>
+</div>
+
+<footer>CrowRules Entertainment · Podcast Studio</footer>
+
+<script src="assets/creators.js"></script>
+</body>
+</html>
