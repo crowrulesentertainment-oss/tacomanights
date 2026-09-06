@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
+<title>Become a Creator · CrowRules</title>
+
+<link rel="stylesheet"
+      href="assets/css/creators.css">
+
+</head>
+
+<body>
+
+<header class="site-header">
+
+<nav class="nav">
+
+<a class="logo" href="index.html">
+CROW<span>RULES</span>
+</a>
+
+<div class="nav-links">
+
+<a href="index.html">Creators</a>
+<a href="live.html">Live</a>
+<a href="dashboard.html">Studio</a>
+
+</div>
+
+</nav>
+
+</header>
+
+
+<main>
+
+<div class="container">
+
+<form id="applicationForm"
+      class="form-card">
+
+<div class="eyebrow">
+CREATOR APPLICATION
+</div>
+
+<h1>Join the Network</h1>
+
+<p style="color:var(--muted)">
+Tell us about yourself, your project and
+what you want to create with CrowRules.
+</p>
+
+
+<div class="form-grid">
+
+<div class="field">
+
+<label>Display Name</label>
+
+<input
+ name="display_name"
+ required>
+
+</div>
+
+
+<div class="field">
+
+<label>Creator Handle</label>
+
+<input
+ name="handle"
+ placeholder="your-handle"
+ required>
+
+</div>
+
+
+<div class="field">
+
+<label>Creator Type</label>
+
+<select name="creator_type">
+
+<option value="video_creator">
+Video Creator
+</option>
+
+<option value="podcaster">
+Podcaster
+</option>
+
+<option value="musician">
+Musician
+</option>
+
+<option value="writer">
+Writer
+</option>
+
+<option value="streamer">
+Streamer
+</option>
+
+<option value="show_creator">
+Show Creator
+</option>
+
+<option value="other">
+Other
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>Portfolio URL</label>
+
+<input
+ name="portfolio_url"
+ type="url">
+
+</div>
+
+
+<div class="field full">
+
+<label>Bio</label>
+
+<textarea
+ name="bio"
+ required></textarea>
+
+</div>
+
+
+<div class="field full">
+
+<label>What do you want to create?</label>
+
+<textarea
+ name="proposal"
+ required></textarea>
+
+</div>
+
+
+</div>
+
+<br>
+
+<button class="btn"
+        type="submit">
+Submit Application
+</button>
+
+</form>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/creators.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
+<title>Creator Studio · CrowRules</title>
+
+<link rel="stylesheet"
+      href="assets/css/creators.css">
+
+</head>
+
+<body data-page="studio">
+
+<header class="site-header">
+
+<nav class="nav">
+
+<a class="logo" href="index.html">
+CROW<span>RULES</span>
+</a>
+
+<div class="nav-links">
+
+<a href="dashboard.html">Dashboard</a>
+<a href="studio.html">Studio</a>
+<a href="live.html">Live</a>
+<a href="analytics.html">Analytics</a>
+
+</div>
+
+</nav>
+
+</header>
+
+
+<main>
+
+<div class="container">
+
+<form id="contentForm"
+      class="form-card">
+
+<div class="eyebrow">
+CONTENT STUDIO
+</div>
+
+<h1>Create Content</h1>
+
+
+<div class="form-grid">
+
+
+<div class="field full">
+
+<label>Title</label>
+
+<input
+ name="title"
+ required>
+
+</div>
+
+
+<div class="field">
+
+<label>Content Type</label>
+
+<select name="content_type">
+
+<option value="video">
+Video
+</option>
+
+<option value="audio">
+Audio
+</option>
+
+<option value="episode">
+Episode
+</option>
+
+<option value="short">
+Short
+</option>
+
+<option value="live">
+Live Recording
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>Category</label>
+
+<input
+ name="category">
+
+</div>
+
+
+<div class="field full">
+
+<label>Description</label>
+
+<textarea
+ name="description"></textarea>
+
+</div>
+
+
+<div class="field">
+
+<label>Tags</label>
+
+<input
+ name="tags"
+ placeholder="sports, comedy, podcast">
+
+</div>
+
+
+<div class="field">
+
+<label>Visibility</label>
+
+<select name="visibility">
+
+<option value="public">
+Public
+</option>
+
+<option value="members">
+Members
+</option>
+
+<option value="private">
+Private
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>Status</label>
+
+<select name="status">
+
+<option value="draft">
+Draft
+</option>
+
+<option value="published">
+Published
+</option>
+
+<option value="scheduled">
+Scheduled
+</option>
+
+<option value="unlisted">
+Unlisted
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>Media File</label>
+
+<input
+ id="mediaFile"
+ type="file">
+
+</div>
+
+
+<div class="field">
+
+<label>Thumbnail</label>
+
+<input
+ id="thumbnailFile"
+ type="file"
+ accept="image/*">
+
+</div>
+
+
+</div>
+
+<br>
+
+<button class="btn"
+        type="submit">
+Publish / Save
+</button>
+
+</form>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/creators.js"></script>
+
+</body>
+</html>

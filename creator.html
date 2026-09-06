@@ -1,153 +1,131 @@
 <!doctype html>
 <html lang="en">
+
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Creator Profile — CrowRules</title>
-<link rel="stylesheet" href="assets/creators.css">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
+<title>Creator · CrowRules</title>
+
+<link rel="stylesheet"
+      href="assets/css/creators.css">
+
 </head>
 
-<body>
+<body data-page="creator">
 
-<header class="topbar">
+<header class="site-header">
 
-<a class="brand" href="index.html">
-<span class="brand-mark">CR</span>
-<span>CROWRULES <b>CREATORS</b></span>
+<nav class="nav">
+
+<a class="logo" href="index.html">
+CROW<span>RULES</span>
 </a>
 
-<nav class="topnav">
-<a href="creators.html">Creators</a>
-<a href="creator-shows.html">Shows</a>
-<a href="creator-podcasts.html">Podcasts</a>
-<a href="creator-live.html">Live</a>
-</nav>
+<div class="nav-links">
+<a href="index.html">Creators</a>
+<a href="live.html">Live</a>
+<a href="apply.html">Apply</a>
+<a href="dashboard.html">Studio</a>
+</div>
 
-<button class="menu-btn" onclick="toggleSidebar()">☰</button>
+</nav>
 
 </header>
 
-<div class="site-layout">
 
-<aside class="sidebar" id="sidebar">
+<main>
 
-<div class="sidebar-label">DISCOVER</div>
-<a href="index.html">⌂ Dashboard</a>
-<a href="creators.html">◉ Creators</a>
-<a class="active" href="creator.html">◎ Creator Profile</a>
+<div id="creatorProfile">
 
-<div class="sidebar-label">CREATOR STUDIO</div>
-<a href="creator-studio.html">▦ Studio</a>
-<a href="creator-content.html">▤ My Content</a>
-<a href="creator-upload.html">↑ Upload</a>
-<a href="creator-shows.html">▣ My Shows</a>
-<a href="creator-podcasts.html">♫ Podcasts</a>
-<a href="creator-live.html">● Live Studio</a>
+<section id="creatorBanner"
+         class="creator-cover">
 
-<div class="sidebar-label">GROW</div>
-<a href="creator-analytics.html">◒ Analytics</a>
-<a href="creator-community.html">☷ Community</a>
-<a href="creator-monetization.html">$ Earnings</a>
+<div class="container creator-profile">
 
-<div class="sidebar-label">ACCOUNT</div>
-<a href="creator-settings.html">⚙ Settings</a>
+<div class="creator-profile-main">
 
-</aside>
+<img id="creatorAvatar"
+     class="profile-avatar"
+     hidden
+     alt="Creator">
 
-<main class="main">
+<div>
 
-<section class="profile-banner">
+<div id="creatorType"
+     class="eyebrow">
+CREATOR
+</div>
 
-<div class="creator-avatar huge">CR</div>
+<h1 id="creatorName">
+Loading...
+</h1>
 
-<div class="profile-info">
-
-<div class="verified">VERIFIED CREATOR</div>
-
-<h1>CrowRules Creator</h1>
-
-<p>@creator</p>
-
-<p>
-Independent creator on the CrowRules Entertainment network.
+<p id="creatorHandle"
+   class="handle">
 </p>
 
-<button
-class="btn primary"
-onclick="followCreator(this)">
-Follow Creator
+<p id="creatorBio">
+</p>
+
+<button id="followButton"
+        class="btn">
+Follow
 </button>
 
 </div>
 
-</section>
-
-<div class="stats">
-
-<div class="stat">
-<strong>0</strong>
-<span>Followers</span>
-</div>
-
-<div class="stat">
-<strong>0</strong>
-<span>Videos</span>
-</div>
-
-<div class="stat">
-<strong>0</strong>
-<span>Watch Hours</span>
-</div>
-
-<div class="stat">
-<strong>0</strong>
-<span>Shows</span>
 </div>
 
 </div>
-
-<section class="panel">
-
-<div class="eyebrow">ABOUT</div>
-
-<h2>Creator Bio</h2>
-
-<p>
-Creator biography and channel information will appear here.
-This profile is designed to load dynamically from Supabase.
-</p>
 
 </section>
 
-<h2>Latest Content</h2>
 
-<div class="card-grid">
+<section class="section">
 
-<div class="feature-card">
-<div class="thumbnail">VIDEO</div>
-<h3>Featured Video</h3>
-<p>Creator video content.</p>
+<div class="container">
+
+<div class="section-heading">
+
+<div>
+
+<div class="eyebrow">
+PUBLISHED
 </div>
 
-<div class="feature-card">
-<div class="thumbnail">SHOW</div>
-<h3>Latest Episode</h3>
-<p>Creator episode content.</p>
+<h2>Content</h2>
+
 </div>
 
-<div class="feature-card">
-<div class="thumbnail">LIVE</div>
-<h3>Upcoming Live</h3>
-<p>Next scheduled event.</p>
 </div>
+
+<div id="creatorContent"
+     class="content-grid">
+
+<div class="loading">
+Loading content...
+</div>
+
+</div>
+
+</div>
+
+</section>
 
 </div>
 
 </main>
-</div>
 
-<footer>CrowRules Entertainment · Creator Profile</footer>
 
-<script src="assets/creators.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/creators.js"></script>
+
 </body>
 </html>
