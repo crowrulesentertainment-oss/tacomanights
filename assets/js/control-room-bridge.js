@@ -105,3 +105,4 @@
   document.addEventListener("visibilitychange",refreshWhenVisible);
   window.setInterval(()=>{if(document.visibilityState==="visible")refreshWhenVisible();},300000);
   run().catch(error=>{console.warn("Raven Control Room public sync failed:",error);setSyncStatus("Control Room sync unavailable · showing Tacoma Nights defaults");});
+})();
