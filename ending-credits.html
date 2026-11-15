@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tacoma Nights — Ending Credits</title>
+<meta name="theme-color" content="#080b10">
+<style>
+:root{color-scheme:dark;--gold:#e8bd72;--white:#f5f4ef;--muted:#aab3bf;--line:#ffffff24}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#080b10;color:var(--white);font-family:Arial,Helvetica,sans-serif}
+body{background:radial-gradient(ellipse at 50% 0%,#26394b 0,#101923 42%,#080b10 78%);padding:24px}
+button,input{font:inherit}button{cursor:pointer;border:1px solid #ffffff35;border-radius:8px;background:#182330;color:white;padding:10px 15px;font-weight:700}button.primary{background:var(--gold);color:#111;border-color:var(--gold)}
+.shell{max-width:1200px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.brand{font-size:12px;letter-spacing:.2em;color:var(--gold);font-weight:800}.small{font-size:12px;color:var(--muted)}
+.auth{max-width:430px;margin:9vh auto;padding:28px;background:#101923;border:1px solid var(--line);border-radius:14px}.auth h1{font-size:27px}.auth label{display:block;font-size:12px;color:var(--muted);margin:15px 0}.auth input{display:block;width:100%;padding:12px;margin-top:7px;border:1px solid #ffffff35;border-radius:8px;background:#080d14;color:white}
+#app[hidden],#auth[hidden]{display:none}
+.stage-wrap{display:flex;justify-content:center}
+.stage{position:relative;width:min(100%,calc((100vh - 190px)*1.7778));aspect-ratio:16/9;overflow:hidden;background:#090d13;border:1px solid #ffffff25;box-shadow:0 24px 90px #000b}
+.backdrop{position:absolute;inset:0;background:linear-gradient(180deg,#0a1523aa,#06090fdd),radial-gradient(ellipse at 50% 75%,#55708666,transparent 55%),linear-gradient(0deg,#0b121b,#152637 62%,#090e16);transition:background 1s}
+.backdrop:before{content:"";position:absolute;inset:48% 0 0;background:linear-gradient(0deg,#05080d 0%,#101b28 100%);clip-path:polygon(0 44%,5% 44%,5% 23%,10% 23%,10% 40%,15% 40%,15% 9%,20% 9%,20% 35%,24% 35%,24% 18%,29% 18%,29% 45%,35% 45%,35% 5%,40% 5%,40% 34%,45% 34%,45% 14%,51% 14%,51% 41%,57% 41%,57% 0,62% 0,62% 34%,68% 34%,68% 16%,74% 16%,74% 44%,80% 44%,80% 23%,85% 23%,85% 40%,91% 40%,91% 12%,96% 12%,96% 43%,100% 43%,100% 100%,0 100%);opacity:.8}
+.backdrop:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#05080d88,transparent 30%,transparent 70%,#05080d88)}
+.stage[data-bg] .backdrop{background-size:cover;background-position:center}
+.scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:7%;opacity:0;transform:translateY(12px);transition:opacity .8s ease,transform .8s ease;pointer-events:none}
+.scene.active{opacity:1;transform:none;animation:scene-enter .95s cubic-bezier(.2,.7,.2,1) both}.scene.scene-disabled{display:none!important}@keyframes scene-enter{0%{opacity:0;transform:scale(1.018);filter:blur(5px)}100%{opacity:1;transform:scale(1);filter:blur(0)}}.stage:after{content:"";position:absolute;inset:0;z-index:8;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,#02040766 100%);opacity:.7}.stage[data-transition="cinematic"] .scene.active{animation:scene-enter 1.15s ease both}
+.scene-inner{position:relative;z-index:2;max-width:88%;text-shadow:0 3px 20px #000}
+.eyebrow{font-size:clamp(9px,1.1vw,15px);letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:18px}
+.logo{font-weight:900;font-size:clamp(34px,7vw,92px);letter-spacing:.13em;line-height:.95}
+.headline{font-size:clamp(22px,4.4vw,58px);font-weight:800;letter-spacing:.08em;text-transform:uppercase;line-height:1.08}
+.subline{font-size:clamp(12px,1.6vw,21px);color:#d7dee7;letter-spacing:.1em;margin-top:18px;line-height:1.5}
+.credits{font-size:clamp(12px,1.45vw,19px);line-height:1.8;white-space:pre-line;color:#e3e7ed;margin-top:15px}
+.scroll-scene{padding:5% 8%;overflow:hidden}
+.scroll-frame{position:relative;z-index:2;width:min(76%,1100px);height:100%;overflow:hidden;margin:auto;border-top:1px solid #e8b45c88;border-bottom:1px solid #e8b45c88;background:linear-gradient(180deg,#080d15dd,#080d15aa)}.scroll-viewport{position:absolute;z-index:2;left:0;right:0;top:5%;bottom:5%;overflow:hidden;contain:paint}
+.scroll-content{position:absolute;left:5%;right:5%;top:100%;white-space:pre-wrap;text-align:center;font-weight:600;line-height:1.65;color:#f1f0ec;text-shadow:0 3px 18px #000;animation:credits-roll var(--scroll-duration,28s) linear forwards}.highlight-videos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px auto 0;max-height:42%;overflow:auto;width:min(100%,1050px)}.highlight-video-card{min-width:0;background:#080d15cc;border:1px solid #e8b45c55;padding:8px}.highlight-video-card video{display:block;width:100%;max-height:210px;aspect-ratio:16/9;object-fit:contain;background:#000}.highlight-video-card p{font-size:clamp(10px,1vw,14px);margin:7px 0 0;color:#f0c477;text-align:center;overflow-wrap:anywhere}
+.scroll-content.size-small{font-size:clamp(12px,1.25vw,18px)}
+.scroll-content.size-medium{font-size:clamp(15px,1.65vw,23px)}
+.scroll-content.size-large{font-size:clamp(18px,2.1vw,29px)}
+.scroll-content.direction-down{top:auto;bottom:100%;animation-name:credits-roll-down}
+@keyframes credits-roll{from{transform:translateY(0)}to{transform:translateY(calc(-100% - 100vh))}}
+@keyframes credits-roll-down{from{transform:translateY(0)}to{transform:translateY(calc(100% + 100vh))}}
+.scroll-disabled{display:none!important}@media(prefers-reduced-motion:reduce){.scene.active{animation:none!important;transition:none!important}}
+@media(max-width:650px){.scroll-frame{width:94%}.scroll-heading{font-size:clamp(14px,3vw,22px)}}
+.gold{color:var(--gold)}.divider{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);width:58%;margin:24px auto}
+.controls{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px;margin:16px 0}.timeline-tools{max-width:1000px;margin:18px auto 8px;padding:14px 16px;background:#101923;border:1px solid var(--line)}.timeline-tools label{display:flex;justify-content:space-between;gap:12px;color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.14em}.timeline-tools input{width:100%;margin:12px 0 0;accent-color:var(--gold)}.timeline-tools output{color:var(--muted);font-variant-numeric:tabular-nums}.scene-picker,.volume-control{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:10px;letter-spacing:.12em;font-weight:800}.scene-picker select{max-width:220px;padding:9px;background:#101923;color:white;border:1px solid #ffffff35;border-radius:8px}.volume-control input{width:120px;accent-color:var(--gold)}.export-progress{height:5px;max-width:900px;margin:12px auto;background:#ffffff1c;overflow:hidden}.export-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#c9874d,var(--gold));transition:width .2s}
+.progress{height:4px;background:#ffffff22;margin:14px 0 6px;overflow:hidden}.progress span{display:block;height:100%;width:0;background:var(--gold)}
+.status{text-align:center;color:var(--muted);font-size:12px;min-height:18px}
+.notes{max-width:900px;margin:22px auto 0;padding:16px 18px;border:1px solid var(--line);border-radius:10px;background:#0e151e;color:var(--muted);font-size:12px;line-height:1.7}
+@media(max-width:650px){body{padding:12px}.top{align-items:flex-start;flex-direction:column}.stage{width:100%}.scene{padding:4%}.credits{line-height:1.5}}
+</style>
+<style>
+:root{--gold:#e7b86d;--ink:#080d14;--panel:#111b27;--panel2:#172433;--line:#ffffff18;--muted:#9eacbb;--white:#f5f6f8}
+body{padding:clamp(12px,2vw,28px);background:radial-gradient(ellipse at 50% -12%,#33485c 0,#111c29 38%,#070b11 82%);font-family:Inter,Segoe UI,Arial,sans-serif}
+.shell{max-width:1640px}
+.top{padding:10px 2px 20px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.top>div:first-child>div:last-child{font-size:clamp(23px,2vw,32px)!important;letter-spacing:-.035em}
+.studio-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;padding:20px 22px;margin-bottom:18px;border:1px solid #d7a85b3b;border-radius:16px;background:linear-gradient(115deg,#172534ee,#0d141eee 70%);box-shadow:0 16px 55px #0005}
+.studio-hero h1{font-size:clamp(20px,2.5vw,30px);margin:7px 0 5px;letter-spacing:-.03em}
+.studio-hero p{color:var(--muted);margin:0;font-size:13px;line-height:1.6}
+.studio-chip{border:1px solid #e7b86d66;color:var(--gold);border-radius:99px;padding:8px 12px;font-size:10px;font-weight:800;letter-spacing:.15em;white-space:nowrap}
+.studio-grid{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:18px;align-items:start}
+.preview-panel,.export-panel{min-width:0;border:1px solid var(--line);border-radius:15px;background:linear-gradient(180deg,#121d29f5,#0d151ff5);box-shadow:0 18px 50px #0004}
+.preview-panel{padding:16px}
+.export-panel{padding:20px;position:sticky;top:16px}
+.panel-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 14px}
+.panel-heading h2{font-size:14px;letter-spacing:.12em;text-transform:uppercase;margin:0}
+.panel-kicker{font-size:10px;color:var(--muted);letter-spacing:.12em}
+.stage-wrap{width:100%;display:flex;justify-content:center}
+.stage{width:100%;max-width:100%;height:auto;aspect-ratio:16/9;border-radius:8px;box-shadow:0 18px 55px #0009}
+.timeline-tools{max-width:none;margin:15px 0 10px;padding:14px 15px;border-radius:10px;background:#080e16;border:1px solid var(--line)}
+.controls{margin:12px 0;gap:8px}
+.controls button{padding:10px 12px;font-size:12px;transition:transform .15s,border-color .15s,background .15s}
+.controls button:hover{transform:translateY(-1px);border-color:#e7b86d88}
+button.primary{background:linear-gradient(135deg,#f1cb88,#d99d4f);color:#17120b;border-color:#f1cb88}
+.scene-picker select{max-width:220px}
+.volume-control{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#0c141e}
+.progress{margin-top:14px;border-radius:99px}
+.progress span,.export-progress span{background:linear-gradient(90deg,#b97b3e,#f3ce8b)}
+.status{line-height:1.5}
+.export-panel h2{font-size:17px;margin:0 0 5px}
+.export-panel .intro{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 18px}
+.field-label{display:block;color:#d6dee7;font-size:11px;font-weight:800;letter-spacing:.09em;margin:15px 0 7px}
+.export-panel input[type=text],.export-panel select{width:100%;background:#080e16;color:#f5f6f8;border:1px solid #ffffff25;border-radius:8px;padding:11px 12px;font:inherit;font-size:12px}
+.export-panel input:focus,.export-panel select:focus{outline:2px solid #e7b86d77;border-color:var(--gold)}
+.check-row{display:flex;align-items:flex-start;gap:9px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px;color:#d5dde6;line-height:1.4}
+.check-row input{accent-color:var(--gold);margin-top:2px}
+.check-row small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.export-specs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:17px 0}
+.export-spec{background:#080e16;border:1px solid var(--line);border-radius:9px;padding:10px}
+.export-spec strong{display:block;color:var(--gold);font-size:15px}
+.export-spec span{display:block;color:var(--muted);font-size:9px;letter-spacing:.1em;margin-top:4px}
+.export-panel .export-progress{margin:12px 0 8px;max-width:none;height:7px;border-radius:99px}
+#exportStatus{min-height:44px;text-align:left;background:#080e16;border:1px solid var(--line);border-radius:9px;padding:10px;font-size:11px}
+#exportMp4{width:100%;padding:14px;font-size:13px;letter-spacing:.04em;margin-top:14px}
+#saveFinishedVideo{width:100%;margin-top:9px;padding:13px}
+.export-help{font-size:10px;line-height:1.65;color:var(--muted);margin:14px 0 0}
+.export-help b{color:var(--gold)}
+.notes{max-width:none;margin:18px 0 0;border-radius:12px}
+#episodeMeta{margin-top:12px;text-align:left!important;color:var(--muted)}
+@media(max-width:1050px){.studio-grid{grid-template-columns:minmax(0,1fr) 310px}.export-panel{padding:15px}}
+@media(max-width:820px){.studio-grid{grid-template-columns:1fr}.export-panel{position:static}.studio-hero{align-items:flex-start;flex-direction:column}.studio-chip{white-space:normal}}
+@media(max-width:650px){body{padding:10px}.preview-panel{padding:9px}.stage{width:100%}.controls{justify-content:flex-start}.timeline-tools{padding:10px}.scene-picker{width:100%;justify-content:space-between}.scene-picker select{flex:1}.export-panel{padding:15px}}
+</style>
+<script src="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/js/crowrules-notifications.js?v=3" defer></script>
+<script src="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/js/crowrules-sitewide.js?v=5" defer></script></head>
+<body>
+<div class="shell">
+ <header class="top"><div><div class="brand">CROWRULES ENTERTAINMENT · CONTROL ROOM MASTER PLAYBACK</div><div style="font-size:22px;font-weight:800;margin-top:5px">Tacoma Nights — Ending Credits</div></div><div class="small">MASTER PLAYBACK · 1920 × 1080 · 16:9 · 30 FPS</div></header>
+ <section id="auth" class="auth">
+  <div class="brand">PRIVATE PRODUCTION PLAYBACK</div><h1>Administrator sign-in</h1><p class="small">Sign in with the Tacoma Nights administrator account to load the saved ending credits.</p>
+  <form id="login"><label>Email address<input name="email" type="email" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="primary" type="submit">Sign in and load credits</button></form><p id="authStatus" class="small" role="status"></p>
+ </section>
+ <main id="app" hidden>
+  <section class="studio-hero"><div><div class="brand">CROWRULES ENTERTAINMENT · POST-PRODUCTION WORKSPACE</div><h1>Ending Credits Studio</h1><p>Review the episode ending, fine-tune the timeline, and render a finished MP4 master.</p></div><div class="studio-chip">MASTER OUTPUT · 16:9 · 30 FPS</div></section>
+  <div class="studio-grid"><section class="preview-panel"><div class="panel-heading"><h2>Program monitor</h2><span class="panel-kicker">LIVE PREVIEW · 1920 × 1080 MASTER</span></div>
+  <div class="stage-wrap"><div class="stage" id="stage">
+   <div class="backdrop" id="backdrop"></div>
+   <section class="scene active" data-scene="0"><div class="scene-inner"><div class="eyebrow">A CrowRules Entertainment Production</div><div class="logo">TACOMA<br>NIGHTS</div><div class="subline">THE CITY. THE PEOPLE. THE STORIES.</div></div></section>
+   <section class="scene" id="highlightsScene" data-scene="1"><div class="scene-inner"><div class="eyebrow">This week's conversations</div><div class="headline">The moments<br><span class="gold">that brought us together.</span></div><div class="divider"></div><div class="credits" id="highlights"></div><div id="highlightVideos" class="highlight-videos"></div></div></section>
+   <section class="scene" id="peopleScene" data-scene="2"><div class="scene-inner"><div class="eyebrow">The people behind the conversation</div><div class="headline">Featuring</div><div class="credits" id="guests"></div><div class="divider"></div><div class="credits" id="contributors"></div></div></section>
+   <section class="scene" id="productionScene" data-scene="3"><div class="scene-inner"><div class="eyebrow">Made possible by</div><div class="headline">Production credits</div><div class="credits" id="production"></div><div class="credits" id="thanks"></div></div></section>
+   <section class="scene scroll-scene" data-scene="4" id="scrollScene"><div class="scroll-frame"><div class="scroll-viewport" id="scrollViewport"><div class="scroll-content size-medium" id="scrollContent">Loading saved end credits…</div></div></div></section>
+   <section class="scene" data-scene="4"><div class="scene-inner"><div class="eyebrow">One company. One universe.</div><div class="logo" style="font-size:clamp(28px,5vw,68px)">CROWRULES<br>ENTERTAINMENT</div><div class="subline">INDEPENDENT STORIES. SHARED CONNECTIONS.</div></div></section>
+   <section class="scene" data-scene="5"><div class="scene-inner"><div class="eyebrow" id="episodeLabel">Thank you for watching</div><div class="headline" id="episodeMessage">Keep the conversation going.</div><div class="credits" id="voiceover"></div><div class="subline" id="subscribe"></div></div></section>
+   <section class="scene" data-scene="6"><div class="scene-inner"><div class="logo">TACOMA<br>NIGHTS</div><div class="divider"></div><div class="headline gold" id="finalHeadline">UNTIL NEXT FRIDAY.</div><div class="subline" id="finalTagline">The conversation doesn't end here.</div><div class="credits">CROWRULES ENTERTAINMENT<br>ONE COMPANY. ONE UNIVERSE.</div></div></section>
+  </div></div>
+  <div class="progress"><span id="progressBar"></span></div>
+  <div class="timeline-tools"><label for="timelineScrubber">TIMELINE <output id="timelineTime">00:00 / 01:50</output></label><input id="timelineScrubber" type="range" min="0" max="110" step="0.01" value="0" aria-label="Scrub ending credits timeline"></div>
+  <div class="controls"><label class="scene-picker">JUMP TO SCENE<select id="scenePicker"><option value="0">Opening identity</option><option value="1">Episode highlights</option><option value="2">Guests & contributors</option><option value="3">Production credits</option><option value="4">Scrolling credits</option><option value="5">CrowRules signature</option><option value="6">Closing message</option><option value="7">Until next Friday</option></select></label><label class="volume-control">MUSIC VOLUME <input id="musicVolume" type="range" min="0" max="1" step="0.01" value="0.8"></label></div>
+  <div class="controls"><button class="primary" id="play">▶ Play ending</button><button id="pause">Ⅱ Pause</button><button id="prev">← Previous</button><button id="next">Next →</button><button id="previewScene">Preview this scene</button><button id="fullPreview">▶ Preview full ending</button><button id="restart">↺ Restart</button><button id="reload">↻ Refresh from Control Room</button></div>
+  <div class="status" id="playStatus" role="status" aria-live="polite">Ready · Tacoma Nights ending credits</div>
+  <div class="small" id="episodeMeta"></div>
+ </section>
+ <aside class="export-panel">
+  <div class="brand">DELIVERY / EXPORT</div><h2>Render final master</h2><p class="intro">Create a properly timestamped MP4 with a dedicated media encoder. Save straight to your device or use the download fallback.</p>
+  <label class="field-label" for="outputFileName">OUTPUT FILE NAME</label><input id="outputFileName" type="text" value="Tacoma-Nights-Ending-Credits" maxlength="90">
+  <label class="field-label" for="outputFormat">OUTPUT FORMAT</label><select id="outputFormat"><option value="mp4" selected>MP4 · H.264 / AAC</option><option value="webm">WebM · VP9 / Opus</option></select>
+   <label class="field-label" for="qualityPreset">RENDER QUALITY</label><select id="qualityPreset"><option value="1080-high">1080p · High quality · 20 Mbps</option><option value="1080-balanced" selected>1080p · Balanced · 12 Mbps</option><option value="720-balanced">720p · Compact · 8 Mbps</option></select>
+  <label class="check-row"><input id="includeMusic" type="checkbox" checked><span><b>Include background music</b><small>Uses the saved music track, trimmed to the ending runtime.</small></span></label>
+  <label class="check-row"><input id="includeHighlights" type="checkbox" checked><span><b>Include uploaded highlight clips</b><small>Plays the uploaded clips in the Episode Highlights scene. Clip audio is not mixed into this master.</small></span></label>
+  <div class="export-specs"><div class="export-spec"><strong id="exportDuration">01:50</strong><span>ESTIMATED RUNTIME</span></div><div class="export-spec"><strong id="exportResolution">1920×1080</strong><span>OUTPUT FRAME</span></div><div class="export-spec"><strong id="exportFormatLabel">MP4</strong><span>FILE FORMAT</span></div><div class="export-spec"><strong id="exportCodec">H.264</strong><span>VIDEO CODEC</span></div></div>
+  <div class="export-progress"><span id="exportProgressBar"></span></div><div class="status" id="exportStatus" role="status" aria-live="polite">Ready to render MP4 or WebM. The finished file will be checked for a readable duration before delivery.</div>
+  <button class="primary" id="exportMp4">⬇ Render & Save MP4</button><button id="saveFinishedVideo" class="primary" hidden>⬇ Download Finished MP4</button>
+  <p class="export-help"><b>Direct save:</b> supported browsers let you choose the MP4 destination before rendering. Other browsers render the file first, verify its duration, then enable the download button. Large exports may require significant memory if direct save is unavailable.</p>
+  <div class="notes"><b style="color:var(--gold)">MASTERING NOTES</b><br>Uploaded highlight clips are included visually. Their original audio and separately recorded voiceover are intentionally left out of this MP4 mix; add them in DaVinci Resolve for a final sound mix. Private images, music and highlight media are loaded through temporary signed storage links.</div>
+ </aside></div>
+ </main>
+</div>
+<audio id="music" preload="none"></audio>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+(()=>{'use strict';
+const SUPABASE_URL="https://cevylpnoexugwgygvtgu.supabase.co";
+const SUPABASE_KEY="sb_publishable_AdfM5y6RqvF3tbvEVzDZSg_JuGTQLD-";
+const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+let scenes=[...document.querySelectorAll('.scene')],data={},current=0,playing=false,startedAt=0,elapsed=0,raf=0,exporting=false,previewOnly=false,finishedExportUrl='',finishedExportName='',finishedExportMime='video/mp4';
+const fallback={runtime_seconds:110,match_audio_length:false,scroll_title_size:'medium',scroll_position:'top',show_highlights:true,show_guests:true,show_contributors:true,show_special_thanks:true,show_production:true,show_staff:true,show_episode_message:true,show_closing_voiceover:true,show_subscribe_message:true,staff_credits:'',highlight_assets:[],scroll_enabled:true,scroll_title:'THE PEOPLE BEHIND THE PRODUCTION',scroll_direction:'up',scroll_duration_seconds:28,scroll_font_size:'medium',scroll_text:'TACOMA NIGHTS\nTHE CITY. THE PEOPLE. THE STORIES.\n\nCREATED BY\nJonathan Riehle\n\nHOSTED BY\nJonathan Riehle\n\nEXECUTIVE PRODUCTION\nCrowRules Entertainment\n\nPRODUCER\nJennifer Riehle\n\nRESEARCH & PRODUCTION\nJennifer Riehle\n\nCONTRIBUTING HOST\nTriton Peterson\n\nSPORTS CONTRIBUTOR\nKenneth WarnerShook\n\nTHE WEEKLY LINEUP\nSports commentary and analysis\n\nCOMMUNITY STORIES & CONVERSATIONS\nTacoma · Pierce County · South Sound · Pacific Northwest\n\nEDITORIAL & STORY DEVELOPMENT\nTacoma Nights production team\n\nPRODUCTION & EDITORIAL SUPPORT\nCrowRules Entertainment\n\nVIDEO EDITING & POST-PRODUCTION\nCrowRules Entertainment\n\nPRODUCTION COORDINATION\nCrowRules Entertainment\n\nCREATIVE DIRECTION\nCrowRules Entertainment\n\nCREATED IN\nTacoma, Washington\n\nWITH THANKS TO\nOur guests, contributors, community partners, and everyone who shares their story\n\nAND MOST OF ALL\nThank you for watching and being part of the conversation\n\nA CROWRULES ENTERTAINMENT PRODUCTION\nONE COMPANY. ONE UNIVERSE.\n\nKEEP THE CONVERSATION GOING.\n',episode_number:'',episode_title:'',episode_highlights:'',guest_credits:'',contributor_credits:'',special_thanks:'',production_credits:'A CrowRules Entertainment Production\nCreated and hosted by Jonathan Riehle\nProduced and edited by CrowRules Entertainment',closing_headline:'UNTIL NEXT FRIDAY.',closing_tagline:"The conversation doesn't end here.",subscribe_message:'Subscribe, follow and keep the conversation going.',closing_voiceover:'Thank you for spending part of your week with us. Keep the conversation going, keep supporting one another, and remember — our stories are what bring us together.'};
+function setText(id,value){$(id).textContent=String(value||'').trim();}
+function syncRuntimeToMusic(){
+ const audio=$('music');
+ if(!data.match_audio_length)return false;
+ if(!Number.isFinite(audio.duration)||!audio.duration)return false;
+ const seconds=audio.duration;
+ if(seconds<=0||seconds>3600){$('playStatus').textContent='Audio must be between 1 second and 60 minutes for exact matching. Using the saved manual runtime.';return false;}
+ data.runtime_seconds=seconds;
+ $('playStatus').textContent='Credits matched to the complete audio · '+Math.floor(seconds/60)+'m '+(seconds%60).toFixed(1).padStart(4,'0')+'s · plays once';
+ updateProgress();
+ return true;
+}
+
+function listText(value){return String(value||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean).join('\n');}
+function applyCredits(v){
+ data={...fallback,...(v||{})};
+ setText('highlights',listText(data.episode_highlights)||'A collection of this week’s memorable moments');const highlightHost=$('highlightVideos');highlightHost.replaceChildren();(Array.isArray(data.highlight_assets)?data.highlight_assets:[]).forEach(asset=>{if(!asset.signed_url)return;const card=document.createElement('div');card.className='highlight-video-card';const video=document.createElement('video');video.controls=true;video.playsInline=true;video.preload='metadata';video.crossOrigin='anonymous';video.src=asset.signed_url;const caption=document.createElement('p');caption.textContent=asset.caption||asset.name||'Episode highlight';card.append(video,caption);highlightHost.append(card);});
+ setText('guests',listText(data.guest_credits)||'Thank you to our guests');
+ setText('contributors',listText(data.contributor_credits));
+ setText('production',data.production_credits);setText('thanks',listText(data.special_thanks)?'SPECIAL THANKS\n'+listText(data.special_thanks):'');
+ $('highlightsScene').classList.toggle('scene-disabled',data.show_highlights===false);
+ $('peopleScene').classList.toggle('scene-disabled',data.show_guests===false&&data.show_contributors===false);
+ $('guests').hidden=data.show_guests===false;$('contributors').hidden=data.show_contributors===false;
+ $('productionScene').classList.toggle('scene-disabled',data.show_production===false&&data.show_special_thanks===false);
+ $('production').hidden=data.show_production===false;$('thanks').hidden=data.show_special_thanks===false;
+ setText('episodeLabel',[data.episode_number,data.episode_title].filter(Boolean).join(' · ')||'Thank you for watching');
+ setText('episodeMessage',data.episode_message||'Keep the conversation going.');$('episodeMessage').hidden=data.show_episode_message===false;
+ setText('voiceover',data.closing_voiceover);$('voiceover').hidden=data.show_closing_voiceover===false;
+ setText('subscribe',data.subscribe_message);$('subscribe').hidden=data.show_subscribe_message===false;
+ setText('finalHeadline',data.closing_headline);setText('finalTagline',data.closing_tagline);
+ setText('episodeMeta',[data.episode_number,data.episode_title].filter(Boolean).join(' — ')||'Tacoma Nights · Master Ending Credits');
+ const scroll=$('scrollScene'),scrollContent=$('scrollContent');
+ scroll.classList.toggle('scroll-disabled',data.scroll_enabled===false);
+ const scrollCopy=String(data.scroll_text||data.production_credits||'A CrowRules Entertainment Production').trim();
+ setText('scrollContent',scrollCopy);
+ scrollContent.className='scroll-content size-'+(['small','medium','large'].includes(data.scroll_font_size)?data.scroll_font_size:'medium')+(data.scroll_direction==='down'?' direction-down':'');
+ scroll.style.setProperty('--scroll-duration',Math.max(10,Math.min(300,Number(data.scroll_duration_seconds)||28))+'s');
+ const backdrop=$('backdrop'),url=String(data.visual_reference||'').trim();
+ if(/^https:\/\//i.test(url)){backdrop.style.backgroundImage='linear-gradient(180deg,#08111dbb,#05080fdd),url("'+url.replace(/["\\]/g,'')+'")';$('stage').dataset.bg='custom';}
+ else {backdrop.style.backgroundImage='';delete $('stage').dataset.bg;}
+ const audio=$('music'),music=String(data.music_reference||'').trim();
+ if(/^https:\/\//i.test(music)&&/\.(mp3|m4a|aac|ogg|wav|webm)(\?|#|$)/i.test(music)){audio.preload='metadata';audio.src=music;audio.load();}else{audio.removeAttribute('src');audio.load();}
+ showScene(0);
+ if(data.match_audio_length){if(audio.readyState>=1)syncRuntimeToMusic();else $('playStatus').textContent='Reading music duration to match the ending credits…';}
+}
+async function loadSaved(){
+ const {data:row,error}=await client.from('tacoma_nights_ending_credits').select('setting_value,updated_at').eq('setting_key','master').maybeSingle();
+ if(error)throw error;
+ const value={...(row?.setting_value||fallback)};
+ if(Array.isArray(value.highlight_assets)){value.highlight_assets=await Promise.all(value.highlight_assets.map(async asset=>{if(!asset.storage_path)return asset;const signed=await client.storage.from('tacoma-nights-clips').createSignedUrl(asset.storage_path,3600);return signed.error?asset:{...asset,signed_url:signed.data.signedUrl};}));}
+ if(value.visual_storage_path){
+  const signed=await client.storage.from('tacoma-nights-clips').createSignedUrl(value.visual_storage_path,3600);
+  if(signed.error)throw signed.error;value.visual_reference=signed.data.signedUrl;
+ }
+ if(value.music_storage_path){
+  const signed=await client.storage.from('tacoma-nights-clips').createSignedUrl(value.music_storage_path,3600);
+  if(signed.error)throw signed.error;value.music_reference=signed.data.signedUrl;
+ }
+ applyCredits(value);const stamp=row?.updated_at?' · Last saved '+new Date(row.updated_at).toLocaleString() : ''; $('playStatus').textContent=row?.setting_value?'Loaded the latest Control Room master'+stamp+'.':'No saved Control Room master found — showing the built-in fallback credits.';
+}
+async function verifyAndLoad(session){
+ if(!session?.access_token)throw new Error('Please sign in again.');
+ const {data,error}=await client.auth.getUser(session.access_token);if(error||!data.user)throw error||new Error('Could not verify your account.');
+ if(data.user.app_metadata?.role!=='admin'&&data.user.user_metadata?.role!=='admin')throw new Error('This account is not authorized as a Tacoma Nights administrator.');
+ $('auth').hidden=true;$('app').hidden=false;await loadSaved();
+}
+function duration(i){const total=Math.max(1,Math.min(3600,Number(data.runtime_seconds)||110));const roll=Math.min(Math.max(1,Math.min(300,Number(data.scroll_duration_seconds)||28)),Math.max(0.1,total-0.1));const weights=[10,14,12,12,0,12,12,8];const enabled=[true,data.show_highlights!==false,data.show_guests!==false||data.show_contributors!==false,data.show_production!==false||data.show_special_thanks!==false,data.scroll_enabled!==false,true,true,true];if(!enabled[i])return 0;if(i===4)return roll;const visibleWeight=weights.reduce((sum,w,index)=>sum+(enabled[index]?w:0),0);const remaining=total-(data.scroll_enabled===false?0:roll);return visibleWeight?remaining*weights[i]/visibleWeight:0;}
+function syncHighlightPlayback(shouldPlay){const videos=[...$('highlightVideos').querySelectorAll('video')];videos.forEach(video=>{video.muted=true;video.loop=true;video.playsInline=true;if(shouldPlay){const attempt=video.play();if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{$('playStatus').textContent='Tap a highlight video to start playback if your browser blocks automatic video.';});}else{video.pause();}});}
+function showScene(i){current=Math.max(0,Math.min(scenes.length-1,i));scenes.forEach((s,n)=>s.classList.toggle('active',n===current));syncHighlightPlayback(current===1&&data.show_highlights!==false);$('scenePicker').value=String(current);$('stage').dataset.transition='cinematic';if(current===4&&data.scroll_enabled!==false){const el=$('scrollContent');el.style.animation='none';el.style.animationDuration=duration(4)+'s';void el.offsetHeight;el.style.animation='';}const names=['Opening identity','Episode highlights','Guests and contributors','Production credits','Scrolling credits','CrowRules signature','Closing message','Until next Friday'];$('playStatus').textContent='Scene '+(current+1)+' of '+scenes.length+' · '+names[current];}
+function totalElapsed(){return Array.from({length:current},(_,i)=>duration(i)).reduce((a,b)=>a+b,0)+elapsed;}function clock(seconds){const s=Math.max(0,Math.floor(seconds));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}function updateProgress(){const total=Number(data.runtime_seconds)||110;const absolute=totalElapsed();const pct=Math.min(100,absolute/total*100);$('progressBar').style.width=pct+'%';$('timelineScrubber').max=total;$('timelineScrubber').value=Math.min(total,absolute);$('timelineTime').textContent=clock(absolute)+' / '+clock(total);}
+function tick(now){if(!playing)return;if(previewOnly){elapsed=(now-startedAt)/1000;if(elapsed>=duration(current)){stop();previewOnly=false;$('playStatus').textContent='Scene preview complete.';updateProgress();return;}updateProgress();raf=requestAnimationFrame(tick);return;}const audio=$('music');if(data.match_audio_length&&audio.src&&Number.isFinite(audio.duration)&&audio.duration>0){const totalElapsed=Math.min(audio.currentTime,Number(data.runtime_seconds)||audio.duration);let offset=0,target=0;while(target<scenes.length-1&&totalElapsed>=offset+duration(target)){offset+=duration(target);target++;}if(totalElapsed>=Number(data.runtime_seconds)){stop();elapsed=0;showScene(scenes.length-1);$('progressBar').style.width='100%';$('playStatus').textContent='Ending complete · audio played once · Until next Friday.';return;}if(target!==current)showScene(target);elapsed=Math.max(0,totalElapsed-offset);}else{const dt=(now-startedAt)/1000;elapsed=dt;if(elapsed>=duration(current)){if(previewOnly||current>=scenes.length-1){const wasPreview=previewOnly;stop();previewOnly=false;if(current>=scenes.length-1)$('progressBar').style.width='100%';$('playStatus').textContent=wasPreview?'Scene preview complete.':'Ending complete · Until next Friday.';return;}elapsed=0;startedAt=now;showScene(current+1);}}updateProgress();raf=requestAnimationFrame(tick);}
+
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const exportClock=seconds=>{const n=Math.max(0,Math.floor(seconds));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');};
+function exportTotal(){return scenes.reduce((sum,scene,index)=>sum+Math.max(0,duration(index)),0);}
+
+async function captureStageForExport(stage,width){
+ // Capture the actual program monitor without export-only color, opacity,
+ // typography, or layout overrides. The preview is the master image.
+ return html2canvas(stage,{
+  backgroundColor:null,
+  scale:width/stage.clientWidth,
+  width:stage.clientWidth,
+  height:stage.clientHeight,
+  useCORS:true,
+  allowTaint:false,
+  logging:false,
+  foreignObjectRendering:false
+ });
+}
+function selectedFormat(){return $('outputFormat').value==='webm'?'webm':'mp4';}
+function updateExportSummary(){if($('exportDuration'))$('exportDuration').textContent=exportClock(exportTotal());if($('qualityPreset'))$('exportResolution').textContent=$('qualityPreset').value==='720-balanced'?'1280×720':'1920×1080';const webm=selectedFormat()==='webm';$('exportFormatLabel').textContent=webm?'WebM':'MP4';$('exportCodec').textContent=webm?'VP9':'H.264';$('exportMp4').textContent='⬇ Render & Save '+(webm?'WebM':'MP4');if(!$('saveFinishedVideo').hidden)$('saveFinishedVideo').textContent='⬇ Download Finished '+(webm?'WebM':'MP4');}
+function exportFileName(){let name=String($('outputFileName').value||'Tacoma-Nights-Ending-Credits').trim().replace(/\.[a-z0-9]+$/i,'').replace(/[^a-z0-9 _-]/gi,'').replace(/\s+/g,'-').replace(/-+/g,'-');return (name||'Tacoma-Nights-Ending-Credits')+'.'+(selectedFormat()==='webm'?'webm':'mp4');}
+async function makeMusicBuffer(url,maxSeconds){
+ if(!url)return null;
+ const response=await fetch(url,{mode:'cors',cache:'no-store'});
+ if(!response.ok)throw new Error('Music file could not be fetched for export (HTTP '+response.status+').');
+ const bytes=await response.arrayBuffer();
+ const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+ if(!AudioContextClass)throw new Error('This browser cannot decode the background music track.');
+ const audioContext=new AudioContextClass();
+ try{
+  const decoded=await audioContext.decodeAudioData(bytes.slice(0));
+  const length=Math.min(decoded.length,Math.max(1,Math.floor(maxSeconds*decoded.sampleRate)));
+  const trimmed=audioContext.createBuffer(decoded.numberOfChannels,length,decoded.sampleRate);
+  for(let channel=0;channel<decoded.numberOfChannels;channel++)trimmed.copyToChannel(decoded.getChannelData(channel).subarray(0,length),channel);
+  return trimmed;
+ }finally{try{await audioContext.close();}catch(e){}}
+}
+async function renderVideo(){
+ if(exporting)return;
+ exporting=true;
+ $('exportMp4').disabled=true;$('saveFinishedVideo').hidden=true;$('exportProgressBar').style.width='0%';
+ const formatKind=selectedFormat(),formatLabel=formatKind.toUpperCase(),mimeType=formatKind==='webm'?'video/webm':'video/mp4',extension=formatKind==='webm'?'.webm':'.mp4';
+ $('exportStatus').textContent='Starting the '+formatLabel+' render pipeline…';
+ const original=current,originalElapsed=elapsed,stage=$('stage'),canvas=document.createElement('canvas');
+ canvas.width=1920;canvas.height=1080;
+ const ctx=canvas.getContext('2d',{alpha:false});
+ let output=null,videoSource=null,audioSource=null,writable=null,fileHandle=null,directSave=false,target=null,finished=false;
+ let shots=[],scrollShot=null,lastScrollRefresh=0,videoCodec='avc',audioBuffer=null;
+ const total=exportTotal(),fps=30,totalFrames=Math.max(1,Math.ceil(total*fps));
+ const includeMusic=$('includeMusic').checked,includeHighlights=$('includeHighlights').checked;
+ const videos=[...$('highlightVideos').querySelectorAll('video')],videoMuted=videos.map(v=>v.muted);
+ try{
+  if(!stage.clientWidth||!stage.clientHeight)throw new Error('The program monitor is not visible. Refresh the page and sign in again.');
+  if(!window.VideoEncoder)throw new Error('This browser does not expose the WebCodecs video encoder. Use the latest Microsoft Edge or Chrome.');
+  $('exportDuration').textContent=exportClock(total);
+  const name=exportFileName();
+  if(typeof window.showSaveFilePicker==='function'){
+   try{
+    fileHandle=await window.showSaveFilePicker({suggestedName:name,types:[{description:formatLabel+' video',accept:{[mimeType]:[extension]}}]});
+    writable=await fileHandle.createWritable();directSave=true;
+   }catch(pickerError){
+    if(pickerError&&pickerError.name==='AbortError'){ $('exportStatus').textContent='Save cancelled. No video was rendered.';return; }
+    console.warn('Direct file save is unavailable; using browser download:',pickerError);
+    fileHandle=null;writable=null;directSave=false;
+   }
+  }
+  const MB=await import('https://esm.sh/mediabunny@1.62.1');
+  const {Output,Mp4OutputFormat,WebMOutputFormat,BufferTarget,StreamTarget,CanvasSource,AudioBufferSource,Quality,getFirstEncodableVideoCodec,getFirstEncodableAudioCodec,Input,BufferSource,BlobSource,ALL_FORMATS}=MB;
+  const format=formatKind==='webm'?new WebMOutputFormat():new Mp4OutputFormat();
+  const preferredVideoCodecs=formatKind==='webm'?['vp9','vp8']:['avc'];
+  videoCodec=await getFirstEncodableVideoCodec(preferredVideoCodecs,{width:1920,height:1080})||await getFirstEncodableVideoCodec(format.getSupportedVideoCodecs(),{width:1920,height:1080});
+  if(!videoCodec)throw new Error('No compatible '+formatLabel+' video encoder is available in this browser.');
+  let audioCodec=null;
+  if(includeMusic&&data.music_reference){
+   try{
+    audioBuffer=await makeMusicBuffer(data.music_reference,total);
+    audioCodec=await getFirstEncodableAudioCodec(formatKind==='webm'?['opus']:['aac'])||await getFirstEncodableAudioCodec(format.getSupportedAudioCodecs());
+    if(!audioCodec)throw new Error('No compatible '+formatLabel+' audio encoder is available.');
+   }catch(musicError){
+    audioBuffer=null;
+    $('exportStatus').textContent='Music could not be prepared; continuing with a silent video. '+musicError.message;
+    await wait(900);
+   }
+  }
+  target=directSave?new StreamTarget(writable,{chunked:true}):new BufferTarget();
+  output=new Output({format,target});
+  const preset=$('qualityPreset').value;
+  const bitrate=preset==='1080-high'?20000000:preset==='720-balanced'?8000000:12000000;
+  const width=preset==='720-balanced'?1280:1920,height=preset==='720-balanced'?720:1080;
+  $('exportResolution').textContent=width+'×'+height;
+  $('exportFormatLabel').textContent=formatLabel;
+  $('exportCodec').textContent=videoCodec==='avc'?'H.264':String(videoCodec).toUpperCase();
+  canvas.width=width;canvas.height=height;
+  videoSource=new CanvasSource(canvas,{codec:videoCodec,quality:new Quality({bitrate}),latencyMode:'quality',hardwareAcceleration:'no-preference'});
+  output.addVideoTrack(videoSource,{frameRate:fps});
+  if(audioBuffer&&audioCodec){
+   audioSource=new AudioBufferSource({codec:audioCodec,quality:new Quality({bitrate:192000})});
+   output.addAudioTrack(audioSource);
+  }
+  if(typeof output.setMetadataTags==='function')output.setMetadataTags({title:'Tacoma Nights — Ending Credits',artist:'CrowRules Entertainment',comment:'One company. One universe.'});
+  $('exportStatus').textContent='Rendering the live program monitor · matching the website preview…';
+  await output.start();
+  if(audioSource&&audioBuffer){$('exportStatus').textContent='Adding background music track…';await audioSource.add(audioBuffer);audioSource.close();}
+  let sceneIndex=-1,frameCount=0,lastPlaybackScene=-1,lastCapturedFrame=null;
+  const captureEvery=1; // Capture every output frame at 30 FPS for the closest preview match.
+  const nextPaint=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  for(let frameIndex=0;frameIndex<totalFrames;frameIndex++){
+   const timestamp=frameIndex/fps;
+   let targetScene=0,sceneStart=0;
+   while(targetScene<scenes.length-1&&timestamp>=sceneStart+Math.max(0,duration(targetScene))){sceneStart+=Math.max(0,duration(targetScene));targetScene++;}
+   if(duration(targetScene)<=0)continue;
+   const local=Math.max(0,timestamp-sceneStart);
+   if(targetScene!==sceneIndex){
+    sceneIndex=targetScene;
+    showScene(sceneIndex);
+    await nextPaint();
+   }
+   elapsed=local;
+   updateProgress();
+   const activeScene=scenes[sceneIndex];
+   activeScene.getAnimations().forEach(animation=>{try{animation.currentTime=Math.min(local*1000,950);}catch(e){}});
+   if(sceneIndex===4&&data.scroll_enabled!==false){
+    $('scrollContent').getAnimations().forEach(animation=>{try{animation.currentTime=local*1000;}catch(e){}});
+   }
+   if(sceneIndex!==lastPlaybackScene){
+    if(sceneIndex===1&&includeHighlights){
+     videos.forEach(video=>{video.muted=true;video.loop=true;video.playsInline=true;try{video.currentTime=0;}catch(e){}});
+     videos.forEach(video=>{if(video.readyState>=2&&video.paused){const p=video.play();if(p&&p.catch)p.catch(()=>{});}});
+    }else videos.forEach(video=>video.pause());
+    lastPlaybackScene=sceneIndex;
+   }
+   // Sample the real DOM stage, including its original styling and live media.
+   if(frameIndex%captureEvery===0||!lastCapturedFrame){
+    await nextPaint();
+    lastCapturedFrame=await captureStageForExport(stage,width);
+   }
+   ctx.clearRect(0,0,width,height);
+   ctx.drawImage(lastCapturedFrame,0,0,width,height);
+   await videoSource.add(timestamp,1/fps,{keyFrame:frameIndex===0||frameIndex%60===0});
+   frameCount++;
+   const pct=8+Math.min(88,((frameIndex+1)/totalFrames)*88);
+   $('exportProgressBar').style.width=pct.toFixed(1)+'%';
+   $('exportStatus').textContent='Matching preview · '+exportClock(timestamp)+' / '+exportClock(total)+' · frame '+frameCount.toLocaleString()+' of '+totalFrames.toLocaleString();
+   if(frameIndex%30===0)await wait(10);
+  }
+  videos.forEach(video=>video.pause());
+  videoSource.close();
+  await output.finalize();
+  finished=true;
+  let verifiedDuration=total,fileSize=0;
+  if(directSave){
+   const savedFile=await fileHandle.getFile();fileSize=savedFile.size;
+   const input=new Input({source:new BlobSource(savedFile),formats:ALL_FORMATS});
+   verifiedDuration=await input.computeDuration();input.dispose();
+  }else{
+   const buffer=target.buffer;
+   if(!buffer||!buffer.byteLength)throw new Error('The Video encoder returned an empty file.');
+   const blob=new Blob([buffer],{type:mimeType});fileSize=blob.size;
+   const input=new Input({source:new BufferSource(buffer),formats:ALL_FORMATS});
+   verifiedDuration=await input.computeDuration();input.dispose();
+   if(finishedExportUrl)URL.revokeObjectURL(finishedExportUrl);
+   finishedExportUrl=URL.createObjectURL(blob);finishedExportName=name;finishedExportMime=mimeType;
+   $('saveFinishedVideo').hidden=false;
+  }
+  if(!Number.isFinite(verifiedDuration)||verifiedDuration<Math.max(1,total*.85))throw new Error('Video validation failed: expected about '+total.toFixed(1)+' seconds, but the file reports '+(Number(verifiedDuration)||0).toFixed(2)+' seconds.');
+  $('exportProgressBar').style.width='100%';
+  $('exportStatus').textContent=formatLabel+' complete and verified · '+exportClock(verifiedDuration)+' · '+(fileSize/1024/1024).toFixed(1)+' MB · '+frameCount.toLocaleString()+' frames · '+(directSave?'saved to your selected location':'ready to download');
+ }catch(err){
+  console.error('Video render failed:',err);
+  $('exportStatus').textContent=formatLabel+' render failed: '+(err.message||'Unknown error')+'. No unverified file was offered for download.';
+  if(writable&&!finished){try{await writable.abort();}catch(e){}}
+  if(output&&!finished){try{await output.cancel();}catch(e){}}
+ }finally{
+  videos.forEach((video,index)=>{video.pause();video.muted=videoMuted[index];});
+  if($('music'))$('music').pause();
+  showScene(original);elapsed=originalElapsed;updateProgress();exporting=false;$('exportMp4').disabled=false;
+ }
+}
+function stop(){playing=false;cancelAnimationFrame(raf);$('music').pause();syncHighlightPlayback(false);$('play').textContent='▶ Play ending';}function seekTo(seconds){stop();previewOnly=false;const total=Math.max(1,Number(data.runtime_seconds)||110);let t=Math.max(0,Math.min(total-.001,Number(seconds)||0)),index=0;while(index<scenes.length-1&&t>=duration(index)){t-=duration(index);index++;}elapsed=t;showScene(index);if(data.match_audio_length&&$('music').src){try{$('music').currentTime=Math.min(totalElapsed(),$('music').duration||totalElapsed());}catch(e){}}updateProgress();}function previewCurrentScene(){stop();previewOnly=true;elapsed=0;showScene(current);updateProgress();const audio=$('music');if(audio.src){const offset=Array.from({length:current},(_,i)=>duration(i)).reduce((x,y)=>x+y,0);try{audio.currentTime=Math.min(offset,audio.duration||offset);audio.play().catch(()=>{});}catch(e){}}playing=true;startedAt=performance.now();$('play').textContent='▶ Previewing scene';raf=requestAnimationFrame(tick);}
+function play(){if(playing)return;playing=true;startedAt=performance.now()-elapsed*1000;syncHighlightPlayback(current===1&&data.show_highlights!==false);$('play').textContent='▶ Playing';const a=$('music');if(a.src){if(data.match_audio_length){const offset=Array.from({length:current},(_,i)=>duration(i)).reduce((x,y)=>x+y,0);try{a.currentTime=Math.min(offset+elapsed,a.duration||offset+elapsed);}catch(e){}}else{a.currentTime=0;}a.loop=false;a.play().catch(()=>{});}raf=requestAnimationFrame(tick);}
+$('music').addEventListener('loadedmetadata',()=>{if(data.match_audio_length)syncRuntimeToMusic();});$('music').volume=.8;$('musicVolume').addEventListener('input',e=>{$('music').volume=Number(e.target.value);});$('timelineScrubber').addEventListener('input',e=>seekTo(e.target.value));$('scenePicker').addEventListener('change',e=>seekTo(Array.from({length:Number(e.target.value)},(_,i)=>duration(i)).reduce((a,b)=>a+b,0)));$('previewScene').addEventListener('click',previewCurrentScene);$('fullPreview').addEventListener('click',()=>{stop();previewOnly=false;elapsed=0;showScene(0);updateProgress();play();});
+$('saveFinishedVideo').addEventListener('click',()=>{
+ if(!finishedExportUrl){$('exportStatus').textContent='No finished recording is ready. Create the video first.';return;}
+ const link=document.createElement('a');link.href=finishedExportUrl;link.download=finishedExportName;
+ document.body.appendChild(link);link.click();link.remove();
+ $('exportStatus').textContent='Download requested · '+finishedExportName+' ('+finishedExportMime+').';
+});
+$('exportMp4').addEventListener('click',renderVideo);
+$('qualityPreset').addEventListener('change',updateExportSummary);
+$('outputFormat').addEventListener('change',()=>{if(finishedExportUrl){URL.revokeObjectURL(finishedExportUrl);finishedExportUrl='';$('saveFinishedVideo').hidden=true;}updateExportSummary();});
+$('play').addEventListener('click',play);
+$('pause').addEventListener('click',()=>{stop();$('playStatus').textContent='Paused · Scene '+(current+1);});
+$('next').addEventListener('click',()=>{stop();elapsed=0;showScene(current+1);updateProgress();});
+$('prev').addEventListener('click',()=>{stop();elapsed=0;showScene(current-1);updateProgress();});
+$('restart').addEventListener('click',()=>{stop();elapsed=0;showScene(0);updateProgress();});
+$('reload').addEventListener('click',async()=>{const b=$('reload');b.disabled=true;b.textContent='↻ Syncing…';try{await loadSaved();}catch(e){$('playStatus').textContent='Could not refresh Control Room credits: '+e.message;}finally{b.disabled=false;b.textContent='↻ Refresh from Control Room';}});
+window.addEventListener('focus',()=>{if(!$('app').hidden&&!playing)loadSaved().catch(e=>{$('playStatus').textContent='Automatic Control Room refresh failed: '+e.message;});});
+$('login').addEventListener('submit',async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;$('authStatus').textContent='Signing in…';try{const fd=new FormData(e.currentTarget);const {data,error}=await client.auth.signInWithPassword({email:fd.get('email'),password:fd.get('password')});if(error)throw error;await verifyAndLoad(data.session);}catch(err){$('authStatus').textContent=err.message||'Sign-in failed.';await client.auth.signOut({scope:'local'});}finally{b.disabled=false;}});
+client.auth.getSession().then(async({data,error})=>{if(error)return;if(data.session){try{await verifyAndLoad(data.session);}catch(e){$('authStatus').textContent=e.message;}}});
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!$('app').hidden){e.preventDefault();playing?$('pause').click():$('play').click();}if(e.key==='ArrowRight'&&!$('app').hidden)$('next').click();if(e.key==='ArrowLeft'&&!$('app').hidden)$('prev').click();});
+})();
+</script>
+<script src="./visitor-presence.js?v=2" defer></script>
+</body></html>
