@@ -54,3 +54,17 @@ Never commit service-role keys, secret keys, or other server credentials.
 - The premiere editor updates only the existing `tacoma_nights_show_settings` row with `setting_key = premiere`; it does not create tables, rows, or policies.
 - The record workspaces remain read-only and rely on the current RLS rules. If a query is denied, the UI reports the database response rather than bypassing permissions.
 - No database schema or RLS policy changes are part of this site upgrade.
+
+
+## Raven Control Room integration
+
+The public Tacoma Nights website uses the Raven Control Room as its editorial source of truth:
+https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html
+
+- The public navigation and staff entry points link directly to the central Control Room.
+- `assets/js/control-room-bridge.js` loads after the shared Supabase browser client and reads the Control Room's existing public-facing settings under the current Row Level Security policies.
+- Published premiere settings from `tacoma_nights_show_settings` drive the homepage countdown.
+- The `featured_video` setting from `tacoma_nights_featured_video` controls the homepage featured video; the dedicated Tacoma Nights playlist remains the fallback.
+- The `weekly_question` setting from `tacoma_nights_site_settings` drives the public weekly-question page and homepage question.
+- Published crew profiles from `tacoma_nights_crew` populate the homepage team section.
+- Public pages never load the private Control Room HTML or its admin-only records. The bridge uses the existing browser-safe publishable key and respects RLS. No service-role key, auth bypass, table, or policy changes are introduced.
