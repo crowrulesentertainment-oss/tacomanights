@@ -5,13 +5,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if (nav) {
     nav.setAttribute("aria-label", "Main navigation");
     nav.innerHTML =
-      '<a href="' + base + 'index.html">Home</a>' +
-      '<details class="nav-dropdown"><summary>Watch</summary><div class="dropdown-menu"><a href="' + base + 'watch.html">Latest Episodes</a><a href="' + base + 'watch.html">Full Episodes</a><a href="' + base + 'watch.html">Video Highlights</a><a href="https://www.youtube.com/playlist?list=PLKfh6Jm08P-c" target="_blank" rel="noopener">YouTube Playlist ↗</a></div></details>' +
+      '<a class="nav-home" href="' + base + 'index.html">Home</a>' +
+      '<details class="nav-dropdown"><summary>Watch</summary><div class="dropdown-menu"><a href="' + base + 'watch.html">Latest Episodes</a><a href="' + base + 'watch.html">Full Episodes Archive</a><a href="https://www.youtube.com/playlist?list=PLKfh6Jm08P-c" target="_blank" rel="noopener">YouTube Playlist ↗</a></div></details>' +
       '<details class="nav-dropdown"><summary>The Show</summary><div class="dropdown-menu"><a href="' + base + 'about.html">About Tacoma Nights</a><a href="' + base + 'shows.html">Shows &amp; Segments</a><a href="' + base + 'explore.html">Explore Our Coverage</a></div></details>' +
-      '<details class="nav-dropdown"><summary>Community</summary><div class="dropdown-menu"><a href="' + base + 'community-voices.html">Community Voices</a><a href="' + base + 'weekly-question.html">Weekly Question</a><a href="' + base + 'shows.html#spotlight">253 Spotlight</a><a href="' + base + 'shows.html#action">Community in Action</a></div></details>' +
-      '<details class="nav-dropdown"><summary>Get Involved</summary><div class="dropdown-menu"><a href="' + base + 'participate.html">Ways to Participate</a><a href="' + base + 'community-voices.html">Submit a Story or Topic</a><a href="' + base + 'participate.html">Become a Contributor</a><a href="' + base + 'participate.html">Become a Guest</a></div></details>' +
+      '<details class="nav-dropdown"><summary>Community</summary><div class="dropdown-menu"><a href="' + base + 'remote-host-upload.html">Remote Host Upload</a><a href="' + base + 'weekly-question.html">Weekly Question</a><a href="' + base + 'shows.html#spotlight">253 Spotlight</a><a href="' + base + 'shows.html#action">Community in Action</a></div></details>' +
+      '<details class="nav-dropdown"><summary>Get Involved</summary><div class="dropdown-menu"><a href="' + base + 'participate.html">Ways to Participate</a><a href="' + base + 'remote-host-upload.html">Remote Host Upload</a><a href="' + base + 'participate.html">Become a Contributor</a><a href="' + base + 'participate.html">Become a Guest</a></div></details>' +
       '<details class="nav-dropdown"><summary>Members</summary><div class="dropdown-menu"><a href="' + base + 'members/login.html">Member Sign In</a><a href="' + base + 'members/dashboard.html">Member Dashboard</a></div></details>' +
-      '<details class="nav-dropdown"><summary>Staff</summary><div class="dropdown-menu"><a data-control-room-link href="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html" target="_blank" rel="noopener">Open Raven Control Room ↗</a></div></details>';
+      '<details class="nav-dropdown"><summary>Staff</summary><div class="dropdown-menu"><a data-control-room-link href="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html" target="_blank" rel="noopener">Raven Control Room ↗</a></div></details>'
   }
   const menuButton = document.querySelector(".menu-toggle");
   menuButton?.addEventListener("click", () => {
@@ -21,6 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".nav-dropdown").forEach(dropdown => dropdown.addEventListener("toggle", () => {
     if (dropdown.open) document.querySelectorAll(".nav-dropdown").forEach(other => { if (other !== dropdown) other.open = false; });
   }));
+  document.addEventListener("keydown", event => { if (event.key === "Escape") document.querySelectorAll(".nav-dropdown[open]").forEach(dropdown => dropdown.open = false); });
+  document.addEventListener("click", event => { if (!event.target.closest(".nav-links")) document.querySelectorAll(".nav-dropdown[open]").forEach(dropdown => dropdown.open = false); });
   const CONTROL_ROOM_URL = "https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html";
   document.querySelectorAll('a[href$="/admin/"],a[href$="admin/"],a[href*="/admin/command-center.html"]').forEach(link => {
     link.href = CONTROL_ROOM_URL;
