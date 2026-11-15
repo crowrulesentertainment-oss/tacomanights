@@ -53,7 +53,7 @@
     const deadline=$("[data-tn-weekly-deadline]");
     if(deadline){deadline.textContent=value.deadline?"Responses requested by "+value.deadline:"";deadline.hidden=!value.deadline;}
     const hiddenSubject=$('input[name="subject"]');
-    if(hiddenSubject && hiddenSubject.value.startsWith("Weekly Question:")) hiddenSubject.value=(value.label||"Weekly Question")+": "+value.question;
+    if(hiddenSubject && document.querySelector('input[name="submission_type"]')?.value==="episode_question") hiddenSubject.value=(value.label||"Weekly Question")+": "+value.question;
   }
   function syncCrew(rows) {
     const host=$("#control-room-crew");
