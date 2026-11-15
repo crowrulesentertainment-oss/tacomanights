@@ -86,3 +86,12 @@ Public site synchronization reads:
 The shared site navigation and footer route staff to the Raven Control Room. The local admin pages remain available as secondary tools; the Raven Control Room is the primary place to manage and publish show content. Public pages refresh the shared settings on page load, when returning to the tab, and periodically while visible.
 
 Only select videos from the official Tacoma Nights YouTube playlist `PLKfh6Jm08P-c` in the Control Room featured-video field. Never select Back Deck Live or unrelated CrowRules programming.
+
+
+### Sitewide YouTube + Control Room connection
+
+Every public page that loads `assets/js/site.js` also loads the public read-only Control Room bridge after the browser-safe Supabase client is ready. The bridge injects a shared Tacoma Nights YouTube / Raven Control Room panel above the footer, so visitors can reach the official playlist and staff can open the canonical Control Room from any public page.
+
+The panel reads the published `premiere` row in `tacoma_nights_show_settings`. When the Control Room publishes a YouTube video ID and status (`scheduled`, `live`, or `ended`), the sitewide watch action links directly to that video and labels the state as upcoming, live, or replay. Otherwise it falls back to the official Tacoma Nights playlist. The homepage and Watch page use the Control Room's featured-video setting for their main player; the Watch page retains a separate full-playlist link.
+
+The bridge refreshes on page load, tab focus/visibility return, and every five minutes while visible. It does not attempt to start a YouTube broadcast, control OBS, expose private Control Room data, or use a service-role key. YouTube video IDs and publishing status must be entered and published by an authorized operator in Raven Control Room.
