@@ -21,12 +21,14 @@
     let panel=$("#tn-sitewide-media");
     if(panel) return panel;
     const footer=$("footer");
-    if(!footer) return null;
+    const mount=footer||$("main")||document.body;
+    if(!mount) return null;
     panel=document.createElement("section");
     panel.id="tn-sitewide-media";
     panel.className="tn-sitewide-media";
     panel.innerHTML='<div class="tn-sitewide-media-inner"><div><span class="tn-sitewide-kicker">TACOMA NIGHTS · OFFICIAL YOUTUBE</span><h2 data-tn-sitewide-title>Watch the latest Tacoma Nights</h2><p data-tn-sitewide-copy>Full episodes, community stories and conversations from the 253.</p><p class="tn-sitewide-status" data-tn-sitewide-status>Playlist connected</p></div><div class="tn-sitewide-actions"><a data-tn-sitewide-watch href="'+PLAYLIST_URL+'" target="_blank" rel="noopener">Watch on YouTube ↗</a><a data-tn-sitewide-control href="'+CONTROL_ROOM_URL+'" target="_blank" rel="noopener">Raven Control Room ↗</a></div></div>';
-    footer.parentNode.insertBefore(panel,footer);
+    if(footer&&footer.parentNode) footer.parentNode.insertBefore(panel,footer);
+    else mount.append(panel);
     return panel;
   }
   function syncCountdown(row) {
