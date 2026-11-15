@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Your Voice Belongs Here | Tacoma Nights</title><link rel="stylesheet" href="assets/css/site.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/config.js"></script><script src="assets/js/supabase.js"></script><script src="assets/js/site.js" defer></script><script src="assets/js/forms.js" defer></script></head><body><header class="site-header"><div class="wrap nav"><a class="brand" href="index.html">TACOMA NIGHTS<small>THE CITY COMES ALIVE</small></a><button class="menu-toggle">☰</button><nav class="nav-links" aria-label="Main navigation"></nav></div></header><section class="page-hero"><div class="wrap"><span class="eyebrow">Community voices</span><h1>Your voice belongs here.</h1><p>Suggest a topic, nominate a person or local business, share a community story, pitch a guest or tell us how you'd like to contribute.</p></div></section><main class="content"><div class="wrap"><div class="notice">Submissions are reviewed by the Tacoma Nights team before selection or publication. Sending a submission does not guarantee publication.</div><form class="panel form-card" id="submissionForm" data-tn-submission>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Your Voice Belongs Here | Tacoma Nights</title><link rel="stylesheet" href="assets/css/site.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script><script src="assets/js/config.js"></script><script src="assets/js/supabase.js"></script><script src="assets/js/site.js" defer></script><script src="assets/js/forms.js" defer></script><style>.upload-progress{height:7px;background:#ffffff18;border-radius:20px;overflow:hidden;margin-top:14px}.upload-progress span{display:block;width:0;height:100%;background:var(--red);transition:width .2s}.status.error{color:#ffb4ae}.status.ok{color:#a8dfb8}</style></head><body><header class="site-header"><div class="wrap nav"><a class="brand" href="index.html">TACOMA NIGHTS<small>THE CITY COMES ALIVE</small></a><button class="menu-toggle">☰</button><nav class="nav-links" aria-label="Main navigation"></nav></div></header><section class="page-hero"><div class="wrap"><span class="eyebrow">Community voices</span><h1>Your voice belongs here.</h1><p>Suggest a topic, nominate a person or local business, share a community story, pitch a guest or tell us how you'd like to contribute.</p></div></section><main class="content"><div class="wrap"><div class="notice">Submissions are reviewed by the Tacoma Nights team before selection or publication. Sending a submission does not guarantee publication.</div><form class="panel form-card" id="submissionForm" data-tn-submission>
 <h2>Bring your voice to Tacoma Nights.</h2>
 <div class="field"><label for="kind">What would you like to send?</label><select id="kind" name="submission_type" required>
 <option value="topic_suggestion">Suggest a topic or give show feedback</option>
@@ -15,4 +15,66 @@
 <label class="check"><input type="checkbox" id="consent" name="consent_to_contact" required> I agree that Tacoma Nights may review this submission and use my contact details to follow up about it.</label>
 <button class="button" id="sendButton" type="submit">Send to Tacoma Nights ↗</button>
 <p class="status" id="formStatus" role="status" aria-live="polite"></p>
-</form></div></main><footer class="footer"><div class="wrap">© CrowRules Entertainment · Tacoma Nights</div></footer><script>document.addEventListener("DOMContentLoaded",()=>{const message=document.getElementById("message"),counter=document.getElementById("counter");if(message&&counter)message.addEventListener("input",()=>counter.textContent=message.value.length.toLocaleString()+" / 4,000 characters");});</script></body></html>
+</form></div><section class="content" id="recording"><div class="wrap">
+<div class="panel form-card">
+<span class="eyebrow">Share a recording</span>
+<h2>Send us your audio or video.</h2>
+<p class="muted">Share a community story, question, message, or on-camera contribution directly with the Tacoma Nights production team. Your file is stored privately and is not published automatically.</p>
+<div class="notice">Uploads are delivered to the private Tacoma Nights production inbox in the <a href="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html" target="_blank" rel="noopener noreferrer">Tacoma Nights Control Room ↗</a> for team review.</div>
+<form id="recordingForm">
+<div class="field"><label for="recordName">Your name *</label><input id="recordName" maxlength="100" autocomplete="name" required></div>
+<div class="field"><label for="recordEmail">Email address (optional)</label><input id="recordEmail" type="email" maxlength="254" autocomplete="email"></div>
+<div class="field"><label for="recordTitle">What is your recording about? *</label><input id="recordTitle" maxlength="120" required placeholder="Brief title or subject"></div>
+<div class="field"><label for="recordType">Recording type *</label><select id="recordType" required><option value="all">Audio or video contribution</option><option value="audio">Audio message</option><option value="video">Video message</option></select></div>
+<div class="field"><label for="recordFile">Choose your audio or video file *</label><input id="recordFile" type="file" accept=".mp3,.wav,.m4a,.aac,.ogg,.mp4,.mov,.webm,audio/mpeg,audio/wav,audio/mp4,audio/aac,audio/ogg,video/mp4,video/quicktime,video/webm" required><small class="muted">Audio: MP3, WAV, M4A, AAC, OGG. Video: MP4, MOV, WebM. Maximum 50 GB per file, subject to storage limits. Large uploads use resumable transfer.</small></div>
+<div class="field"><label for="recordNotes">Message or notes for the production team (optional)</label><textarea id="recordNotes" maxlength="2000" placeholder="Anything the production team should know…"></textarea></div>
+<div class="hidden"><label for="recordWebsite">Leave blank</label><input id="recordWebsite" tabindex="-1" autocomplete="off"></div>
+<label class="check"><input type="checkbox" id="recordRights" required> I created this recording or have permission to share it, and I give CrowRules Entertainment permission to review and edit it for possible use on Tacoma Nights. I understand that submitting does not guarantee publication.</label>
+<button class="button" id="uploadButton" type="submit">Upload my recording securely ↗</button>
+<div class="upload-progress" aria-hidden="true"><span id="progressBar"></span></div>
+<p class="status" id="uploadStatus" role="status" aria-live="polite">Choose a recording to get started. Your upload stays private for production review.</p>
+</form>
+</div></div></section></main><footer class="footer"><div class="wrap">© CrowRules Entertainment · Tacoma Nights</div></footer><script>document.addEventListener("DOMContentLoaded",()=>{const message=document.getElementById("message"),counter=document.getElementById("counter");if(message&&counter)message.addEventListener("input",()=>counter.textContent=message.value.length.toLocaleString()+" / 4,000 characters");});</script><script>
+document.addEventListener("DOMContentLoaded",()=>{
+ const $=id=>document.getElementById(id),form=$("recordingForm");
+ if(!form)return;
+ const config=window.TACOMA_NIGHTS_CONFIG||{},bucket="tacoma-nights-clips",table="tacoma_nights_clip_uploads",maxBytes=50*1024*1024*1024;
+ const projectId=String(config.supabaseUrl||"").match(/^https:\/\/([a-z0-9]+)\.supabase\.co$/i)?.[1];
+ function status(message,kind=""){const el=$("uploadStatus");el.textContent=message;el.className="status"+(kind?" "+kind:"");}
+ function fileKind(file){const ext=file.name.toLowerCase().split(".").pop();if(["mp3","wav","m4a","aac","ogg"].includes(ext)||file.type.startsWith("audio/"))return "audio";if(["mp4","mov","webm"].includes(ext)||file.type.startsWith("video/"))return "video";return "";}
+ function normalizedMime(file,kind){const ext=file.name.toLowerCase().split(".").pop(),map={mp3:"audio/mpeg",wav:"audio/wav",m4a:"audio/x-m4a",aac:"audio/aac",ogg:"audio/ogg",mp4:kind==="audio"?"audio/mp4":"video/mp4",mov:"video/quicktime",webm:kind==="audio"?"audio/webm":"video/webm"};return map[ext]||file.type||"application/octet-stream";}
+ function fileSize(bytes){if(bytes>=1024**3)return(bytes/1024**3).toFixed(2)+" GB";if(bytes>=1024**2)return(bytes/1024**2).toFixed(1)+" MB";return(bytes/1024).toFixed(1)+" KB";}
+ form.addEventListener("submit",async event=>{
+  event.preventDefault();
+  const button=$("uploadButton"),file=$("recordFile").files?.[0],name=$("recordName").value.trim(),title=$("recordTitle").value.trim(),email=$("recordEmail").value.trim(),type=$("recordType").value,notes=$("recordNotes").value.trim();
+  try{
+   if($("recordWebsite").value.trim())throw new Error("Submission could not be accepted.");
+   if(!name||!title||!file)throw new Error("Enter your name and recording subject, then choose a file.");
+   if(!$("recordRights").checked)throw new Error("Please confirm you have permission to share this recording.");
+   if(!window.tus?.Upload)throw new Error("The resumable upload service did not load. Refresh and try again.");
+   if(!window.tnSupabase)throw new Error("The secure upload service is unavailable. Refresh and try again.");
+   if(!projectId)throw new Error("The Tacoma Nights upload configuration is incomplete.");
+   const kind=fileKind(file);if(!kind)throw new Error("Choose a supported audio or video file.");
+   if(type!=="all"&&type!==kind)throw new Error("The selected file does not match the recording type.");
+   if(file.size<1||file.size>maxBytes)throw new Error("The file is empty or exceeds the 50 GB per-file limit.");
+   const mime=normalizedMime(file,kind),cleanName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_").slice(-100);
+   let storagePath="public-inbox/"+crypto.randomUUID()+"-"+cleanName;
+   button.disabled=true;button.textContent="Uploading securely…";$("progressBar").style.width="0%";status("Preparing private upload…");
+   await new Promise(async(resolve,reject)=>{
+    let settled=false;const finish=error=>{if(settled)return;settled=true;error?reject(error):resolve();};
+    const upload=new tus.Upload(file,{endpoint:"https://"+projectId+".storage.supabase.co/storage/v1/upload/resumable",retryDelays:[0,3000,5000,10000,20000,30000,60000,120000],headers:{apikey:config.supabaseKey},uploadDataDuringCreation:true,removeFingerprintOnSuccess:true,chunkSize:6*1024*1024,metadata:{bucketName:bucket,objectName:storagePath,contentType:mime,cacheControl:"3600"},onError:error=>finish(new Error("Upload interrupted. Reselect the same file in this browser to resume if available. "+(error?.message||""))),onProgress:(sent,total)=>{const pct=total?Math.min(99,Math.round(sent/total*100)):0;$("progressBar").style.width=pct+"%";status("Uploading "+file.name+" · "+pct+"% · "+fileSize(sent)+" of "+fileSize(total));},onSuccess:async()=>{
+     try{
+      const privateNotes=[notes,"Recording type: "+kind].filter(Boolean).join("\n\n");
+      const {error}=await window.tnSupabase.from(table).insert({owner_id:null,co_host_name:name,co_host_email:email||null,title,episode_label:"Community Voices — Tacoma Nights",notes:privateNotes||null,storage_path:storagePath,original_filename:file.name,file_size:file.size,mime_type:mime,rights_confirmed:true});
+      if(error){await window.tnSupabase.storage.from(bucket).remove([storagePath]);throw error;}
+      finish();
+     }catch(error){finish(new Error("The file uploaded but its private production record could not be saved: "+(error.message||"unknown error")));}
+    }});
+    try{const previous=await upload.findPreviousUploads(),match=previous.find(item=>item.metadata?.bucketName===bucket&&item.metadata?.objectName);if(match){storagePath=match.metadata.objectName;upload.resumeFromPreviousUpload(match);status("Resuming from the last confirmed upload chunk…");}upload.start();}catch(error){finish(error);}
+   });
+   $("progressBar").style.width="100%";status("Your recording was sent to the private Tacoma Nights production inbox. The team can review it in the Control Room. Thank you, "+name+".","ok");form.reset();
+  }catch(error){status(error.message||"The recording could not be uploaded. Please try again.","error");}
+  finally{button.disabled=false;button.textContent="Upload my recording securely ↗";}
+ });
+});
+</script></body></html>
