@@ -44,7 +44,7 @@
     const description=$("[data-tn-featured-description]") || $(".feature p");
     if(description && value.description) description.textContent=value.description;
     const link=$("[data-tn-featured-link]");
-    if(link) link.href="https://www.youtube.com/watch?v="+encodeURIComponent(videoId);
+    if(link){link.href="https://www.youtube.com/watch?v="+encodeURIComponent(videoId);link.textContent="Watch Featured Tacoma Nights Video ↗";}
   }
   function syncWeeklyQuestion(value) {
     if(!value?.question) return;
