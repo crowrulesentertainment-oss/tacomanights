@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
       '<details class="nav-dropdown"><summary>Community</summary><div class="dropdown-menu"><a href="' + base + 'community-voices.html">Community Voices</a><a href="' + base + 'weekly-question.html">Weekly Question</a><a href="' + base + 'shows.html#spotlight">253 Spotlight</a><a href="' + base + 'shows.html#action">Community in Action</a></div></details>' +
       '<details class="nav-dropdown"><summary>Get Involved</summary><div class="dropdown-menu"><a href="' + base + 'participate.html">Ways to Participate</a><a href="' + base + 'community-voices.html">Submit a Story or Topic</a><a href="' + base + 'participate.html">Become a Contributor</a><a href="' + base + 'participate.html">Become a Guest</a></div></details>' +
       '<details class="nav-dropdown"><summary>Members</summary><div class="dropdown-menu"><a href="' + base + 'members/login.html">Member Sign In</a><a href="' + base + 'members/dashboard.html">Member Dashboard</a></div></details>' +
-      '<details class="nav-dropdown"><summary>Staff</summary><div class="dropdown-menu"><a href="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html">Raven Control Room ↗</a><a href="' + base + 'admin/">Local Staff Sign In</a><a href="' + base + 'admin/command-center.html">Local Command Center</a></div></details>';
+      '<details class="nav-dropdown"><summary>Staff</summary><div class="dropdown-menu"><a data-control-room-link href="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html" target="_blank" rel="noopener">Open Raven Control Room ↗</a></div></details>';
   }
   const menuButton = document.querySelector(".menu-toggle");
   menuButton?.addEventListener("click", () => {
@@ -21,6 +21,32 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".nav-dropdown").forEach(dropdown => dropdown.addEventListener("toggle", () => {
     if (dropdown.open) document.querySelectorAll(".nav-dropdown").forEach(other => { if (other !== dropdown) other.open = false; });
   }));
+  const CONTROL_ROOM_URL = "https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html";
+  document.querySelectorAll('a[href$="/admin/"],a[href$="admin/"],a[href*="/admin/command-center.html"]').forEach(link => {
+    link.href = CONTROL_ROOM_URL;
+    link.target = "_blank";
+    link.rel = "noopener";
+    if (/staff|admin|command center/i.test(link.textContent)) link.textContent = "Raven Control Room ↗";
+    link.setAttribute("data-control-room-link", "");
+  });
+  document.querySelectorAll("[data-control-room-link]").forEach(link => {
+    link.href = CONTROL_ROOM_URL;
+    link.target = "_blank";
+    link.rel = "noopener";
+  });
+  const connectionLabel = document.getElementById("connection-state");
+  if (connectionLabel) connectionLabel.setAttribute("data-control-room-status", "");
+  const footerLinks = document.querySelector(".footer .footer-row > div:nth-child(2), footer .footer-links");
+  if (footerLinks && !footerLinks.querySelector("[data-control-room-link]")) {
+    const separator = document.createTextNode(" · ");
+    const link = document.createElement("a");
+    link.href = CONTROL_ROOM_URL;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = "Raven Control Room";
+    link.setAttribute("data-control-room-link", "");
+    footerLinks.append(separator, link);
+  }
   document.querySelectorAll("[data-year]").forEach(el => el.textContent = new Date().getFullYear());
   const current = location.pathname.split("/").pop() || "index.html";
   nav?.querySelectorAll("a[href]").forEach(link => {
@@ -128,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     window.tacomaNightsSupabase = client;
     const controlRoomBridge = document.createElement("script");
-    controlRoomBridge.src = base + "assets/js/control-room-bridge.js?v=1";
+    controlRoomBridge.src = base + "assets/js/control-room-bridge.js?v=2";
     controlRoomBridge.defer = true;
     document.head.appendChild(controlRoomBridge);
     if (state) state.textContent = "Connected to the Tacoma Nights community network";
