@@ -1,7 +1,7 @@
 /* Tacoma Nights public episode archive. Reads the public YouTube playlist feed only. */
 (() => {
   "use strict";
-  const PLAYLIST_ID = "PLKfh6Jm08P-c";
+  const PLAYLIST_ID = "PLYK7RQq4_mhw";
   const PLAYLIST_URL = "https://www.youtube.com/playlist?list=" + PLAYLIST_ID;
   const FEED_URL = "https://www.youtube.com/feeds/videos.xml?playlist_id=" + PLAYLIST_ID;
   const grid = document.getElementById("tn-episode-grid");
