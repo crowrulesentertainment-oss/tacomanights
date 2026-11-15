@@ -44,7 +44,7 @@
       const title = escapeHTML(item.title);
       const thumb = escapeHTML(item.thumbnail);
       const date = escapeHTML(safeDate(item.published));
-      return '<article class="episode-card"><button class="episode-thumb" type="button" data-episode-id="'+id+'" aria-label="Play '+title+'"><img src="'+thumb+'" alt="" loading="lazy" referrerpolicy="no-referrer"><span class="episode-play" aria-hidden="true">▶</span></button><div class="episode-info"><div class="episode-date">'+(date||"Tacoma Nights episode")+'</div><h3 class="episode-title">'+title+'</h3><a class="episode-watch" href="https://www.youtube.com/watch?v='+id+'" target="_blank" rel="noopener">Watch episode ↗</a></div></article>';
+      return '<article class="episode-card card"><button class="episode-thumb" type="button" data-episode-id="'+id+'" aria-label="Play '+title+'"><img src="'+thumb+'" alt="" loading="lazy" referrerpolicy="no-referrer"><span class="episode-play" aria-hidden="true">▶</span></button><div class="episode-info"><div class="episode-date">'+(date||"Tacoma Nights episode")+'</div><h3 class="episode-title">'+title+'</h3><a class="episode-watch" href="https://www.youtube.com/watch?v='+id+'" target="_blank" rel="noopener">Play episode ↗</a></div></article>';
     }).join("");
     grid.querySelectorAll("[data-episode-id]").forEach(button => button.addEventListener("click", () => {
       const selected = episodes.find(item => item.id === button.dataset.episodeId);
