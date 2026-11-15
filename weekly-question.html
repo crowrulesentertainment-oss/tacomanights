@@ -7,6 +7,7 @@
 <title>Weekly Question | Tacoma Nights</title>
 <link rel="stylesheet" href="assets/css/site.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
 <script src="assets/js/config.js"></script>
 <script src="assets/js/supabase.js"></script>
 <script src="assets/js/site.js" defer></script>
@@ -25,6 +26,10 @@
 <div class="field"><label for="email">Email address *</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required></div>
 <div class="field"><label for="subject">Subject *</label><input id="subject" name="subject" maxlength="180" required value="Weekly Question: What makes a community strong?"></div>
 <div class="field"><label for="message">Your answer *</label><textarea id="message" name="message" maxlength="4000" required placeholder="Share your perspective…"></textarea></div>
+<div class="field"><label for="weeklyVideo">Video response (optional)</label><input id="weeklyVideo" name="weekly_video" type="file" accept=".mp4,.mov,.webm,video/mp4,video/quicktime,video/webm"><small class="muted">Add an MP4, MOV, or WebM video answering this week’s question. Your video is uploaded privately for Tacoma Nights production review and is not published automatically.</small></div>
+<label class="check"><input type="checkbox" id="videoRights" name="video_rights"> I created this video or have permission to share it, and I give CrowRules Entertainment permission to review and edit it for possible use on Tacoma Nights.</label>
+<div class="progress" id="videoProgress" style="display:none;height:8px;background:#ffffff18;margin:12px 0;overflow:hidden"><span id="videoProgressBar" style="display:block;width:0;height:100%;background:#e7b975"></span></div>
+<p class="status" id="videoUploadStatus" role="status" aria-live="polite"></p>
 <label class="check"><input type="checkbox" name="consent_to_contact" required> Tacoma Nights may review my response and contact me about it.</label>
 <button class="button" type="submit">Submit my answer</button>
 <p class="status" role="status" aria-live="polite"></p>
