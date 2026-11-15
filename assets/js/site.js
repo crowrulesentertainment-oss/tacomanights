@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     nav.setAttribute("aria-label", "Main navigation");
     nav.innerHTML =
       '<a class="nav-home" href="' + base + 'index.html">Home</a>' +
-      '<details class="nav-dropdown"><summary>Archive</summary><div class="dropdown-menu"><a href="' + base + 'archive.html">Tacoma Nights Archive</a><a href="https://www.youtube.com/playlist?list=PLKfh6Jm08P-c" target="_blank" rel="noopener">YouTube Playlist ↗</a></div></details>' +
+      '<details class="nav-dropdown"><summary>Archive</summary><div class="dropdown-menu"><a href="' + base + 'archive.html">Tacoma Nights Archive</a><a href="https://www.youtube.com/playlist?list=PLYK7RQq4_mhw" target="_blank" rel="noopener">YouTube Playlist ↗</a></div></details>' +
       '<details class="nav-dropdown"><summary>The Show</summary><div class="dropdown-menu"><a href="' + base + 'about.html">About Tacoma Nights</a><a href="' + base + 'shows.html">Shows &amp; Segments</a><a href="' + base + 'future-segments.html">Future Segments</a><a href="' + base + 'explore.html">Explore Our Coverage</a></div></details>' +
       '<details class="nav-dropdown"><summary>Community</summary><div class="dropdown-menu"><a href="' + base + 'weekly-question.html">Weekly Question</a><a href="' + base + 'shows.html#spotlight">253 Spotlight</a><a href="' + base + 'shows.html#action">Community in Action</a></div></details>' +
       '<details class="nav-dropdown"><summary>Get Involved</summary><div class="dropdown-menu"><a href="' + base + 'participate.html">Ways to Participate</a><a href="' + base + 'remote-host-upload.html">Remote Host Upload</a><a href="' + base + 'remote-host.html">Become a Remote Host</a><a href="' + base + 'participate.html">Become a Guest</a></div></details>' +
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Enforce show-specific video sources sitewide: never expose the general CrowRules channel feed.
-  const tnPlaylist = "PLKfh6Jm08P-c";
+  const tnPlaylist = "PLYK7RQq4_mhw";
   const tnPlaylistEmbed = "https://www.youtube-nocookie.com/embed/videoseries?list=" + tnPlaylist;
   const normalizeTacomaNightsMedia = root => {
     root.querySelectorAll("iframe[src]").forEach(frame => {
