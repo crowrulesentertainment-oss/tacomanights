@@ -95,5 +95,13 @@
     window.dispatchEvent(new CustomEvent("tacoma-nights-control-room-synced",{detail:{successful}}));
   }
   window.TacomaNightsControlRoom={url:CONTROL_ROOM_URL,refresh:run};
+  let refreshQueued=false;
+  const refreshWhenVisible=()=>{
+    if(document.visibilityState==="hidden"||refreshQueued)return;
+    refreshQueued=true;
+    run().catch(error=>console.warn("Raven Control Room refresh failed:",error)).finally(()=>{refreshQueued=false;});
+  };
+  window.addEventListener("focus",refreshWhenVisible);
+  document.addEventListener("visibilitychange",refreshWhenVisible);
+  window.setInterval(()=>{if(document.visibilityState==="visible")refreshWhenVisible();},300000);
   run().catch(error=>{console.warn("Raven Control Room public sync failed:",error);setSyncStatus("Control Room sync unavailable · showing Tacoma Nights defaults");});
-})();
