@@ -39,7 +39,7 @@
     const videoId=row.youtube_video_id;
     const status=String(row.status||"playlist").toLowerCase();
     const when=row.premiere_at?new Date(row.premiere_at):null;
-    if(when&&Number.isFinite(when.getTime())){
+    if(when&&Number.isFinite(when.getTime())&&when.getTime()>Date.now()){
       setText("#next-episode-title",title);
       setText("#next-episode-date",formatPacific(when));
       const tick=()=>{
