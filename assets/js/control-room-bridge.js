@@ -31,8 +31,8 @@
   }
   function syncCountdown(row) {
     if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}
-    if(!row?.is_published) return;
     const panel=ensureSitewideMediaPanel();
+    if(!row?.is_published) return;
     const title=row.show_title||"Tacoma Nights";
     const videoId=row.youtube_video_id;
     const status=String(row.status||"playlist").toLowerCase();
@@ -114,6 +114,7 @@
   style.textContent=".tn-sitewide-media{background:linear-gradient(120deg,#171a20,#0d0f14);border-top:1px solid #ffffff20;border-bottom:1px solid #ffffff20;padding:30px 20px;color:#f5f1e9}.tn-sitewide-media-inner{width:min(1180px,100%);margin:auto;display:flex;align-items:center;justify-content:space-between;gap:22px}.tn-sitewide-kicker{font-size:.65rem;letter-spacing:.16em;font-weight:800;color:#d8b875}.tn-sitewide-media h2{font-size:clamp(1.35rem,3vw,2rem);margin:7px 0}.tn-sitewide-media p{margin:0;color:#b9b6b0;font-size:.88rem}.tn-sitewide-media .tn-sitewide-status{margin-top:8px;color:#d8b875;font-size:.68rem;font-weight:800;letter-spacing:.1em}.tn-sitewide-actions{display:flex;flex-wrap:wrap;gap:9px}.tn-sitewide-actions a{display:inline-flex;align-items:center;justify-content:center;padding:11px 14px;border:1px solid #d8b875;color:#f5f1e9;text-decoration:none;font-size:.72rem;font-weight:800;letter-spacing:.06em}.tn-sitewide-actions a:first-child{background:#d8b875;color:#151515}@media(max-width:650px){.tn-sitewide-media-inner{align-items:flex-start;flex-direction:column}.tn-sitewide-actions{width:100%}.tn-sitewide-actions a{flex:1}}";
   document.head.appendChild(style);
   async function run() {
+    ensureSitewideMediaPanel();
     setSyncStatus("Connecting to Raven Control Room…");
     const jobs=[
       db.from("tacoma_nights_show_settings").select("show_title,premiere_at,status,is_published,youtube_video_id").eq("setting_key","premiere").eq("is_published",true).maybeSingle(),
