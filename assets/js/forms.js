@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded",()=>{
        owner_id:null,co_host_name:form.querySelector('[name="full_name"]').value.trim(),
        co_host_email:form.querySelector('[name="email"]').value.trim()||null,
        title:subject,episode_label:"The People's Perspective — Question of the Week",
-       notes:["Weekly question: "+document.querySelector("#weeklyQuestionHeading")?.textContent,message].filter(Boolean).join("\\n\\n"),
+       notes:["Weekly question: "+document.querySelector("#weeklyQuestionHeading")?.textContent,message].filter(Boolean).join("\n\n"),
        storage_path:storagePath,original_filename:file.name,file_size:file.size,mime_type:mime,rights_confirmed:true
       });
       if(error){await window.tnSupabase.storage.from(BUCKET).remove([storagePath]);throw error;}
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     interest_area:String(f.get("interest_area")||"").trim()||null,
     portfolio_url:String(f.get("portfolio_url")||"").trim()||null,
     subject:String(f.get("subject")||"").trim(),
-    message:String(f.get("message")||"").trim()+(videoPath?"\\n\\nVideo response uploaded to the private Tacoma Nights production inbox. Reference: "+videoPath:""),
+    message:String(f.get("message")||"").trim()+(videoPath?"\n\nVideo response uploaded to the private Tacoma Nights production inbox. Reference: "+videoPath:""),
     consent_to_contact:f.get("consent_to_contact")==="on",status:"new"
    };
    const allowed=["crew_interest","guest_pitch","story_pitch","topic_suggestion","episode_question"];
