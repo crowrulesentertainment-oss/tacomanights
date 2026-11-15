@@ -8,6 +8,9 @@
   if (!db) return;
   const CONTROL_ROOM_URL = "https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html";
   const PLAYLIST_ID = "PLKfh6Jm08P-c";
+  const PLAYLIST_URL = "https://www.youtube.com/playlist?list=" + PLAYLIST_ID;
+  const PLAYLIST_EMBED = "https://www.youtube-nocookie.com/embed/videoseries?list=" + PLAYLIST_ID;
+  let countdownTimer = null;
   const $ = (selector, root=document) => root.querySelector(selector);
   const setText = (selector, value) => { const el=$(selector); if(el && value != null) el.textContent=String(value); };
   const setSyncStatus = message => document.querySelectorAll("#connection-state,[data-control-room-status]").forEach(el=>el.textContent=message);
@@ -15,35 +18,41 @@
   const embedVideo = id => "https://www.youtube-nocookie.com/embed/"+encodeURIComponent(id)+"?rel=0&modestbranding=1";
   const formatPacific = value => new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",weekday:"long",month:"long",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short"}).format(new Date(value));
   function syncCountdown(row) {
+    if(countdownTimer) clearInterval(countdownTimer);
     if (!row?.premiere_at || !row.is_published) return;
     const when = new Date(row.premiere_at);
     if (!Number.isFinite(when.getTime())) return;
     setText("#next-episode-title", row.show_title || "The next conversation is coming.");
     setText("#next-episode-date", formatPacific(when));
-    let timer;
     const tick=()=>{
       const left=Math.max(0,when.getTime()-Date.now());
       const values=[Math.floor(left/86400000),Math.floor(left%86400000/3600000),Math.floor(left%3600000/60000),Math.floor(left%60000/1000)];
       ["#count-days","#count-hours","#count-minutes","#count-seconds"].forEach((sel,i)=>setText(sel,String(values[i]).padStart(2,"0")));
-      if(left===0){setText("#countdown-status","Premiere time reached · watch Tacoma Nights");clearInterval(timer);}
+      if(left===0){setText("#countdown-status","Premiere time reached · watch Tacoma Nights");clearInterval(countdownTimer);}
     };
-    tick(); timer=setInterval(tick,1000);
+    tick(); countdownTimer=setInterval(tick,1000);
     setText("#countdown-status","Schedule synced from Raven Control Room");
   }
   function syncFeaturedVideo(value) {
     const videoId=value?.video_id;
-    if(!validVideoId(videoId)) return;
     const frame=$(".feature iframe, [data-tn-featured-player]");
+    const title=$("[data-tn-featured-title]") || $(".feature h3");
+    const description=$("[data-tn-featured-description]") || $(".feature p");
+    const link=$("[data-tn-featured-link]");
+    if(!validVideoId(videoId)){
+      if(frame){delete frame.dataset.tnApprovedFeatured;frame.src=PLAYLIST_EMBED;frame.title="Official Tacoma Nights playlist";}
+      if(title) title.textContent="Stories. People. Community.";
+      if(description) description.textContent="Full episodes, conversations, community features and special programming from Tacoma Nights.";
+      if(link){link.href=PLAYLIST_URL;link.textContent="Open Tacoma Nights Playlist ↗";}
+      return;
+    }
     if(frame){
       frame.dataset.tnApprovedFeatured="true";
       frame.src=embedVideo(videoId);
       frame.title=value.title||"Tacoma Nights featured video";
     }
-    const title=$("[data-tn-featured-title]") || $(".feature h3");
     if(title && value.title) title.textContent=value.title;
-    const description=$("[data-tn-featured-description]") || $(".feature p");
     if(description && value.description) description.textContent=value.description;
-    const link=$("[data-tn-featured-link]");
     if(link){link.href="https://www.youtube.com/watch?v="+encodeURIComponent(videoId);link.textContent="Watch Featured Tacoma Nights Video ↗";}
   }
   function syncWeeklyQuestion(value) {
