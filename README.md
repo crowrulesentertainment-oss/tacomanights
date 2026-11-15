@@ -25,15 +25,32 @@ Public forms should insert only into `tacoma_nights_submissions` using the exist
 - Cinematic Tacoma Nights hero and calls to action
 - Live next-episode countdown in Pacific Time
 - Supabase-published premiere schedule takes precedence over the recurring Friday 10 PM PT fallback
-- YouTube playlist embed and links
+- YouTube embeds and channel-style links are normalized sitewide to the Tacoma Nights-only playlist `PLKfh6Jm08P-c`; the generic CrowRules channel feed is not used on this show site.
 - Show segments, community participation and geographic coverage
 - Responsive mobile and desktop layout
 - Grouped dropdown navigation
 
 ## Pages and deployment
 
-Home, Watch, Shows, Community Voices, Weekly Question, Participate, Explore, About, Member sign-in/dashboard, Admin Command Center and supporting workspaces.
+Home, Watch, Shows, Community Voices, Weekly Question, Participate, Explore, About, Member sign-in/dashboard, Admin Command Center with live operational counts, filterable submission review, CSV export, and a premiere publishing form; supporting read-only workspaces.
 
 Enable GitHub Pages for `main` / root. Site uses relative paths. Verify nested pages and auth redirects after publishing.
 
 Never commit service-role keys, secret keys, or other server credentials.
+
+
+## Tacoma Nights-only video handling
+
+- The canonical video source is the dedicated Tacoma Nights playlist: `PLKfh6Jm08P-c`.
+- Homepage and Watch page embed that playlist directly using YouTube's privacy-enhanced player.
+- The shared public-site script normalizes YouTube iframe embeds and generic channel links to the Tacoma Nights playlist, including dynamically added embeds.
+- The general `@CrowRules_TV` channel feed is intentionally not linked from Tacoma Nights pages, preventing Back Deck Live content from being surfaced through a generic channel feed.
+
+## Staff Command Center
+
+- Staff sign-in requires the existing Supabase Auth user with `app_metadata.role = admin`.
+- Overview counts use existing submissions, host applications, and production task tables.
+- Community submissions can be searched and filtered in the browser; staff can export the loaded list as CSV.
+- The premiere editor updates only the existing `tacoma_nights_show_settings` row with `setting_key = premiere`; it does not create tables, rows, or policies.
+- The record workspaces remain read-only and rely on the current RLS rules. If a query is denied, the UI reports the database response rather than bypassing permissions.
+- No database schema or RLS policy changes are part of this site upgrade.
