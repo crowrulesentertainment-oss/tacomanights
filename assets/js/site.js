@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     window.tacomaNightsSupabase = client;
     const controlRoomBridge = document.createElement("script");
-    controlRoomBridge.src = "assets/js/control-room-bridge.js?v=1";
+    controlRoomBridge.src = base + "assets/js/control-room-bridge.js?v=1";
     controlRoomBridge.defer = true;
     document.head.appendChild(controlRoomBridge);
     if (state) state.textContent = "Connected to the Tacoma Nights community network";
