@@ -71,10 +71,56 @@ footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-s
 @media(max-width:700px){.category-guide-grid{grid-template-columns:1fr}}
 
 </style>
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+/* Tacoma Nights shared visual system */
+:root{--bg:#090a0d;--panel:#15171d;--line:#ffffff20;--text:#f7f5f0;--muted:#b8b5b0;--gold:#e6b96c;--red:#c83238;--max:1180px}
+body{background:var(--bg);color:var(--text);font:16px/1.65 "DM Sans",sans-serif}
+header.site-header{position:sticky;top:0;z-index:20;background:#090a0df2;backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{min-height:74px;height:auto;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{font:800 1rem Manrope,sans-serif;letter-spacing:.1em}.brand small{display:block;color:var(--muted);font:700 .62rem "DM Sans";letter-spacing:.14em}
+.navlinks{display:none}.nav-links{display:flex}
+.hero{min-height:560px;background-image:linear-gradient(100deg,#090a0df2,#090a0d8c),url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=2200&q=85');background-position:center;background-size:cover;border-bottom:1px solid var(--line)}
+.hero:before,.hero:after{display:none}
+.hero-inner{width:min(1180px,calc(100% - 36px));padding:88px 0 96px;max-width:760px}
+.hero h1{font:800 clamp(3.5rem,8vw,6.6rem)/.98 Manrope,sans-serif;letter-spacing:-.06em}
+.hero h1 span{color:var(--gold)}
+.hero p{color:#d0ceca;font-size:1.12rem}
+.eyebrow{color:var(--gold)}
+.live{border-color:#e6b96c55;background:#090a0db8;color:#f1d8a8}
+.btn{display:inline-flex;justify-content:center;align-items:center;min-height:46px;padding:12px 18px;border-radius:9px;font-weight:800;font-size:.88rem;border:1px solid transparent;transition:.2s}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}.btn.secondary{background:transparent;border-color:#ffffff55;color:#f7f5f0}
+.band{background:#101116;border-bottom:1px solid #ffffff0c}.banditem{border-color:#ffffff14}.banditem b{font:800 1rem Manrope}.banditem span{color:var(--muted)}
+section.content{padding:62px 0}.heading h2,.content h2{font:800 clamp(2.1rem,5vw,3.4rem)/1.08 Manrope,sans-serif;letter-spacing:-.05em}
+.heading p,.content p{color:var(--muted)}
+.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.card{background:linear-gradient(145deg,#1b1e25,#111218);border:1px solid var(--line);border-radius:17px;padding:25px;box-shadow:none}
+.card h3{font:700 1.12rem Manrope}.card p{color:var(--muted)}
+.num{color:var(--gold)}
+.split{gap:36px}.photo{border-color:var(--line);border-radius:17px}
+.checks li{border-color:#ffffff18;color:#dedbd4}.checks li:before{color:var(--gold)}
+.callout{background:linear-gradient(145deg,#1b1e25,#111218);border:1px solid #e6b96c55;border-radius:17px;color:#e8e4dc}
+.callout strong{color:#f1d8a8}
+.form-shell{gap:28px}.form-intro{position:sticky;top:105px}
+.formbox{background:linear-gradient(145deg,#1b1e25,#111218);border:1px solid var(--line);border-radius:17px;box-shadow:none}
+.formbox h3{font:800 1.5rem Manrope}.formbox>p{color:var(--muted)}
+.form-section-heading{border-color:#ffffff18}.form-section-heading>span{background:#c8323820;border-color:#c8323866;color:#f0b6b8}
+.field label,.choice-group legend{color:#e8e5df}.field input,.field select,.field textarea{background:#0b0c10;color:#fff;border:1px solid #ffffff35;border-radius:8px}
+.choice-group{background:#0b0c10;border-color:#ffffff25}.choice{background:#ffffff05;border-color:#ffffff17;color:#d5d2cb}.choice:has(input:checked){border-color:#e6b96c80;background:#e6b96c12}.choice input,.agree input{accent-color:#c83238}
+.agree,.section-note,.fine{color:var(--muted)}.status{color:var(--gold)}.status.success{color:#a8e6bd}.status.error{color:#ffb4a8}
+footer.footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-size:.85rem}
+@media(max-width:850px){.form-shell,.split{grid-template-columns:1fr}.form-intro{position:static}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.hero{min-height:490px}.hero-inner{padding:62px 0 72px}.hero h1{font-size:clamp(3rem,14vw,4.5rem)}.formbox{padding:19px 15px}.fields{gap:16px}.choice-grid{grid-template-columns:1fr}}
+</style>
+<script src="assets/js/site.js" defer></script>
 <script src="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/js/crowrules-notifications.js?v=3" defer></script>
 <script src="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/js/crowrules-sitewide.js?v=5" defer></script></head>
 <body>
-<header><div class="wrap nav"><a class="brand" href="./">TACOMA NIGHTS<small>A CrowRules Entertainment Production</small></a><nav class="navlinks" aria-label="Main navigation"><a href="./">Show home</a><a href="./#crew">Our crew</a><a href="remote-host-upload.html">Co-host clip upload ↗</a><a class="pill" href="#apply">Apply to host ↗</a></nav></div></header>
+<header class="site-header"><div class="wrap nav">
+<a class="brand" href="index.html">TACOMA NIGHTS<small>A CROW RULES ENTERTAINMENT PRODUCTION</small></a>
+<button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+<nav class="nav-links" aria-label="Main navigation"></nav>
+</div></header>
 <main>
 <section class="hero"><div class="wrap hero-inner"><div class="live"><i></i> Behind the mic · Beyond the deck</div><div class="eyebrow" style="margin-top:25px">Tacoma Nights · Remote Host Recruitment</div><h1>Your voice.<span>Your perspective.</span>Our show.</h1><p>Help bring Tacoma and the Pacific Northwest into the conversation. Join Tacoma Nights as a remote host and take part in a real, growing independent talk show — from wherever you call home.</p><div class="actions"><a class="btn primary" href="#apply">Start your application ↗</a><a class="btn secondary" href="#how">See how remote hosting works</a><a class="btn secondary" href="remote-host-upload.html">Already a co-host? Upload your clip ↗</a></div><div class="meta"><span>Remote participation</span><span>Tacoma & Pacific Northwest focus</span><span>Independent production</span></div></div></section>
 <div class="band"><div class="wrap bandgrid"><div class="banditem"><b>Join from your own space</b><span>Participate remotely without relocating to Tacoma.</span></div><div class="banditem"><b>Bring a point of view</b><span>Help shape conversations, segments, and community stories.</span></div><div class="banditem"><b>Build something together</b><span>Collaborate with a small independent production.</span></div></div></div>
@@ -158,7 +204,7 @@ footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-s
 <div class="field full"><label for="why">Why would you like to join Tacoma Nights? *</label><textarea id="why" name="why" required maxlength="2500" placeholder="What would you bring to the conversation?"></textarea></div>
 </div><label class="agree"><input type="checkbox" name="volunteer_acknowledgement" required><span>I understand that participation is currently a volunteer/community collaboration opportunity, not a paid position. Future paid roles may be considered if CrowRules Entertainment grows and becomes financially able, but compensation is not guaranteed. Applying does not guarantee selection or publication.</span></label><label class="agree"><input type="checkbox" name="contact_consent" required><span>I agree that Tacoma Nights may review this application and contact me about this opportunity. My contact details should not be published.</span></label><button class="btn primary" type="submit" style="width:100%;cursor:pointer">Submit remote host application ↗</button><div class="status" id="formStatus" role="status" aria-live="polite">Ready when you are. Complete the form and submit your application.</div><p class="fine">Your application should be handled privately by authorized production personnel. Do not submit passwords, payment details, government ID numbers, or other sensitive information.</p></form></div></section>
 </main>
-<footer><div class="wrap foot"><span>© CrowRules Entertainment · Tacoma Nights</span><span><a href="./">Back to Tacoma Nights</a> · One company. One universe.</span></div></footer>
+<footer class="footer"><div class="wrap footer-row"><span>© CrowRules Entertainment · Tacoma Nights</span><span><a href="./">Back to Tacoma Nights</a> · One company. One universe.</span></div></footer>
 <script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
