@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
       '<details class="nav-dropdown"><summary>Community</summary><div class="dropdown-menu"><a href="' + base + 'community-voices.html">Community Voices</a><a href="' + base + 'weekly-question.html">Weekly Question</a><a href="' + base + 'shows.html#spotlight">253 Spotlight</a><a href="' + base + 'shows.html#action">Community in Action</a></div></details>' +
       '<details class="nav-dropdown"><summary>Get Involved</summary><div class="dropdown-menu"><a href="' + base + 'participate.html">Ways to Participate</a><a href="' + base + 'community-voices.html">Submit a Story or Topic</a><a href="' + base + 'participate.html">Become a Contributor</a><a href="' + base + 'participate.html">Become a Guest</a></div></details>' +
       '<details class="nav-dropdown"><summary>Members</summary><div class="dropdown-menu"><a href="' + base + 'members/login.html">Member Sign In</a><a href="' + base + 'members/dashboard.html">Member Dashboard</a></div></details>' +
-      '<details class="nav-dropdown"><summary>Staff</summary><div class="dropdown-menu"><a href="' + base + 'admin/">Staff Sign In</a><a href="' + base + 'admin/command-center.html">Command Center</a></div></details>';
+      '<details class="nav-dropdown"><summary>Staff</summary><div class="dropdown-menu"><a href="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html">Raven Control Room ↗</a><a href="' + base + 'admin/">Local Staff Sign In</a><a href="' + base + 'admin/command-center.html">Local Command Center</a></div></details>';
   }
   const menuButton = document.querySelector(".menu-toggle");
   menuButton?.addEventListener("click", () => {
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const u = new URL(frame.getAttribute("src"), location.href);
         if (["youtube.com","www.youtube.com","m.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].includes(u.hostname)) {
-          if (u.searchParams.get("list") !== tnPlaylist || !u.pathname.includes("videoseries")) {
+          if (frame.dataset.tnApprovedFeatured !== "true" && (u.searchParams.get("list") !== tnPlaylist || !u.pathname.includes("videoseries"))) {
             frame.src = tnPlaylistEmbed;
             frame.title = "Official Tacoma Nights episodes playlist";
           }
@@ -127,6 +127,10 @@ document.addEventListener("DOMContentLoaded", () => {
       auth: { autoRefreshToken:true, persistSession:true, detectSessionInUrl:true }
     });
     window.tacomaNightsSupabase = client;
+    const controlRoomBridge = document.createElement("script");
+    controlRoomBridge.src = "assets/js/control-room-bridge.js?v=1";
+    controlRoomBridge.defer = true;
+    document.head.appendChild(controlRoomBridge);
     if (state) state.textContent = "Connected to the Tacoma Nights community network";
     return client.from("tacoma_nights_show_settings")
       .select("show_title,premiere_at,status,is_published")
