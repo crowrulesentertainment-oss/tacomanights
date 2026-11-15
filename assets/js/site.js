@@ -84,6 +84,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   }
 
+  // Enforce show-specific video sources sitewide: never expose the general CrowRules channel feed.
+  const tnPlaylist = "PLKfh6Jm08P-c";
+  const tnPlaylistEmbed = "https://www.youtube-nocookie.com/embed/videoseries?list=" + tnPlaylist;
+  const normalizeTacomaNightsMedia = root => {
+    root.querySelectorAll("iframe[src]").forEach(frame => {
+      try {
+        const u = new URL(frame.getAttribute("src"), location.href);
+        if (["youtube.com","www.youtube.com","m.youtube.com","youtube-nocookie.com","www.youtube-nocookie.com"].includes(u.hostname)) {
+          if (u.searchParams.get("list") !== tnPlaylist || !u.pathname.includes("videoseries")) {
+            frame.src = tnPlaylistEmbed;
+            frame.title = "Official Tacoma Nights episodes playlist";
+          }
+        }
+      } catch {}
+    });
+    root.querySelectorAll('a[href*="youtube.com/@CrowRules_TV"],a[href*="youtube.com/channel/"]').forEach(link => {
+      link.href = "https://www.youtube.com/playlist?list=" + tnPlaylist;
+      link.textContent = link.textContent.replace(/CrowRules TV/gi,"Tacoma Nights Playlist");
+    });
+  };
+  normalizeTacomaNightsMedia(document);
+  new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(node => {
+    if (node.nodeType === 1) { if (node.matches?.("iframe[src],a[href]")) normalizeTacomaNightsMedia(node.parentNode || document); else normalizeTacomaNightsMedia(node); }
+  }))).observe(document.documentElement,{childList:true,subtree:true});
+
   // Shared browser-safe Supabase connection for Tacoma Nights public pages.
   const SUPABASE_URL = "https://cevylpnoexugwgygvtgu.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_AdfM5y6RqvF3tbvEVzDZSg_JuGTQLD-";
