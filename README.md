@@ -68,3 +68,21 @@ https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-night
 - The `weekly_question` setting from `tacoma_nights_site_settings` drives the public weekly-question page and homepage question.
 - Published crew profiles from `tacoma_nights_crew` populate the homepage team section.
 - Public pages never load the private Control Room HTML or its admin-only records. The bridge uses the existing browser-safe publishable key and respects RLS. No service-role key, auth bypass, table, or policy changes are introduced.
+
+
+## Primary Tacoma Nights Control Room
+
+The canonical administration and publishing workspace is the Raven Control Room:
+https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html
+
+The Control Room and this GitHub Pages site use the same Supabase project and publishable browser key. Public pages do not scrape or embed the private admin HTML. They read only published/public records from the shared Supabase database through `assets/js/control-room-bridge.js`, subject to the existing Row Level Security policies.
+
+Public site synchronization reads:
+- `tacoma_nights_show_settings` — published premiere title and date/time.
+- `tacoma_nights_featured_video` — approved homepage featured video and copy.
+- `tacoma_nights_site_settings` — published weekly question.
+- `tacoma_nights_crew` — published crew profiles.
+
+The shared site navigation and footer route staff to the Raven Control Room. The local admin pages remain available as secondary tools; the Raven Control Room is the primary place to manage and publish show content. Public pages refresh the shared settings on page load, when returning to the tab, and periodically while visible.
+
+Only select videos from the official Tacoma Nights YouTube playlist `PLKfh6Jm08P-c` in the Control Room featured-video field. Never select Back Deck Live or unrelated CrowRules programming.
