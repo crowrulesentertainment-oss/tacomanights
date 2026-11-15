@@ -132,7 +132,7 @@
     else if(question.status==="rejected"||question.value?.error)console.warn("Control Room weekly question sync unavailable",question.reason||question.value.error);
     if(crew.status==="fulfilled"&&!crew.value.error){syncCrew(crew.value.data||[]);successful++;}
     else if(crew.status==="rejected"||crew.value?.error)console.warn("Control Room crew sync unavailable",crew.reason||crew.value.error);
-    setSyncStatus(successful ? "Connected · content synced from Raven Control Room" : "Raven Control Room connected · public content will use site defaults");
+    setSyncStatus(successful ? "Connected · YouTube + Raven Control Room synced" : "YouTube playlist connected · Control Room content will use site defaults");
     document.querySelectorAll("[data-control-room-link]").forEach(a=>{a.href=CONTROL_ROOM_URL;a.target="_blank";a.rel="noopener";});
     window.dispatchEvent(new CustomEvent("tacoma-nights-control-room-synced",{detail:{successful}}));
   }
@@ -146,5 +146,5 @@
   window.addEventListener("focus",refreshWhenVisible);
   document.addEventListener("visibilitychange",refreshWhenVisible);
   window.setInterval(()=>{if(document.visibilityState==="visible")refreshWhenVisible();},300000);
-  run().catch(error=>{console.warn("Raven Control Room public sync failed:",error);setSyncStatus("Control Room sync unavailable · showing Tacoma Nights defaults");});
+  run().catch(error=>{console.warn("Raven Control Room public sync failed:",error);setSyncStatus("Control Room sync unavailable · official Tacoma Nights playlist remains available");});
 })();
