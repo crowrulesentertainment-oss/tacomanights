@@ -20,13 +20,32 @@
     .steps{list-style:none;padding:0;margin:22px 0}.steps li{display:flex;gap:13px;padding:13px 0;border-bottom:1px solid var(--border)}.steps li:last-child{border:0}.num{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border:1px solid rgba(188,236,255,.23);border-radius:10px;color:var(--cyan);font-size:.75rem;font-weight:800}.steps strong{display:block;font-size:.88rem}.steps small{display:block;color:var(--muted);font-size:.77rem;margin-top:3px}.owner{margin-top:25px;padding-top:22px;border-top:1px solid var(--border)}.owner-form{display:grid;gap:10px;margin-top:14px}.owner-list{display:grid;gap:12px;margin-top:16px}.clip-item{padding:15px;border:1px solid var(--border);border-radius:13px;background:rgba(2,8,16,.35)}.clip-item strong{display:block}.clip-item small{display:block;color:var(--muted);font-size:.74rem;margin:5px 0 8px}.clip-item p{color:var(--muted);font-size:.82rem;white-space:pre-wrap;overflow-wrap:anywhere}.footer{padding:24px 0;border-top:1px solid var(--border);color:var(--muted);font-size:.76rem;text-align:center}.footer a{color:var(--cyan)}
     @media(max-width:780px){.layout{grid-template-columns:1fr}.hero{padding:60px 0 45px}.nav{min-height:68px}}@media(max-width:480px){.container{width:min(100% - 26px,1080px)}.nav a.back{font-size:.75rem}.brand strong{font-size:.88rem}.brand small{font-size:.56rem}.hero-meta{gap:7px}.pill{font-size:.7rem}}
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
-  </style>
+  
+    .workspace-nav{display:flex;align-items:center;gap:clamp(10px,1.4vw,20px);flex-wrap:wrap}
+    .workspace-nav-link,.workspace-dropdown>summary{font-size:.82rem;font-weight:800;color:#eaf2f8;cursor:pointer;white-space:nowrap;list-style:none}
+    .workspace-dropdown>summary::-webkit-details-marker{display:none}
+    .workspace-dropdown>summary:after{content:"⌄";margin-left:6px;color:var(--gold)}
+    .workspace-nav-link:hover,.workspace-dropdown>summary:hover,.workspace-menu a:hover{color:var(--cyan)}
+    .workspace-dropdown{position:relative}
+    .workspace-menu{position:absolute;top:calc(100% + 12px);left:0;z-index:20;min-width:190px;padding:7px;display:grid;gap:3px;background:#101b2a;border:1px solid var(--border);border-radius:12px;box-shadow:0 18px 42px #0009}
+    .workspace-menu a{padding:9px 11px;border-radius:7px;font-size:.8rem;color:#eaf2f8;white-space:nowrap}
+    .workspace-dropdown:not([open]) .workspace-menu{display:none}
+    @media(max-width:780px){.nav{align-items:flex-start;flex-direction:column;padding:12px 0}.workspace-nav{width:100%;gap:10px 15px}.workspace-menu{top:calc(100% + 5px)}}
+    @media(max-width:480px){.workspace-nav{gap:8px 12px}.workspace-nav-link,.workspace-dropdown>summary{font-size:.75rem}.workspace-menu{min-width:170px}}
+
+   </style>
 <script src="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/js/crowrules-notifications.js?v=3" defer></script>
 <script src="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/js/crowrules-sitewide.js?v=5" defer></script></head>
 <body>
   <header class="topbar"><div class="container nav">
     <a class="brand" href="./" aria-label="Tacoma Nights home"><span class="mark">✦</span><span><strong>TACOMA NIGHTS</strong><small>CrowRules Entertainment</small></span></a>
-    <a class="back" href="./">← Back to Tacoma Nights</a>
+    <nav class="workspace-nav" aria-label="Main navigation">
+      <details class="workspace-dropdown"><summary>Watch</summary><div class="workspace-menu"><a href="watch.html">Latest Episodes</a><a href="https://www.youtube.com/playlist?list=PLKfh6Jm08P-c" target="_blank" rel="noopener">YouTube Playlist ↗</a></div></details>
+      <details class="workspace-dropdown"><summary>The Show</summary><div class="workspace-menu"><a href="about.html">About Tacoma Nights</a><a href="shows.html">Shows &amp; Segments</a><a href="explore.html">Explore Coverage</a></div></details>
+      <details class="workspace-dropdown"><summary>Community</summary><div class="workspace-menu"><a href="remote-host-upload.html" aria-current="page">Remote Host Upload</a><a href="weekly-question.html">Weekly Question</a></div></details>
+      <a class="workspace-nav-link" href="participate.html">Get Involved</a>
+      <a class="back" href="./">Home</a>
+    </nav>
   </div></header>
   <section class="hero"><div class="container">
     <span class="eyebrow">Remote co-host workspace</span>
