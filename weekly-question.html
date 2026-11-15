@@ -1,1 +1,72 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Weekly Question | Tacoma Nights</title><link rel="stylesheet" href="assets/css/site.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/config.js"></script><script src="assets/js/supabase.js"></script><script src="assets/js/site.js" defer></script><script src="assets/js/forms.js" defer></script></head><body><header class="site-header"><div class="wrap nav"><a class="brand" href="index.html">TACOMA NIGHTS<small>THE CITY COMES ALIVE</small></a><button class="menu-toggle">☰</button><nav class="nav-links" aria-label="Main navigation"></nav></div></header><section class="page-hero"><div class="wrap"><span class="eyebrow" data-tn-weekly-label>The weekly question</span><h1 data-tn-weekly-question>What makes a community strong?</h1><p data-tn-weekly-deadline>What do you believe is the single most important thing that makes a community strong, and what is one thing people can do to make their community better?</p></div></section><main class="content"><div class="wrap"><form class="panel form-card" data-tn-submission><input type="hidden" name="submission_type" value="episode_question"><input type="hidden" name="subject" value="Weekly Question: What makes a community strong?"><div class="field"><label>Your name *</label><input name="full_name" required maxlength="120"></div><div class="field"><label>Email *</label><input name="email" type="email" required maxlength="254"></div><div class="field"><label>Your answer *</label><textarea name="message" required maxlength="3000" placeholder="Share your perspective..."></textarea></div><label class="check"><input type="checkbox" name="consent_to_contact" required> Tacoma Nights may contact me about my response.</label><button class="button" type="submit">Submit my answer</button><p class="status" role="status" aria-live="polite"></p></form></div></main><footer class="footer"><div class="wrap">© CrowRules Entertainment · Tacoma Nights</div></footer></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080d17">
+<meta name="description" content="Answer the weekly Tacoma Nights community question. Your voice belongs in the conversation.">
+<title>Weekly Question | Tacoma Nights — CrowRules Entertainment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/site.js" defer></script>
+<script src="assets/js/forms.js" defer></script>
+<style>
+:root{color-scheme:dark;--bg:#080d17;--panel:#111d2d;--line:rgba(184,220,246,.17);--text:#f4f7fb;--muted:#a8b6c8;--cyan:#a5e8ff;--gold:#e7b975;--green:#a8dfb8;--red:#ffb4ae}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;min-width:320px;background:radial-gradient(ellipse at 70% -10%,#1a3150 0,transparent 45%),linear-gradient(180deg,#080d17,#0b1322 60%,#080d17);color:var(--text);font:16px/1.65 "DM Sans",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}button,input,textarea{font:inherit;max-width:100%}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wrap{width:min(1120px,calc(100% - 36px));margin:auto}.top{position:sticky;top:0;z-index:20;background:#080d17ed;backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{font:800 1rem Manrope,sans-serif;letter-spacing:.04em;color:var(--text)}.brand small{display:block;color:var(--muted);font:600 .66rem "DM Sans";letter-spacing:.16em}.links{display:flex;gap:18px;align-items:center;flex-wrap:wrap;font-size:.86rem}
+.hero{padding:74px 0 58px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#080d17ed,#080d1780),radial-gradient(ellipse at 78% 28%,#4d94b533,transparent 46%)}.eyebrow{color:var(--cyan);font-size:.73rem;font-weight:800;letter-spacing:.19em;text-transform:uppercase}.hero h1{font:800 clamp(2.8rem,7.5vw,5.2rem)/1.02 Manrope,sans-serif;letter-spacing:-.065em;max-width:900px;margin:17px 0}.hero h1 span{color:var(--cyan)}.hero p{color:#c0ccda;max-width:720px;font-size:1.12rem}.section{padding:56px 0}.head{max-width:780px;margin-bottom:26px}.head h2{font:800 clamp(1.9rem,4.5vw,3rem)/1.13 Manrope,sans-serif;letter-spacing:-.045em;margin:8px 0 12px}.muted{color:var(--muted)}
+.weekly-card,.panel{border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,#142238ef,#0d1727f5);box-shadow:0 18px 55px #0002}.weekly-card{position:relative;overflow:hidden;border-color:#a5e8ff55;border-radius:22px;padding:clamp(24px,5vw,42px);background:radial-gradient(ellipse at 90% 0%,#5ab8d52b,transparent 48%),linear-gradient(135deg,#152a40,#0b1728);box-shadow:0 20px 65px #0003}.weekly-card:before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:linear-gradient(180deg,var(--cyan),var(--gold))}.weekly-card .eyebrow{display:inline-flex;align-items:center;gap:9px}.weekly-card .eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold)}.weekly-card h2{font:800 clamp(1.65rem,4vw,2.65rem)/1.2 Manrope,sans-serif;letter-spacing:-.04em;max-width:850px;margin:14px 0 18px}.weekly-card .prompt{font-size:1.08rem;color:#d8e5f1;max-width:850px}.panel{padding:clamp(20px,4vw,34px)}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.field{display:block;width:100%;margin-top:6px;padding:12px 13px;border:1px solid var(--line);border-radius:11px;background:#080f1b;color:var(--text)}.field::placeholder{color:#7f91a8}label{display:block;font-size:.87rem;font-weight:700}.full{grid-column:1/-1}textarea.field{resize:vertical;min-height:170px}.consent{display:flex;align-items:flex-start;gap:10px;color:var(--muted);font-size:.83rem;font-weight:500}.consent input{margin-top:6px;flex:0 0 auto}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;border:1px solid transparent;border-radius:12px;padding:11px 18px;color:#07121a;background:linear-gradient(135deg,#c8f0ff,#a9d7e9);font-weight:800;cursor:pointer}.btn:disabled{opacity:.55;cursor:wait}.help{font-size:.82rem;color:var(--muted)}.status{min-height:24px;color:var(--muted);font-size:.9rem}.footer{border-top:1px solid var(--line);padding:25px 0;color:var(--muted);font-size:.84rem}.footrow{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:700px){.nav{align-items:flex-start;flex-direction:column;padding:13px 0}.links{gap:10px;font-size:.8rem}.hero{padding:55px 0 45px}.section{padding:42px 0}.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.panel{padding:18px}.hero h1{font-size:clamp(2.5rem,12vw,4rem)}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap nav"><a class="brand" href="index.html">TACOMA NIGHTS<small>CROWRULES ENTERTAINMENT</small></a><nav class="links" aria-label="Main navigation"><a href="index.html">Show home</a><a href="community.html">Community Hub</a><a href="community-voices.html">Community Voices</a><a href="#answer">Answer the question</a></nav></div></header>
+<main>
+<section class="hero"><div class="wrap"><span class="eyebrow">Tacoma · South Sound · Pacific Northwest</span><h1>The weekly <span>question.</span></h1><p>Every week, Tacoma Nights asks a question inspired by the people, places, and conversations that make our community what it is. Add your perspective to the conversation.</p></div></section>
+<section class="section" id="question"><div class="wrap"><div class="weekly-card">
+<span class="eyebrow" id="weeklyQuestionLabel">This week's community question</span>
+<h2 id="weeklyQuestionText">What makes a community strong?</h2>
+<p class="prompt" id="weeklyQuestionPrompt">What do you believe is the single most important thing that makes a community strong, and what is one thing people can do to make their community better?</p>
+<p class="help" id="weeklyQuestionDeadline">Have your response in by Wednesday night to be considered for this week's production.</p>
+</div></div></section>
+<section class="section" id="answer"><div class="wrap"><div class="head"><span class="eyebrow">Your voice belongs here</span><h2>Share your answer with Tacoma Nights.</h2><p class="muted">Tell us what you think. Your response may help shape an upcoming episode or community conversation.</p></div>
+<div class="panel"><form data-tn-submission><input type="hidden" name="submission_type" value="episode_question"><input type="hidden" name="subject" id="weeklySubject" value="Weekly Question: What makes a community strong?">
+<div class="formgrid">
+<div><label for="fullName">Your name *</label><input class="field" id="fullName" name="full_name" autocomplete="name" maxlength="120" required></div>
+<div><label for="email">Email address *</label><input class="field" id="email" name="email" type="email" autocomplete="email" maxlength="254" required></div>
+<div class="full"><label for="message">Your answer *</label><textarea class="field" id="message" name="message" maxlength="4000" required placeholder="Share your perspective, a personal experience, or an idea that could make a difference…"></textarea><p class="help">Please keep your response respectful and avoid sharing confidential or sensitive personal information.</p></div>
+<div class="full"><label class="consent"><input type="checkbox" name="consent_to_contact" required><span>Tacoma Nights may review my response and contact me about it.</span></label></div>
+<div class="full"><button class="btn" type="submit">Submit my answer ↗</button><p class="status" role="status" aria-live="polite"></p></div>
+</div></form></div></div></section>
+</main>
+<footer class="footer"><div class="wrap footrow"><span>© <span id="year"></span> CrowRules Entertainment · Tacoma Nights</span><span>One company. One universe. · <a href="index.html">Back to the show ↗</a></span></div></footer>
+<script>
+(() => {
+const fallback={label:"This week's community question",question:"What makes a community strong?",prompt:"What do you believe is the single most important thing that makes a community strong, and what is one thing people can do to make their community better?",deadline:"Wednesday night"};
+document.getElementById("year").textContent=new Date().getFullYear();
+async function loadQuestion(){
+ try{
+  if(!window.tnSupabase)return;
+  const {data,error}=await window.tnSupabase.from("tacoma_nights_site_settings").select("setting_value").eq("setting_key","weekly_question").maybeSingle();
+  if(error)throw error;
+  const saved=data?.setting_value;
+  if(!saved||typeof saved!=="object"||typeof saved.question!=="string"||!saved.question.trim())return;
+  const q={...fallback,...saved};
+  document.getElementById("weeklyQuestionLabel").textContent=q.label||fallback.label;
+  document.getElementById("weeklyQuestionText").textContent=q.question;
+  document.getElementById("weeklyQuestionPrompt").textContent=q.prompt||q.question;
+  document.getElementById("weeklyQuestionDeadline").textContent="Have your response in by "+(q.deadline||fallback.deadline)+" to be considered for this week's production.";
+  document.getElementById("weeklySubject").value="Weekly Question: "+q.question.slice(0,145);
+ }catch(error){console.warn("Using the default weekly question:",error.message);}
+}
+loadQuestion();
+})();
+</script>
+</body>
+</html>
