@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try { const url = new URL(link.href, location.href); if (url.origin === location.origin && url.pathname.split("/").pop() === current) link.setAttribute("aria-current", "page"); } catch {}
   });
 
-  // Weekly Friday 10 PM Pacific fallback, with published Supabase premiere settings taking precedence.
+  // Weekly Friday 7 PM Pacific fallback, with published Supabase premiere settings taking precedence.
   const pacific = "America/Los_Angeles";
   const partsAt = (date, timeZone) => Object.fromEntries(new Intl.DateTimeFormat("en-US", {
     timeZone, year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit", hourCycle:"h23"
@@ -76,14 +76,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const weekday = new Intl.DateTimeFormat("en-US", { timeZone:pacific, weekday:"short" }).format(now);
     const dayIndex = ({Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6})[weekday];
     let add = (5 - dayIndex + 7) % 7;
-    let candidate = pacificToUtc(local.year, local.month, local.day + add, 22, 0);
-    if (candidate <= now) candidate = pacificToUtc(local.year, local.month, local.day + add + 7, 22, 0);
+    let candidate = pacificToUtc(local.year, local.month, local.day + add, 19, 0);
+    if (candidate <= now) candidate = pacificToUtc(local.year, local.month, local.day + add + 7, 19, 0);
     return candidate;
   };
   const titleNode = document.getElementById("next-episode-title");
   const dateNode = document.getElementById("next-episode-date");
   const statusNode = document.getElementById("countdown-status");
+  let fallbackEpisodeNumber = 6;
   let premiereAt = nextWeeklyPremiere();
+  if (titleNode) titleNode.textContent = "EPISODE 006 — What Makes a Community Strong?";
   let countdownInterval;
   const formatPremiere = date => new Intl.DateTimeFormat("en-US", {
     timeZone:pacific, weekday:"long", month:"long", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit", timeZoneName:"short"
@@ -105,6 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
     countdownInterval = window.setInterval(() => {
       if (Date.now() >= premiereAt.getTime()) {
         premiereAt = nextWeeklyPremiere();
+        fallbackEpisodeNumber += 1;
+        if (titleNode) titleNode.textContent = "EPISODE " + String(fallbackEpisodeNumber).padStart(3,"0") + " — Next Tacoma Nights Conversation";
         dateNode.textContent = formatPremiere(premiereAt);
         if (statusNode) statusNode.textContent = "Next episode countdown refreshed";
       }
