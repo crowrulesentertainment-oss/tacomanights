@@ -17,21 +17,50 @@
   const validVideoId = value => /^[A-Za-z0-9_-]{11}$/.test(String(value||""));
   const embedVideo = id => "https://www.youtube-nocookie.com/embed/"+encodeURIComponent(id)+"?rel=0&modestbranding=1";
   const formatPacific = value => new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",weekday:"long",month:"long",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short"}).format(new Date(value));
+  function ensureSitewideMediaPanel() {
+    let panel=$("#tn-sitewide-media");
+    if(panel) return panel;
+    const footer=$("footer");
+    if(!footer) return null;
+    panel=document.createElement("section");
+    panel.id="tn-sitewide-media";
+    panel.className="tn-sitewide-media";
+    panel.innerHTML='<div class="tn-sitewide-media-inner"><div><span class="tn-sitewide-kicker">TACOMA NIGHTS · OFFICIAL YOUTUBE</span><h2 data-tn-sitewide-title>Watch the latest Tacoma Nights</h2><p data-tn-sitewide-copy>Full episodes, community stories and conversations from the 253.</p><p class="tn-sitewide-status" data-tn-sitewide-status>Playlist connected</p></div><div class="tn-sitewide-actions"><a data-tn-sitewide-watch href="'+PLAYLIST_URL+'" target="_blank" rel="noopener">Watch on YouTube ↗</a><a data-tn-sitewide-control href="'+CONTROL_ROOM_URL+'" target="_blank" rel="noopener">Raven Control Room ↗</a></div></div>';
+    footer.parentNode.insertBefore(panel,footer);
+    return panel;
+  }
   function syncCountdown(row) {
-    if(countdownTimer) clearInterval(countdownTimer);
-    if (!row?.premiere_at || !row.is_published) return;
-    const when = new Date(row.premiere_at);
-    if (!Number.isFinite(when.getTime())) return;
-    setText("#next-episode-title", row.show_title || "The next conversation is coming.");
-    setText("#next-episode-date", formatPacific(when));
-    const tick=()=>{
-      const left=Math.max(0,when.getTime()-Date.now());
-      const values=[Math.floor(left/86400000),Math.floor(left%86400000/3600000),Math.floor(left%3600000/60000),Math.floor(left%60000/1000)];
-      ["#count-days","#count-hours","#count-minutes","#count-seconds"].forEach((sel,i)=>setText(sel,String(values[i]).padStart(2,"0")));
-      if(left===0){setText("#countdown-status","Premiere time reached · watch Tacoma Nights");clearInterval(countdownTimer);}
-    };
-    tick(); countdownTimer=setInterval(tick,1000);
-    setText("#countdown-status","Schedule synced from Raven Control Room");
+    if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}
+    if(!row?.is_published) return;
+    const panel=ensureSitewideMediaPanel();
+    const title=row.show_title||"Tacoma Nights";
+    const videoId=row.youtube_video_id;
+    const status=String(row.status||"playlist").toLowerCase();
+    const when=row.premiere_at?new Date(row.premiere_at):null;
+    if(when&&Number.isFinite(when.getTime())){
+      setText("#next-episode-title",title);
+      setText("#next-episode-date",formatPacific(when));
+      const tick=()=>{
+        const left=Math.max(0,when.getTime()-Date.now());
+        const values=[Math.floor(left/86400000),Math.floor(left%86400000/3600000),Math.floor(left%3600000/60000),Math.floor(left%60000/1000)];
+        ["#count-days","#count-hours","#count-minutes","#count-seconds"].forEach((sel,i)=>setText(sel,String(values[i]).padStart(2,"0")));
+        if(left===0){setText("#countdown-status","Premiere time reached · watch Tacoma Nights");clearInterval(countdownTimer);countdownTimer=null;}
+      };
+      tick();countdownTimer=setInterval(tick,1000);
+      setText("#countdown-status","Schedule synced from Raven Control Room");
+    }
+    const valid=validVideoId(videoId);
+    const watchUrl=valid?"https://www.youtube.com/watch?v="+encodeURIComponent(videoId):PLAYLIST_URL;
+    if(panel){
+      setText("[data-tn-sitewide-title]",title);
+      setText("[data-tn-sitewide-copy]",when&&Number.isFinite(when.getTime())?"Next Tacoma Nights broadcast · "+formatPacific(when):"Official Tacoma Nights episodes, conversations and community stories.");
+      const label=panel.querySelector("[data-tn-sitewide-status]");
+      if(label)label.textContent=status==="live"?"LIVE NOW · Tacoma Nights":status==="scheduled"?"UPCOMING · Tacoma Nights":status==="ended"?"LATEST REPLAY · Tacoma Nights":"OFFICIAL PLAYLIST · Tacoma Nights";
+      const watch=panel.querySelector("[data-tn-sitewide-watch]");
+      if(watch){watch.href=watchUrl;watch.textContent=status==="live"?"Watch Live on YouTube ↗":status==="scheduled"?"Open Scheduled YouTube Video ↗":valid?"Watch Tacoma Nights Video ↗":"Watch on YouTube ↗";}
+    }
+    const premiereLinks=document.querySelectorAll("[data-tn-premiere-link]");
+    premiereLinks.forEach(a=>{a.href=watchUrl;a.hidden=!valid;});
   }
   function syncFeaturedVideo(value) {
     const videoId=value?.video_id;
@@ -81,6 +110,9 @@
     });
     host.replaceChildren(grid);
   }
+  const style=document.createElement("style");
+  style.textContent=".tn-sitewide-media{background:linear-gradient(120deg,#171a20,#0d0f14);border-top:1px solid #ffffff20;border-bottom:1px solid #ffffff20;padding:30px 20px;color:#f5f1e9}.tn-sitewide-media-inner{width:min(1180px,100%);margin:auto;display:flex;align-items:center;justify-content:space-between;gap:22px}.tn-sitewide-kicker{font-size:.65rem;letter-spacing:.16em;font-weight:800;color:#d8b875}.tn-sitewide-media h2{font-size:clamp(1.35rem,3vw,2rem);margin:7px 0}.tn-sitewide-media p{margin:0;color:#b9b6b0;font-size:.88rem}.tn-sitewide-media .tn-sitewide-status{margin-top:8px;color:#d8b875;font-size:.68rem;font-weight:800;letter-spacing:.1em}.tn-sitewide-actions{display:flex;flex-wrap:wrap;gap:9px}.tn-sitewide-actions a{display:inline-flex;align-items:center;justify-content:center;padding:11px 14px;border:1px solid #d8b875;color:#f5f1e9;text-decoration:none;font-size:.72rem;font-weight:800;letter-spacing:.06em}.tn-sitewide-actions a:first-child{background:#d8b875;color:#151515}@media(max-width:650px){.tn-sitewide-media-inner{align-items:flex-start;flex-direction:column}.tn-sitewide-actions{width:100%}.tn-sitewide-actions a{flex:1}}";
+  document.head.appendChild(style);
   async function run() {
     setSyncStatus("Connecting to Raven Control Room…");
     const jobs=[
