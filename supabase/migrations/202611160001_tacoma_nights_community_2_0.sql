@@ -155,7 +155,7 @@ create policy "Public can read aggregate poll totals" on public.tn_community_pol
 grant select on public.tn_community_poll_totals to anon,authenticated;
 
 create or replace function public.tn_update_community_poll_totals()
-returns trigger language plpgsql security invoker set search_path=public
+returns trigger language plpgsql security definer set search_path=public
 as $
 begin
  if tg_op='INSERT' then
