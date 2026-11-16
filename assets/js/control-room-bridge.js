@@ -34,7 +34,19 @@
   function syncCountdown(row) {
     if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null;}
     const panel=ensureSitewideMediaPanel();
-    if(!row?.is_published) return;
+    const liveFrame=$("#tn-live-player");
+    const liveTitle=$("#tn-live-title");
+    const chatFrame=$("#tn-live-chat-embed");
+    const chatNote=$("#tn-live-chat-note");
+    const placeholder=$("#tn-live-placeholder");
+    const showPlaceholder=(message)=>{
+      if(liveFrame){liveFrame.hidden=true;liveFrame.src="about:blank";}
+      if(placeholder){placeholder.hidden=false;if(message){const p=placeholder.querySelector("p");if(p)p.textContent=message;}}
+      if(liveTitle)liveTitle.textContent="Premiere setup pending · past episodes are available in the archive.";
+      if(chatFrame){chatFrame.hidden=true;chatFrame.removeAttribute("src");}
+      if(chatNote)chatNote.hidden=false;
+    };
+    if(!row?.is_published){showPlaceholder("The video and live chat will appear here as soon as the YouTube Premiere is scheduled and published from Raven Control Room.");return;}
     const title=row.show_title||"Tacoma Nights";
     const videoId=row.youtube_video_id;
     const status=String(row.status||"playlist").toLowerCase();
@@ -52,17 +64,12 @@
       setText("#countdown-status","Schedule synced from Raven Control Room");
     }
     const valid=validVideoId(videoId);
-    const liveFrame=$("#tn-live-player");
-    const liveTitle=$("#tn-live-title");
-    const chatFrame=$("#tn-live-chat-embed");
-    const chatNote=$("#tn-live-chat-note");
     const activeBroadcast=valid&&(status==="live"||status==="scheduled");
-    if(liveFrame){
-      liveFrame.src=valid?embedVideo(videoId):"https://www.youtube-nocookie.com/embed/live_stream?channel=UCOSm_4z9LIQUWHOc8yzPgkw";
-      liveFrame.title=valid?(title||"Tacoma Nights premiere"):"Tacoma Nights live channel player";
-    }
-    if(liveTitle){
-      liveTitle.textContent=valid?(status==="live"?"LIVE NOW · "+title:status==="scheduled"?"UPCOMING PREMIERE · "+title:"LATEST REPLAY · "+title):"Live channel player · scheduled premieres appear here when published.";
+    if(!valid){showPlaceholder("The next Tacoma Nights video has not been attached yet. Once its YouTube Premiere is scheduled and published from Raven Control Room, the player will appear here.");}
+    else{
+      if(liveFrame){liveFrame.src=embedVideo(videoId);liveFrame.title=title||"Tacoma Nights premiere";liveFrame.hidden=false;}
+      if(placeholder)placeholder.hidden=true;
+      if(liveTitle)liveTitle.textContent=status==="live"?"LIVE NOW · "+title:status==="scheduled"?"UPCOMING PREMIERE · "+title:"LATEST REPLAY · "+title;
     }
     if(chatFrame&&activeBroadcast){
       chatFrame.src="https://www.youtube.com/live_chat?v="+encodeURIComponent(videoId)+"&embed_domain=crowrulesentertainment-oss.github.io";
