@@ -18,13 +18,13 @@ GitHub Actions workflow: `.github/workflows/pages.yml`. Set repository Settings 
 
 ## Roadmap
 1. Public website and shared integration foundation.
-2. Member profiles, boards, polls, weekly questions and moderation.
+2. Member profiles, moderated discussion boards, threaded replies, reactions, reports and community polls (connected to existing tn_community_* tables).
 3. Vertical recording studio and member submissions.
 4. Remote host applications, multiple video uploads and crew workspace.
 5. Live/episode engagement and analytics.
 6. Advanced community programming and recognition.
 
-Member sign-in is active in Foundation 1.0. Community boards, profile editing, recording and applications are staged for later phases.
+Phase 2 connects member profiles, moderated discussion posts, replies, reactions, reports and poll voting to existing `tn_community_*` tables. Member display name, bio, city and interests are stored in the signed-in user's own Auth metadata; this does not create a public member directory. Community submissions enter the existing pending moderation state. No database schema, RLS policy, storage bucket, auth provider or existing record was changed. Phase 3 recording and Phase 4 contributor applications remain staged.
 ## Authentication redirect
 The member sign-up and password-reset flows return to the current `members.html` URL. Ensure the deployed GitHub Pages URL is present in Supabase Auth → URL Configuration → Redirect URLs:
 `https://crowrulesentertainment-oss.github.io/tacomanights/**`
