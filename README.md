@@ -95,3 +95,17 @@ Every public page that loads `assets/js/site.js` also loads the public read-only
 The panel reads the published `premiere` row in `tacoma_nights_show_settings`. When the Control Room publishes a YouTube video ID and status (`scheduled`, `live`, or `ended`), the sitewide watch action links directly to that video and labels the state as upcoming, live, or replay. Otherwise it falls back to the official Tacoma Nights playlist. The homepage and Watch page use the Control Room's featured-video setting for their main player; the Watch page retains a separate full-playlist link.
 
 The bridge refreshes on page load, tab focus/visibility return, and every five minutes while visible. It does not attempt to start a YouTube broadcast, control OBS, expose private Control Room data, or use a service-role key. YouTube video IDs and publishing status must be entered and published by an authorized operator in Raven Control Room.
+
+## Cinematic community platform additions
+
+The staging build retains the existing site and adds:
+- A dedicated homepage live/premiere player and scheduled/live YouTube chat, driven by the existing published Raven Control Room premiere setting.
+- A separate daily rotating archive episode player.
+- A Tacoma downtown-at-night hero photograph with visible photographer and license attribution.
+- Dedicated CrowRules network, Tacoma Community Hub connection, and crew/community Discord pages.
+- Direct navigation to The Teenager Perspective, The Cool Perspective, The Weekly Lineup, and future segments.
+- Homepage pathways to the People's Mic, message board, polls, story/event ideas, crew chat and Tacoma Community Hub.
+
+The Tacoma Community Hub is connected through shared navigation and editorial cross-links; its verified directory/event records remain managed by the Hub itself. Tacoma Nights keeps its own episode and community workflows.
+
+No production Supabase tables, records, authentication settings, storage policies or RLS policies are changed by this staging build. See [the staging build notes](docs/CINEMATIC-COMMUNITY-PLATFORM.md).
