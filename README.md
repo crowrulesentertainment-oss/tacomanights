@@ -25,7 +25,7 @@ Public forms should insert only into `tacoma_nights_submissions` using the exist
 - Cinematic Tacoma Nights hero and calls to action
 - Live next-episode countdown in Pacific Time
 - Supabase-published premiere schedule takes precedence over the recurring Friday 10 PM PT fallback
-- YouTube embeds and channel-style links are normalized sitewide to the Tacoma Nights-only playlist `PLKfh6Jm08P-c`; the generic CrowRules channel feed is not used on this show site.
+- YouTube embeds and channel-style links are normalized sitewide to the Tacoma Nights-only playlist `PLYK7RQq4_mhw`; the generic CrowRules channel feed is not used on this show site.
 - Show segments, community participation and geographic coverage
 - Responsive mobile and desktop layout
 - Grouped dropdown navigation
@@ -41,7 +41,7 @@ Never commit service-role keys, secret keys, or other server credentials.
 
 ## Tacoma Nights-only video handling
 
-- The canonical video source is the dedicated Tacoma Nights playlist: `PLKfh6Jm08P-c`.
+- The canonical video source is the dedicated Tacoma Nights playlist: `PLYK7RQq4_mhw`.
 - Homepage and Watch page embed that playlist directly using YouTube's privacy-enhanced player.
 - The shared public-site script normalizes YouTube iframe embeds and generic channel links to the Tacoma Nights playlist, including dynamically added embeds.
 - The general `@CrowRules_TV` channel feed is intentionally not linked from Tacoma Nights pages, preventing Back Deck Live content from being surfaced through a generic channel feed.
@@ -85,7 +85,7 @@ Public site synchronization reads:
 
 The shared site navigation and footer route staff to the Raven Control Room. The local admin pages remain available as secondary tools; the Raven Control Room is the primary place to manage and publish show content. Public pages refresh the shared settings on page load, when returning to the tab, and periodically while visible.
 
-Only select videos from the official Tacoma Nights YouTube playlist `PLKfh6Jm08P-c` in the Control Room featured-video field. Never select Back Deck Live or unrelated CrowRules programming.
+Only select videos from the official Tacoma Nights YouTube playlist `PLYK7RQq4_mhw` in the Control Room featured-video field. Never select Back Deck Live or unrelated CrowRules programming.
 
 
 ### Sitewide YouTube + Control Room connection

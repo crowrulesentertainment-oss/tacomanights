@@ -7,7 +7,7 @@
   const db = window.tacomaNightsSupabase;
   if (!db) return;
   const CONTROL_ROOM_URL = "https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html";
-  const PLAYLIST_ID = "PLKfh6Jm08P-c";
+  const PLAYLIST_ID = "PLYK7RQq4_mhw";
   const PLAYLIST_URL = "https://www.youtube.com/playlist?list=" + PLAYLIST_ID;
   const PLAYLIST_EMBED = "https://www.youtube-nocookie.com/embed/videoseries?list=" + PLAYLIST_ID;
   let countdownTimer = null;
