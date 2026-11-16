@@ -86,10 +86,10 @@ as $$
      or coalesce((auth.jwt()->'app_metadata'->>'tacoma_nights_admin')='true',false);
 $$;
 revoke all on function public.tn_is_community_admin() from public;
-grant execute on function public.tn_is_community_admin() to authenticated;
+grant execute on function public.tn_is_community_admin() to anon,authenticated;
 
 create or replace function public.tn_validate_community_vote()
-returns trigger language plpgsql security definer set search_path=public
+returns trigger language plpgsql security invoker set search_path=public
 as $$
 declare opts jsonb;
 begin
@@ -107,7 +107,7 @@ alter table public.tn_community_reactions enable row level security;
 alter table public.tn_community_reports enable row level security;
 
 drop policy if exists "Published community items are public" on public.tn_community_items;
-create policy "Published community items are public" on public.tn_community_items for select using(status='published' or auth.uid()=user_id or public.tn_is_community_admin());
+create policy "Published community items are public" on public.tn_community_items for select using((status='published' and item_type <> 'people_mic') or auth.uid()=user_id or public.tn_is_community_admin());
 drop policy if exists "Members submit community items" on public.tn_community_items;
 create policy "Members submit community items" on public.tn_community_items for insert to authenticated with check(auth.uid()=user_id and status='pending');
 drop policy if exists "Admins create community content" on public.tn_community_items;
@@ -155,7 +155,7 @@ create policy "Public can read aggregate poll totals" on public.tn_community_pol
 grant select on public.tn_community_poll_totals to anon,authenticated;
 
 create or replace function public.tn_update_community_poll_totals()
-returns trigger language plpgsql security definer set search_path=public
+returns trigger language plpgsql security invoker set search_path=public
 as $
 begin
  if tg_op='INSERT' then
