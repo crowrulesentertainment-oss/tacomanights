@@ -52,6 +52,26 @@
       setText("#countdown-status","Schedule synced from Raven Control Room");
     }
     const valid=validVideoId(videoId);
+    const liveFrame=$("#tn-live-player");
+    const liveTitle=$("#tn-live-title");
+    const chatFrame=$("#tn-live-chat-embed");
+    const chatNote=$("#tn-live-chat-note");
+    const activeBroadcast=valid&&(status==="live"||status==="scheduled");
+    if(liveFrame){
+      liveFrame.src=valid?embedVideo(videoId):"https://www.youtube-nocookie.com/embed/live_stream?channel=UCOSm_4z9LIQUWHOc8yzPgkw";
+      liveFrame.title=valid?(title||"Tacoma Nights premiere"):"Tacoma Nights live channel player";
+    }
+    if(liveTitle){
+      liveTitle.textContent=valid?(status==="live"?"LIVE NOW · "+title:status==="scheduled"?"UPCOMING PREMIERE · "+title:"LATEST REPLAY · "+title):"Live channel player · scheduled premieres appear here when published.";
+    }
+    if(chatFrame&&activeBroadcast){
+      chatFrame.src="https://www.youtube.com/live_chat?v="+encodeURIComponent(videoId)+"&embed_domain=crowrulesentertainment-oss.github.io";
+      chatFrame.hidden=false;
+      if(chatNote)chatNote.hidden=true;
+    }else{
+      if(chatFrame){chatFrame.hidden=true;chatFrame.removeAttribute("src");}
+      if(chatNote)chatNote.hidden=false;
+    }
     const watchUrl=valid?"https://www.youtube.com/watch?v="+encodeURIComponent(videoId):PLAYLIST_URL;
     if(panel){
       setText("[data-tn-sitewide-title]",title);
