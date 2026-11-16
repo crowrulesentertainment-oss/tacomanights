@@ -36,40 +36,73 @@
     const panel=ensureSitewideMediaPanel();
     const liveFrame=$("#tn-live-player");
     const liveTitle=$("#tn-live-title");
+    const stateLabel=$("#tn-broadcast-state");
+    const watchLink=$("#tn-live-watch-link");
     const chatFrame=$("#tn-live-chat-embed");
     const chatNote=$("#tn-live-chat-note");
     const placeholder=$("#tn-live-placeholder");
-    const showPlaceholder=(message)=>{
+    const countdownPanel=$(".countdown-panel");
+    const setCountdown=(message)=>{
+      setText("#countdown-status",message);
+      ["#count-days","#count-hours","#count-minutes","#count-seconds"].forEach(sel=>setText(sel,"00"));
+    };
+    const showPlaceholder=(message,state="PREMIERE SETUP")=>{
       if(liveFrame){liveFrame.hidden=true;liveFrame.src="about:blank";}
-      if(placeholder){placeholder.hidden=false;if(message){const p=placeholder.querySelector("p");if(p)p.textContent=message;}}
+      if(placeholder){placeholder.hidden=false;const p=placeholder.querySelector("p");if(p&&message)p.textContent=message;}
       if(liveTitle)liveTitle.textContent="Premiere setup pending · past episodes are available in the archive.";
+      if(stateLabel)stateLabel.textContent=state;
+      if(watchLink){watchLink.href=PLAYLIST_URL;watchLink.textContent="Browse episode archive ↗";}
       if(chatFrame){chatFrame.hidden=true;chatFrame.removeAttribute("src");}
       if(chatNote)chatNote.hidden=false;
     };
-    if(!row?.is_published){showPlaceholder("The video and live chat will appear here as soon as the YouTube Premiere is scheduled and published from Raven Control Room.");return;}
+    if(!row?.is_published){
+      showPlaceholder("The video and live chat will appear here as soon as the YouTube Premiere is scheduled and published from Raven Control Room.");
+      setCountdown("Waiting for the next published Tacoma Nights Premiere");
+      return;
+    }
     const title=row.show_title||"Tacoma Nights";
     const videoId=row.youtube_video_id;
     const status=String(row.status||"playlist").toLowerCase();
     const when=row.premiere_at?new Date(row.premiere_at):null;
-    if(when&&Number.isFinite(when.getTime())&&when.getTime()>Date.now()){
+    const hasDate=!!(when&&Number.isFinite(when.getTime()));
+    const valid=validVideoId(videoId);
+    const isScheduled=status==="scheduled";
+    const isLive=status==="live";
+    const isEnded=["ended","complete","completed","replay","archived"].includes(status);
+    const activeBroadcast=valid&&(isLive||isScheduled);
+    if(hasDate){
       setText("#next-episode-title",title);
       setText("#next-episode-date",formatPacific(when));
-      const tick=()=>{
-        const left=Math.max(0,when.getTime()-Date.now());
-        const values=[Math.floor(left/86400000),Math.floor(left%86400000/3600000),Math.floor(left%3600000/60000),Math.floor(left%60000/1000)];
-        ["#count-days","#count-hours","#count-minutes","#count-seconds"].forEach((sel,i)=>setText(sel,String(values[i]).padStart(2,"0")));
-        if(left===0){setText("#countdown-status","Premiere time reached · watch Tacoma Nights");clearInterval(countdownTimer);countdownTimer=null;}
-      };
-      tick();countdownTimer=setInterval(tick,1000);
-      setText("#countdown-status","Schedule synced from Raven Control Room");
+      if(isScheduled&&when.getTime()>Date.now()){
+        const tick=()=>{
+          const left=Math.max(0,when.getTime()-Date.now());
+          const values=[Math.floor(left/86400000),Math.floor(left%86400000/3600000),Math.floor(left%3600000/60000),Math.floor(left%60000/1000)];
+          ["#count-days","#count-hours","#count-minutes","#count-seconds"].forEach((sel,i)=>setText(sel,String(values[i]).padStart(2,"0")));
+          if(left===0){setCountdown("Premiere time reached · YouTube will transition to the live broadcast");clearInterval(countdownTimer);countdownTimer=null;}
+        };
+        tick();countdownTimer=setInterval(tick,1000);
+        setText("#countdown-status","Scheduled Premiere · synced from Raven Control Room");
+      }else if(isLive){
+        setCountdown("LIVE NOW · Tacoma Nights is on the air");
+      }else if(isEnded){
+        setCountdown("Premiere complete · watch the full replay");
+      }else if(isScheduled){
+        setCountdown("Premiere time reached · waiting for YouTube to go live");
+      }else{
+        setCountdown("Schedule synced from Raven Control Room");
+      }
+    }else if(!isLive&&!isEnded){
+      setCountdown("Next episode details will appear when published in Raven Control Room");
     }
-    const valid=validVideoId(videoId);
-    const activeBroadcast=valid&&(status==="live"||status==="scheduled");
-    if(!valid){showPlaceholder("The next Tacoma Nights video has not been attached yet. Once its YouTube Premiere is scheduled and published from Raven Control Room, the player will appear here.");}
-    else{
-      if(liveFrame){liveFrame.src=embedVideo(videoId);liveFrame.title=title||"Tacoma Nights premiere";liveFrame.hidden=false;}
+    if(!valid){
+      showPlaceholder("The episode record is published, but its YouTube video ID is not ready yet. Add the scheduled Premiere video ID in Raven Control Room and this player will connect automatically.",isScheduled?"PREMIERE SCHEDULED · VIDEO PENDING":"VIDEO SETUP PENDING");
+    }else{
+      if(liveFrame){liveFrame.src=embedVideo(videoId);liveFrame.title=title+" · Tacoma Nights";liveFrame.hidden=false;}
       if(placeholder)placeholder.hidden=true;
-      if(liveTitle)liveTitle.textContent=status==="live"?"LIVE NOW · "+title:status==="scheduled"?"UPCOMING PREMIERE · "+title:"LATEST REPLAY · "+title;
+      const label=isLive?"LIVE NOW":isScheduled?"UPCOMING PREMIERE":isEnded?"PERMANENT REPLAY":"LATEST VIDEO";
+      if(liveTitle)liveTitle.textContent=label+" · "+title;
+      if(stateLabel)stateLabel.textContent=label;
+      if(watchLink){watchLink.href="https://www.youtube.com/watch?v="+encodeURIComponent(videoId);watchLink.textContent=isEnded?"Watch Permanent Replay ↗":isLive?"Watch Live on YouTube ↗":isScheduled?"Open Scheduled Premiere ↗":"Watch Episode on YouTube ↗";}
     }
     if(chatFrame&&activeBroadcast){
       chatFrame.src="https://www.youtube.com/live_chat?v="+encodeURIComponent(videoId)+"&embed_domain=crowrulesentertainment-oss.github.io";
@@ -77,19 +110,24 @@
       if(chatNote)chatNote.hidden=true;
     }else{
       if(chatFrame){chatFrame.hidden=true;chatFrame.removeAttribute("src");}
-      if(chatNote)chatNote.hidden=false;
+      if(chatNote){
+        chatNote.hidden=false;
+        const heading=chatNote.querySelector("h4");
+        const copy=chatNote.querySelector("p");
+        if(heading)heading.textContent=isEnded?"The live chat has closed.":"Chat opens with the premiere.";
+        if(copy)copy.textContent=isEnded?"The broadcast has ended. Watch the permanent replay above or join the community discussion.":"YouTube chat appears here for scheduled or live broadcasts. You can also join the community discussion.";
+      }
     }
     const watchUrl=valid?"https://www.youtube.com/watch?v="+encodeURIComponent(videoId):PLAYLIST_URL;
     if(panel){
       setText("[data-tn-sitewide-title]",title);
-      setText("[data-tn-sitewide-copy]",when&&Number.isFinite(when.getTime())?"Next Tacoma Nights broadcast · "+formatPacific(when):"Official Tacoma Nights episodes, conversations and community stories.");
+      setText("[data-tn-sitewide-copy]",hasDate?(isEnded?"Replay available · "+formatPacific(when):"Tacoma Nights broadcast · "+formatPacific(when)):"Official Tacoma Nights episodes, conversations and community stories.");
       const label=panel.querySelector("[data-tn-sitewide-status]");
-      if(label)label.textContent=status==="live"?"LIVE NOW · Tacoma Nights":status==="scheduled"?"UPCOMING · Tacoma Nights":status==="ended"?"LATEST REPLAY · Tacoma Nights":"OFFICIAL PLAYLIST · Tacoma Nights";
+      if(label)label.textContent=isLive?"LIVE NOW · Tacoma Nights":isScheduled?"UPCOMING PREMIERE · Tacoma Nights":isEnded?"PERMANENT REPLAY · Tacoma Nights":"OFFICIAL PLAYLIST · Tacoma Nights";
       const watch=panel.querySelector("[data-tn-sitewide-watch]");
-      if(watch){watch.href=watchUrl;watch.textContent=status==="live"?"Watch Live on YouTube ↗":status==="scheduled"?"Open Scheduled YouTube Video ↗":valid?"Watch Tacoma Nights Video ↗":"Watch on YouTube ↗";}
+      if(watch){watch.href=watchUrl;watch.textContent=isLive?"Watch Live on YouTube ↗":isScheduled?"Open Scheduled Premiere ↗":isEnded?"Watch Permanent Replay ↗":valid?"Watch Tacoma Nights Video ↗":"Watch on YouTube ↗";}
     }
-    const premiereLinks=document.querySelectorAll("[data-tn-premiere-link]");
-    premiereLinks.forEach(a=>{a.href=watchUrl;a.hidden=!valid;});
+    document.querySelectorAll("[data-tn-premiere-link]").forEach(a=>{a.href=watchUrl;a.hidden=!valid;});
   }
   function syncFeaturedVideo(value) {
     const videoId=value?.video_id;
