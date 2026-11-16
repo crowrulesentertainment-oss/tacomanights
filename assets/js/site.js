@@ -6,11 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
     nav.setAttribute("aria-label", "Main navigation");
     nav.innerHTML =
       '<a class="nav-home" href="' + base + 'index.html">Home</a>' +
-      '<details class="nav-dropdown"><summary>Archive</summary><div class="dropdown-menu"><a href="' + base + 'archive.html">Full Episode Archive</a><a href="https://www.youtube.com/playlist?list=PLYK7RQq4_mhw" target="_blank" rel="noopener">YouTube Playlist ↗</a></div></details>' +
+      '<details class="nav-dropdown"><summary>Archive</summary><div class="dropdown-menu"><a href="' + base + 'archive.html">Full Episode Archive</a><a href="https://www.youtube.com/playlist?list=PLKfh6Jm08P-c" target="_blank" rel="noopener">YouTube Playlist ↗</a></div></details>' +
       '<details class="nav-dropdown"><summary>The Show</summary><div class="dropdown-menu"><a href="' + base + 'about.html">About Tacoma Nights</a><a href="' + base + 'shows.html">Shows &amp; Segments</a><a href="' + base + 'future-segments.html">Future Segments</a><a href="' + base + 'explore.html">Explore Our Coverage</a></div></details>' +
       '<details class="nav-dropdown"><summary>Community</summary><div class="dropdown-menu"><a href="' + base + 'community.html">Community Hub</a><a href="' + base + 'community.html#forum">Message Board</a><a href="' + base + 'community.html#polls">Community Polls</a><a href="' + base + 'community.html#spotlight">People’s Spotlight</a><a href="' + base + 'community.html#calendar">Community Calendar</a><a href="' + base + 'weekly-question.html">Weekly Question</a><a href="' + base + 'people-mic.html">The People’s Mic Studio</a></div></details>' +
       '<details class="nav-dropdown"><summary>Get Involved</summary><div class="dropdown-menu"><a href="' + base + 'participate.html">Ways to Participate</a><a href="' + base + 'remote-host-upload.html">Remote Host Upload</a><a href="' + base + 'remote-host.html">Become a Remote Host</a><a href="' + base + 'participate.html">Become a Guest</a></div></details>' +
-      '<a href="' + base + 'donate.html">Support Tacoma Nights</a>' +
+      '<a href="https://crowrulesentertainment-oss.github.io/tacoma/" target="_blank" rel="noopener">Tacoma Community Hub ↗</a>' +\n      '<a href="' + base + 'donate.html">Support Tacoma Nights</a>' +
       '<details class="nav-dropdown"><summary>Members</summary><div class="dropdown-menu"><a href="' + base + 'members/login.html">Member Sign In</a><a href="' + base + 'members/dashboard.html">Member Dashboard</a></div></details>' +
       '<details class="nav-dropdown"><summary>Staff</summary><div class="dropdown-menu"><a data-control-room-link href="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html" target="_blank" rel="noopener">Raven Control Room ↗</a></div></details>'
   }
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try { const url = new URL(link.href, location.href); if (url.origin === location.origin && url.pathname.split("/").pop() === current) link.setAttribute("aria-current", "page"); } catch {}
   });
 
-  // Weekly Friday 7 PM Pacific fallback, with published Supabase premiere settings taking precedence.
+  // Weekly Friday 10 PM Pacific fallback, with published Supabase premiere settings taking precedence.
   const pacific = "America/Los_Angeles";
   const partsAt = (date, timeZone) => Object.fromEntries(new Intl.DateTimeFormat("en-US", {
     timeZone, year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit", hourCycle:"h23"
@@ -77,8 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const weekday = new Intl.DateTimeFormat("en-US", { timeZone:pacific, weekday:"short" }).format(now);
     const dayIndex = ({Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6})[weekday];
     let add = (5 - dayIndex + 7) % 7;
-    let candidate = pacificToUtc(local.year, local.month, local.day + add, 19, 0);
-    if (candidate <= now) candidate = pacificToUtc(local.year, local.month, local.day + add + 7, 19, 0);
+    let candidate = pacificToUtc(local.year, local.month, local.day + add, 22, 0);
+    if (candidate <= now) candidate = pacificToUtc(local.year, local.month, local.day + add + 7, 22, 0);
     return candidate;
   };
   const titleNode = document.getElementById("next-episode-title");
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Enforce show-specific video sources sitewide: never expose the general CrowRules channel feed.
-  const tnPlaylist = "PLYK7RQq4_mhw";
+  const tnPlaylist = "PLKfh6Jm08P-c";
   const tnPlaylistEmbed = "https://www.youtube-nocookie.com/embed/videoseries?list=" + tnPlaylist;
   const normalizeTacomaNightsMedia = root => {
     root.querySelectorAll("iframe[src]").forEach(frame => {
