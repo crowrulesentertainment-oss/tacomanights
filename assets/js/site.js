@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     nav.setAttribute("aria-label", "Main navigation");
     nav.innerHTML =
       '<a class="nav-home" href="' + base + 'index.html">Home</a>' +
-      '<details class="nav-dropdown"><summary>Archive</summary><div class="dropdown-menu"><a href="' + base + 'archive.html">Full Episode Archive</a><a href="https://www.youtube.com/playlist?list=PLKfh6Jm08P-c" target="_blank" rel="noopener">YouTube Playlist ↗</a></div></details>' +
+      '<details class="nav-dropdown"><summary>Archive</summary><div class="dropdown-menu"><a href="' + base + 'archive.html">Full Episode Archive</a><a href="https://www.youtube.com/playlist?list=PLYK7RQq4_mhw" target="_blank" rel="noopener">YouTube Playlist ↗</a></div></details>' +
       '<details class="nav-dropdown"><summary>The Show</summary><div class="dropdown-menu"><a href="' + base + 'about.html">About Tacoma Nights</a><a href="' + base + 'shows.html">Shows &amp; Segments</a><a href="' + base + 'teenager-perspective.html">The Teenager Perspective</a><a href="' + base + 'cool-perspective.html">The Cool Perspective</a><a href="' + base + 'weekly-lineup.html">The Weekly Lineup</a><a href="' + base + 'future-segments.html">Future Segments</a><a href="' + base + 'explore.html">Explore Our Coverage</a></div></details>' +
       '<details class="nav-dropdown"><summary>Community</summary><div class="dropdown-menu"><a href="' + base + 'community.html">Tacoma Nights Community</a><a href="' + base + 'tacoma-community.html">Tacoma Community Hub Connection</a><a href="' + base + 'community.html#forum">Message Board</a><a href="' + base + 'community.html#polls">Community Polls</a><a href="' + base + 'community.html#spotlight">People’s Spotlight</a><a href="' + base + 'community.html#calendar">Community Calendar</a><a href="' + base + 'weekly-question.html">Weekly Question</a><a href="' + base + 'people-mic.html">The People’s Mic Studio</a></div></details>' +
       '<details class="nav-dropdown"><summary>Get Involved</summary><div class="dropdown-menu"><a href="' + base + 'participate.html">Ways to Participate</a><a href="' + base + 'remote-host-upload.html">Remote Host Upload</a><a href="' + base + 'remote-host.html">Become a Remote Host</a><a href="' + base + 'participate.html">Become a Guest</a></div></details>' +
@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Enforce show-specific video sources sitewide: never expose the general CrowRules channel feed.
-  const tnPlaylist = "PLKfh6Jm08P-c";
+  const tnPlaylist = "PLYK7RQq4_mhw";
   const tnPlaylistEmbed = "https://www.youtube-nocookie.com/embed/videoseries?list=" + tnPlaylist;
   const normalizeTacomaNightsMedia = root => {
     root.querySelectorAll("iframe[src]").forEach(frame => {
