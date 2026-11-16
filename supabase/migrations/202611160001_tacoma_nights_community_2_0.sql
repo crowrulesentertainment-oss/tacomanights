@@ -33,7 +33,7 @@ create index if not exists tn_community_replies_item on public.tn_community_repl
 create index if not exists tn_community_replies_parent on public.tn_community_replies(parent_reply_id);
 
 create or replace function public.tn_validate_community_reply()
-returns trigger language plpgsql security definer set search_path=public
+returns trigger language plpgsql security invoker set search_path=public
 as $$
 declare parent_item uuid;
 begin
@@ -80,7 +80,7 @@ alter table public.tn_community_reports add column if not exists reviewed_by uui
 alter table public.tn_community_reports add column if not exists reviewed_at timestamptz;
 
 create or replace function public.tn_is_community_admin()
-returns boolean language sql stable security definer set search_path=public,auth
+returns boolean language sql stable security invoker set search_path=public,auth
 as $$
  select coalesce((auth.jwt()->'app_metadata'->>'role')='admin',false)
      or coalesce((auth.jwt()->'app_metadata'->>'tacoma_nights_admin')='true',false);
@@ -142,9 +142,41 @@ create policy "Members report content" on public.tn_community_reports for insert
 drop policy if exists "Admins review reports" on public.tn_community_reports;
 create policy "Admins review reports" on public.tn_community_reports for all to authenticated using(public.tn_is_community_admin()) with check(public.tn_is_community_admin());
 
-create or replace view public.tn_community_poll_results as
- select item_id,option_index,count(*)::bigint as vote_count from public.tn_community_votes group by item_id,option_index;
-grant select on public.tn_community_poll_results to anon,authenticated;
+-- Public poll totals are stored separately so raw member votes remain private.
+create table if not exists public.tn_community_poll_totals (
+ item_id uuid not null references public.tn_community_items(id) on delete cascade,
+ option_index integer not null check(option_index >= 0),
+ vote_count bigint not null default 0 check(vote_count >= 0),
+ primary key(item_id,option_index)
+);
+alter table public.tn_community_poll_totals enable row level security;
+drop policy if exists "Public can read aggregate poll totals" on public.tn_community_poll_totals;
+create policy "Public can read aggregate poll totals" on public.tn_community_poll_totals for select using(true);
+grant select on public.tn_community_poll_totals to anon,authenticated;
+
+create or replace function public.tn_update_community_poll_totals()
+returns trigger language plpgsql security definer set search_path=public
+as $
+begin
+ if tg_op='INSERT' then
+  insert into public.tn_community_poll_totals(item_id,option_index,vote_count)
+  values(new.item_id,new.option_index,1)
+  on conflict(item_id,option_index) do update set vote_count=public.tn_community_poll_totals.vote_count+1;
+  return new;
+ elsif tg_op='DELETE' then
+  update public.tn_community_poll_totals set vote_count=vote_count-1
+   where item_id=old.item_id and option_index=old.option_index and vote_count>1;
+  delete from public.tn_community_poll_totals
+   where item_id=old.item_id and option_index=old.option_index and vote_count=1;
+  return old;
+ end if;
+ return null;
+end $;
+revoke all on function public.tn_update_community_poll_totals() from public,anon,authenticated;
+drop trigger if exists tn_community_poll_totals_insert on public.tn_community_votes;
+create trigger tn_community_poll_totals_insert after insert on public.tn_community_votes for each row execute function public.tn_update_community_poll_totals();
+drop trigger if exists tn_community_poll_totals_delete on public.tn_community_votes;
+create trigger tn_community_poll_totals_delete after delete on public.tn_community_votes for each row execute function public.tn_update_community_poll_totals();
 grant select on public.tn_community_items to anon,authenticated;
 grant insert,update,delete on public.tn_community_items to authenticated;
 grant select on public.tn_community_replies to anon,authenticated;

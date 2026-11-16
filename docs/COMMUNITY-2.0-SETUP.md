@@ -4,7 +4,7 @@
 All work is isolated on \`tacoma-nights-community-2-0\`. No production files are deployed and no Supabase migration has been applied. Existing Tacoma Nights tables and policies are not intentionally modified.
 
 ## Database migration
-Review \`supabase/migrations/202611160001_tacoma_nights_community_2_0.sql\` in full before applying. It creates the community tables, reply threading, reactions, reports, poll-result view, admin authorization function, and private People's Mic bucket/policies. It is designed to be repeatable.
+Review \`supabase/migrations/202611160001_tacoma_nights_community_2_0.sql\` in full before applying. It creates the community tables, reply threading, reactions, reports, aggregate poll totals table, admin authorization function, and private People's Mic bucket/policies. It is designed to be repeatable.
 
 **Do not put a service-role key in browser code.** Set the administrator claim only through a trusted Supabase administrative process:
 - \`app_metadata.role = "admin"\`, or
@@ -31,8 +31,10 @@ The bucket is private. The browser upload path is \`peoples-mic/<auth.uid()>/<ra
 4. Admin: can review submissions, approve/reject/hide/delete items, hide/restore replies, review/dismiss reports, create published content and polls, and access private recordings through short-lived signed URLs.
 5. Poll validation: reject invalid option indices and prevent duplicate votes.
 6. Reply validation: reject replies to unpublished/non-forum items and cross-thread parent IDs.
-7. Responsive browser tests: current Chrome/Edge, Safari/iOS, Firefox; camera permission denied, no camera, interrupted recording, network failure, and upload failure.
-8. Regression: verify existing episode archive, weekly question, member sign-in, existing admin/control room, premiere countdown and existing Supabase tables/policies remain unchanged.
+7. Poll privacy: anonymous and authenticated clients can read only aggregate totals; they cannot read other members' individual votes.
+8. Verify trigger-maintained poll totals after insert and delete, including duplicate-vote rejection.
+9. Responsive browser tests: current Chrome/Edge, Safari/iOS, Firefox; camera permission denied, no camera, interrupted recording, network failure, and upload failure.
+10. Regression: verify existing episode archive, weekly question, member sign-in, existing admin/control room, premiere countdown and existing Supabase tables/policies remain unchanged.
 
 ## Known boundaries
 - This branch has not been browser-tested against real anonymous/member/admin accounts.
