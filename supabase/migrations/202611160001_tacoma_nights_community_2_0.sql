@@ -156,7 +156,7 @@ grant select on public.tn_community_poll_totals to anon,authenticated;
 
 create or replace function public.tn_update_community_poll_totals()
 returns trigger language plpgsql security definer set search_path=public
-as $
+as $$
 begin
  if tg_op='INSERT' then
   insert into public.tn_community_poll_totals(item_id,option_index,vote_count)
@@ -171,7 +171,7 @@ begin
   return old;
  end if;
  return null;
-end $;
+end $$;
 revoke all on function public.tn_update_community_poll_totals() from public,anon,authenticated;
 drop trigger if exists tn_community_poll_totals_insert on public.tn_community_votes;
 create trigger tn_community_poll_totals_insert after insert on public.tn_community_votes for each row execute function public.tn_update_community_poll_totals();
