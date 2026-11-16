@@ -144,3 +144,8 @@ a.card:hover,a.card:focus-visible,.panel:hover{
 .footer a{color:#ead2a8}
 .footer a:hover{text-decoration:underline}
 @media(max-width:760px){.tn-network-links a{flex:1 1 42%;text-align:center}}
+
+.tn-live-chat-frame{display:block;width:100%;height:320px;min-height:320px;border:0;border-radius:8px;background:#08090c}
+.tn-live-chat-frame[hidden]{display:none}
+#tn-live-chat-note{width:100%}
+@media(max-width:800px){.tn-live-chat-frame{height:360px}}
