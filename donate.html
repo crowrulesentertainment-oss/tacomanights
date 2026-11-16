@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Support Tacoma Nights, a CrowRules Entertainment community storytelling show rooted in Tacoma, Washington.">
+<meta name="theme-color" content="#090a0d"><title>Support Tacoma Nights | CrowRules Entertainment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css"><script src="assets/js/site.js" defer></script><script src="assets/js/donate.js" defer></script>
+<style>
+.donate-hero{padding:70px 0 42px;background:linear-gradient(100deg,#090a0df2,#090a0d9c),url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=2000&q=85') center/cover}
+.donate-hero h1{font:800 clamp(2.8rem,7vw,5.5rem)/1 Manrope,sans-serif;letter-spacing:-.05em;margin:12px 0}.donate-hero h1 em{color:var(--gold);font-style:normal}.donate-hero p{max-width:700px;color:#d0ceca;font-size:1.08rem}
+.donate-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(290px,.9fr);gap:22px;align-items:start}
+.donate-panel,.impact-panel{padding:clamp(22px,4vw,34px);border:1px solid var(--line);border-radius:17px;background:linear-gradient(145deg,#191c23,#101116);box-shadow:0 18px 55px #0004}
+.donate-panel h2,.impact-panel h2{font:800 1.45rem Manrope,sans-serif;margin:0 0 8px}.field-label{display:block;font-size:.8rem;font-weight:800;color:#e9e5dc;margin:19px 0 9px}
+.choice-row,.amount-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.amount-grid{grid-template-columns:repeat(3,1fr)}
+.choice,.amount{border:1px solid #ffffff30;background:#0c0d11;color:#f7f5f0;padding:13px 10px;border-radius:9px;font-weight:800;cursor:pointer}
+.choice[aria-pressed=true]{border-color:var(--gold);background:#e6b96c18;color:var(--gold)}.amount[aria-pressed=true]{border-color:var(--red);background:#c8323822}
+.input{width:100%;background:#0c0d11;border:1px solid #ffffff30;border-radius:9px;color:white;padding:14px;font:500 .95rem "DM Sans",sans-serif}
+.amount-wrap{display:flex;align-items:center;gap:8px;background:#0c0d11;border:1px solid #ffffff30;border-radius:9px;padding:0 12px}.amount-wrap span{color:var(--gold);font-weight:800}.amount-wrap input{border:0;background:transparent;outline:0;color:white;padding:13px 0;width:100%;font:600 1rem "DM Sans",sans-serif}
+.help,.legal{font-size:.76rem;color:var(--muted);margin:7px 0 0}.legal{font-size:.7rem;line-height:1.6;margin-top:18px}
+.submit{width:100%;justify-content:center;margin-top:22px;padding:15px;cursor:pointer;border:0;font-weight:800}.submit:disabled{opacity:.6;cursor:wait}
+.message{display:none;margin-top:14px;padding:12px;border:1px solid #c8323855;background:#c8323818;border-radius:9px;color:#ffd8d8;font-size:.85rem}.message.show{display:block}
+.impact-list{display:grid;gap:17px;margin-top:22px}.impact-item{display:flex;gap:12px}.impact-num{color:var(--gold);font:800 1.2rem Manrope}.impact-item strong{display:block}.impact-item p{font-size:.8rem;color:var(--muted);margin:3px 0 0}
+@media(max-width:800px){.donate-grid{grid-template-columns:1fr}.donate-hero{padding:54px 0 34px}}@media(max-width:450px){.amount-grid{grid-template-columns:repeat(2,1fr)}}
+</style></head>
+<body>
+<header class="site-header"><div class="wrap nav"><a class="brand" href="index.html">TACOMA NIGHTS<small>A CROW RULES ENTERTAINMENT PRODUCTION</small></a><button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button><nav class="nav-links" aria-label="Main navigation"></nav></div></header>
+<main>
+<section class="donate-hero"><div class="wrap"><span class="eyebrow">Community-powered storytelling · The 253</span><h1>Help keep the<br><em>conversation going.</em></h1><p>Tacoma Nights brings local voices, real conversations and community stories to the screen. Your support helps us keep building an independent show from the ground up, right here in Tacoma, Washington.</p></div></section>
+<section class="section"><div class="wrap donate-grid">
+<div class="donate-panel"><span class="eyebrow">Support Tacoma Nights</span><h2>Choose your contribution</h2><p class="muted">Every contribution helps. Give once or become a monthly supporter.</p>
+<form id="donation-form">
+<span class="field-label">Contribution frequency</span><div class="choice-row"><button class="choice" type="button" data-frequency="one_time" aria-pressed="true">One-time</button><button class="choice" type="button" data-frequency="monthly" aria-pressed="false">Monthly</button></div>
+<label class="field-label" for="custom-amount">Choose an amount (USD)</label><div class="amount-grid">
+<button class="amount" type="button" data-amount="5" aria-pressed="false">$5</button><button class="amount" type="button" data-amount="10" aria-pressed="true">$10</button><button class="amount" type="button" data-amount="25" aria-pressed="false">$25</button><button class="amount" type="button" data-amount="50" aria-pressed="false">$50</button><button class="amount" type="button" data-amount="100" aria-pressed="false">$100</button><button class="amount" type="button" data-amount="250" aria-pressed="false">$250</button></div>
+<div class="field-label">Or enter your own amount</div><div class="amount-wrap"><span>$</span><input id="custom-amount" type="number" min="1" max="1000000" step="0.01" inputmode="decimal" placeholder="Custom amount" aria-label="Custom contribution amount"></div><p class="help">Minimum $1.00. Choose any amount up to $1,000,000.</p>
+<label class="field-label" for="donor-name">Name (optional)</label><input class="input" id="donor-name" type="text" maxlength="200" autocomplete="name" placeholder="Your name">
+<label class="field-label" for="donor-email">Email address <span id="email-note" class="muted">(optional for one-time support)</span></label><input class="input" id="donor-email" type="email" maxlength="320" autocomplete="email" placeholder="you@example.com">
+<button class="button submit" id="donate-submit" type="submit">Continue to secure checkout · $10.00</button><div class="message" id="donation-message" role="alert" aria-live="polite"></div>
+<p class="help">Secure checkout is hosted by Stripe. Your card details are entered on Stripe's secure checkout page.</p>
+<p class="legal">Contributions support Tacoma Nights, a CrowRules Entertainment production. They are voluntary payments for show support and are not charitable donations or represented as tax-deductible. Monthly support continues until canceled. You may manage or cancel recurring payments through Stripe or by contacting CrowRules Entertainment.</p>
+</form></div>
+<aside class="impact-panel"><span class="eyebrow">What your support makes possible</span><h2>Local stories deserve a platform.</h2><p class="muted">Your contribution helps offset the costs of producing and sharing Tacoma Nights.</p><div class="impact-list">
+<div class="impact-item"><span class="impact-num">01</span><div><strong>Production & equipment</strong><p>Recording, editing, audio, video and the tools needed to make each episode.</p></div></div>
+<div class="impact-item"><span class="impact-num">02</span><div><strong>Community storytelling</strong><p>Making room for local voices, guests, contributors and stories from across the 253.</p></div></div>
+<div class="impact-item"><span class="impact-num">03</span><div><strong>Publishing & distribution</strong><p>Keeping episodes available and reaching viewers across Tacoma, the PNW and beyond.</p></div></div>
+<div class="impact-item"><span class="impact-num">04</span><div><strong>Growing the show</strong><p>Building an independent production one conversation at a time.</p></div></div></div>
+<div class="actions"><a class="button outline" href="index.html">Back to Tacoma Nights</a></div></aside>
+</div></section></main>
+<footer class="footer"><div class="wrap footer-row"><div><strong>TACOMA NIGHTS</strong><p>The City Comes Alive. A CrowRules Entertainment production.</p></div><div><a href="archive.html">Archive</a> · <a href="participate.html">Participate</a> · <a href="donate.html">Support the Show</a></div><small>© <span data-year></span> CrowRules Entertainment</small></div></footer>
+</body></html>

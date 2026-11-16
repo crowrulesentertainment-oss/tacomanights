@@ -1,0 +1,23 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090a0d"><title>Staff Sign In | Tacoma Nights</title><link rel="stylesheet" href="../assets/css/site.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../assets/js/config.js"></script><script src="../assets/js/supabase.js"></script><script src="../assets/js/auth.js"></script>
+<style>
+.staff-login{min-height:calc(100vh - 75px);display:grid;place-items:center;padding:48px 0;background:radial-gradient(ellipse at 20% 20%,#9c252d30,transparent 45%),radial-gradient(ellipse at 85% 80%,#e6b96c14,transparent 40%)}
+.login-card{width:min(100%,560px);padding:clamp(25px,5vw,44px);background:linear-gradient(145deg,#1b1e25,#101116);border:1px solid #e6b96c44;border-radius:20px;box-shadow:0 24px 80px #0008}
+.login-mark{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#c83238,#751c24);font:900 1.1rem Manrope;margin-bottom:22px}
+.login-card h1{font:800 clamp(2rem,5vw,3.1rem)/1.05 Manrope;margin:9px 0}
+.login-card .field{margin:18px 0}
+.login-card .button{width:100%;justify-content:center;cursor:pointer}
+.login-foot{border-top:1px solid var(--line);margin-top:24px;padding-top:18px;color:var(--muted);font-size:.78rem}
+</style></head><body>
+<header class="site-header"><div class="wrap nav"><a class="brand" href="../index.html">TACOMA NIGHTS<small>PRODUCTION OPERATIONS</small></a><div style="display:flex;gap:12px;flex-wrap:wrap"><a class="text-link" href="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html">Raven Control Room ↗</a><a class="text-link" href="../index.html">← Public website</a></div></div></header>
+<main class="staff-login"><div class="wrap"><form id="login" class="login-card">
+<div class="login-mark">TN</div><span class="eyebrow">Restricted staff access</span><h1>Secondary Workspace.</h1><p class="muted">Sign in with your existing CrowRules account that has the Tacoma Nights administrator role.</p>
+<div class="field"><label for="email">Email address</label><input id="email" type="email" required autocomplete="username" placeholder="you@example.com"></div>
+<div class="field"><label for="password">Password</label><input id="password" type="password" required autocomplete="current-password" placeholder="Your password"></div>
+<a class="button" style="display:flex;justify-content:center;text-decoration:none;margin-bottom:12px" href="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html" target="_blank" rel="noopener">Open Raven Control Room ↗</a><p class="muted" style="font-size:.78rem">The Raven Control Room is the primary Tacoma Nights administration source. This sign-in remains available as a secondary local workspace.</p><button class="button" id="submit" type="submit">Sign In to Secondary Workspace</button><p class="status" id="status" role="status" aria-live="polite"></p>
+<div class="login-foot">Authorized personnel only. Staff access is verified by Supabase Auth. Public episode viewing does not require a staff account.</div>
+</form></div></main>
+<script>
+(async()=>{const {data}=await TNAuth.current();if(data?.user){if(TNAuth.isAdmin(data.user))location.replace("command-center.html");else $("status").textContent="This account is signed in but does not have the administrator role.";}})();
+const $=id=>document.getElementById(id);
+$("login").addEventListener("submit",async e=>{e.preventDefault();const button=$("submit");button.disabled=true;button.textContent="Checking access…";$("status").textContent="";const {data,error}=await TNAuth.signIn($("email").value.trim(),$("password").value);if(error){$("status").textContent=error.message;button.disabled=false;button.textContent="Sign In to Production";return;}if(!TNAuth.isAdmin(data.user)){await TNAuth.signOut();$("status").textContent="Sign-in succeeded, but this account does not have the required Tacoma Nights administrator role.";button.disabled=false;button.textContent="Sign In to Production";return;}location.href="command-center.html";});
+</script></body></html>
