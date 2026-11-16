@@ -25,3 +25,10 @@ GitHub Actions workflow: `.github/workflows/pages.yml`. Set repository Settings 
 6. Advanced community programming and recognition.
 
 Member sign-in is active in Foundation 1.0. Community boards, profile editing, recording and applications are staged for later phases.
+## Authentication redirect
+The member sign-up and password-reset flows return to the current `members.html` URL. Ensure the deployed GitHub Pages URL is present in Supabase Auth → URL Configuration → Redirect URLs:
+`https://crowrulesentertainment-oss.github.io/tacomanights/**`
+Also add your local development origin when testing locally.
+
+## Hero photography
+The Tacoma and Mount Rainier hero image is from the USGS Volcano Hazards Program and is marked public domain: https://www.usgs.gov/media/images/mount-rainier-and-tacoma-wa
