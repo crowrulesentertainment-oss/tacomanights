@@ -49,3 +49,90 @@
 .connection-state{display:block;color:#8f9d8d;margin-top:8px}
 @media(max-width:900px){.hero-layout{grid-template-columns:1fr;max-width:760px}.hero-upgrade{min-height:0}.hero-upgrade .hero-content{padding:35px 0 0}.countdown-panel{margin-bottom:10px}}
 @media(max-width:560px){.countdown-panel{padding:20px}.countdown-grid{gap:5px}.countdown-grid>div{padding:13px 3px}.countdown-grid strong{font-size:1.55rem}.countdown-grid span{font-size:.52rem}.countdown-footer{font-size:.65rem}.hero-layout{padding:46px 0}}
+
+
+/* =========================================================
+   TACOMA NIGHTS · CINEMATIC 2.1 STAGING DESIGN SYSTEM
+   Additive layer: preserves existing page layouts and controls.
+   ========================================================= */
+:root{
+  --tn-ink:#08090c;--tn-panel:#12151b;--tn-panel-raised:#191d25;
+  --tn-red:#c6383f;--tn-gold:#e7bd78;--tn-cream:#f5f0e7;
+  --tn-muted:#b9b8b5;--tn-glass:rgba(12,14,19,.78);
+  --tn-border:rgba(255,255,255,.13);
+}
+html{scroll-behavior:smooth;scroll-padding-top:92px}
+body{background:var(--tn-ink);color:var(--tn-cream);-webkit-font-smoothing:antialiased}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 15% 0%,rgba(116,39,44,.13),transparent 42%),radial-gradient(ellipse at 92% 42%,rgba(181,137,75,.07),transparent 38%)}
+.site-header{background:rgba(7,8,11,.91);border-bottom-color:rgba(231,189,120,.19);box-shadow:0 8px 34px rgba(0,0,0,.22)}
+.brand{color:#fff;letter-spacing:.13em}
+.brand small{letter-spacing:.17em}
+.nav-links>a,.nav-dropdown>summary{transition:color .2s ease}
+.nav-dropdown[open]>summary{color:var(--tn-gold)}
+.dropdown-menu{background:rgba(12,14,19,.98);border-color:rgba(231,189,120,.22);backdrop-filter:blur(18px)}
+.hero-upgrade{
+ min-height:clamp(650px,78vh,850px);
+ background-image:linear-gradient(90deg,rgba(5,7,10,.96) 0%,rgba(7,9,12,.82) 42%,rgba(7,9,12,.30) 100%),linear-gradient(0deg,#08090c 0%,transparent 32%),url('https://commons.wikimedia.org/wiki/Special:FilePath/Commencement_Bay,_Tacoma,_WA_-_2017-04-09_-_11.jpg?width=2200');
+ background-position:center 47%;background-size:cover;background-repeat:no-repeat;
+ border-bottom:1px solid rgba(231,189,120,.16)
+}
+.hero-upgrade:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 45%,rgba(231,189,120,.08) 100%);mix-blend-mode:screen}
+.hero-layout{position:relative;z-index:1}
+.hero-upgrade .hero-content{max-width:760px}
+.hero-upgrade .hero-content>p{font-size:clamp(1rem,1.5vw,1.2rem);line-height:1.8}
+.hero h1{ text-shadow:0 8px 40px rgba(0,0,0,.5);letter-spacing:-.075em}
+.hero h1 em{color:var(--tn-gold);text-shadow:0 0 36px rgba(231,189,120,.16)}
+.hero-location{color:#e4d5bf!important}
+.countdown-panel{background:linear-gradient(145deg,rgba(23,26,33,.94),rgba(8,10,14,.91));border-color:rgba(231,189,120,.35);box-shadow:0 28px 90px rgba(0,0,0,.48)}
+.section{position:relative}
+.section.dark{background:linear-gradient(180deg,#101218,#0c0e13);border-color:rgba(255,255,255,.06)}
+.section-head{align-items:end}
+.section h2,.page-hero h1{letter-spacing:-.045em}
+.card,.panel,.live-player-panel,.live-chat-panel{
+ background:linear-gradient(145deg,rgba(27,30,38,.96),rgba(13,15,20,.98));
+ border-color:rgba(255,255,255,.12);box-shadow:0 14px 38px rgba(0,0,0,.17);
+ transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease
+}
+a.card:hover,a.card:focus-visible,.panel:hover{
+ transform:translateY(-3px);border-color:rgba(231,189,120,.42);box-shadow:0 20px 48px rgba(0,0,0,.3)
+}
+.button{background:linear-gradient(135deg,#c6383f,#92252c);border-color:#d14b51;box-shadow:0 8px 24px rgba(198,56,63,.16);transition:transform .2s ease,filter .2s ease}
+.button:hover,.button:focus-visible{transform:translateY(-2px);filter:brightness(1.12)}
+.button.outline{border-color:rgba(231,189,120,.5);color:#f5f0e7}
+.text-link{font-weight:800}
+.question{background:linear-gradient(135deg,rgba(28,30,37,.98),rgba(16,18,24,.98));border-left-color:var(--tn-gold);border-radius:0 14px 14px 0}
+.page-hero{background:linear-gradient(110deg,rgba(8,9,12,.97),rgba(19,20,26,.91)),url('https://commons.wikimedia.org/wiki/Special:FilePath/Commencement_Bay,_Tacoma,_WA_-_2017-04-09_-_11.jpg?width=1800') center/cover}
+.form-card,.admin-side,.admin-card{background:linear-gradient(145deg,#171a21,#0e1015);border-color:var(--tn-border)}
+.field input,.field textarea,.field select{background:#090b10;border-color:rgba(255,255,255,.2);color:#fff}
+.field input:focus,.field textarea:focus,.field select:focus{outline:2px solid rgba(231,189,120,.62);outline-offset:1px;border-color:var(--tn-gold)}
+.site-footer,.footer{background:#07080b;border-top-color:rgba(231,189,120,.2)}
+.tn-network-strip{padding:24px 0;background:linear-gradient(105deg,#17191f,#0c0e13);border-block:1px solid rgba(231,189,120,.2)}
+.tn-network-strip .wrap{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.tn-network-strip p{margin:4px 0 0;color:var(--tn-muted);font-size:.88rem}
+.tn-network-links{display:flex;gap:10px;flex-wrap:wrap}
+.tn-network-links a{padding:9px 13px;border:1px solid rgba(231,189,120,.34);border-radius:8px;color:#f6ead7;font-size:.78rem;font-weight:800}
+.tn-network-links a:hover{background:rgba(231,189,120,.12)}
+.tn-growth-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+.tn-growth-card{position:relative;overflow:hidden;padding:clamp(22px,3vw,34px);border:1px solid rgba(231,189,120,.22);border-radius:17px;background:linear-gradient(130deg,rgba(25,28,35,.96),rgba(10,12,16,.97))}
+.tn-growth-card h3{font:800 clamp(1.3rem,2.3vw,1.8rem)/1.2 Manrope,sans-serif;margin:8px 0}
+.tn-growth-card p{color:var(--tn-muted);max-width:540px}
+.tn-goal-number{font:800 clamp(2.4rem,5vw,4rem)/1 Manrope,sans-serif;color:var(--tn-gold);font-variant-numeric:tabular-nums}
+.tn-goal-track{height:10px;margin:17px 0 9px;background:#ffffff14;border-radius:999px;overflow:hidden}
+.tn-goal-fill{height:100%;width:0;background:linear-gradient(90deg,#a72c34,#e7bd78);border-radius:inherit;transition:width .8s ease}
+.tn-goal-note{font-size:.72rem;color:#aaa7a1}
+.tn-hub-card{background:linear-gradient(115deg,rgba(11,14,18,.88),rgba(11,14,18,.97)),url('https://commons.wikimedia.org/wiki/Special:FilePath/Commencement_Bay,_Tacoma,_WA_-_2017-04-09_-_11.jpg?width=1400') center/cover}
+.tn-hub-card .eyebrow{color:var(--tn-gold)}
+.tn-hub-card .button{margin-top:7px}
+:focus-visible{outline:2px solid var(--tn-gold);outline-offset:3px}
+@media(max-width:760px){
+ .hero-upgrade{background-position:58% center;min-height:0}
+ .hero-layout{padding:48px 0 38px}
+ .hero-upgrade .hero-content{padding:12px 0 0}
+ .tn-growth-grid{grid-template-columns:1fr}
+ .tn-network-strip .wrap{align-items:flex-start}
+ .tn-network-links{width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
