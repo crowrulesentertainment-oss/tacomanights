@@ -1,0 +1,1 @@
+window.TNAuth={signIn:(email,password)=>tnSupabase.auth.signInWithPassword({email,password}),signOut:()=>tnSupabase.auth.signOut(),current:()=>tnSupabase.auth.getUser(),isAdmin:u=>u?.app_metadata?.role==="admin"};
