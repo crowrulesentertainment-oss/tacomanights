@@ -108,8 +108,8 @@ create policy "Uploader or admin can read community video" on storage.objects fo
 drop policy if exists "Admin can delete community video" on storage.objects;
 create policy "Admin can delete community video" on storage.objects for delete to authenticated using(bucket_id='tacoma-nights-community-private' and public.tn_is_community_admin());
 
-grant select,insert,update on public.tn_community_items to authenticated;
-grant select,insert,update on public.tn_community_replies to authenticated;
+grant select on public.tn_community_items to anon,authenticated;\ngrant insert,update on public.tn_community_items to authenticated;
+grant select on public.tn_community_replies to anon,authenticated;\ngrant insert,update on public.tn_community_replies to authenticated;
 grant select,insert on public.tn_community_votes to authenticated;
-grant select,insert on public.tn_community_reactions to authenticated;
+grant select on public.tn_community_reactions to anon,authenticated;\ngrant insert on public.tn_community_reactions to authenticated;
 grant select,insert,update on public.tn_community_reports to authenticated;
