@@ -10,7 +10,11 @@ document.addEventListener("DOMContentLoaded", () => {
       '<details class="nav-dropdown"><summary>The Show</summary><div class="dropdown-menu"><a href="' + base + 'about.html">About Tacoma Nights</a><a href="' + base + 'shows.html">Shows &amp; Segments</a><a href="' + base + 'future-segments.html">Future Segments</a><a href="' + base + 'explore.html">Explore Our Coverage</a></div></details>' +
       '<details class="nav-dropdown"><summary>Community</summary><div class="dropdown-menu"><a href="' + base + 'community.html">Community Hub</a><a href="' + base + 'community.html#forum">Message Board</a><a href="' + base + 'community.html#polls">Community Polls</a><a href="' + base + 'community.html#spotlight">People’s Spotlight</a><a href="' + base + 'community.html#calendar">Community Calendar</a><a href="' + base + 'weekly-question.html">Weekly Question</a><a href="' + base + 'people-mic.html">The People’s Mic Studio</a></div></details>' +
       '<details class="nav-dropdown"><summary>Get Involved</summary><div class="dropdown-menu"><a href="' + base + 'participate.html">Ways to Participate</a><a href="' + base + 'remote-host-upload.html">Remote Host Upload</a><a href="' + base + 'remote-host.html">Become a Remote Host</a><a href="' + base + 'participate.html">Become a Guest</a></div></details>' +
-      '<a href="https://crowrulesentertainment-oss.github.io/tacoma/" target="_blank" rel="noopener">Tacoma Community Hub ↗</a>' +\n      '<a href="' + base + 'donate.html">Support Tacoma Nights</a>' +
+      '<a href="' + base + 'tacoma-community.html">Tacoma Community Hub</a>' +
+      '<a href="' + base + 'crew-chat.html">Crew Live Chat</a>' +
+      '<a href="' + base + 'network.html">CrowRules Network</a>' +
+      '<a href="https://discord.gg/aMhhYgR9P6" target="_blank" rel="noopener">Discord ↗</a>' +
+      '<a href="' + base + 'donate.html">Support Tacoma Nights</a>' +
       '<details class="nav-dropdown"><summary>Members</summary><div class="dropdown-menu"><a href="' + base + 'members/login.html">Member Sign In</a><a href="' + base + 'members/dashboard.html">Member Dashboard</a></div></details>' +
       '<details class="nav-dropdown"><summary>Staff</summary><div class="dropdown-menu"><a data-control-room-link href="https://crowrulesentertainment-oss.github.io/crowrulesentertainment/tacoma-nights/control-room.html" target="_blank" rel="noopener">Raven Control Room ↗</a></div></details>'
   }
