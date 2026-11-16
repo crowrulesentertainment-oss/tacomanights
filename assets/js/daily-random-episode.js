@@ -3,7 +3,7 @@
    sees the same selected episode for the entire day. */
 (() => {
   "use strict";
-  const PLAYLIST_ID = "PLKfh6Jm08P-c";
+  const PLAYLIST_ID = "PLYK7RQq4_mhw";
   const FEED_URL = "https://www.youtube.com/feeds/videos.xml?playlist_id=" + PLAYLIST_ID;
   const player = document.getElementById("tn-daily-random-player");
   const titleNode = document.getElementById("tn-daily-random-title");
