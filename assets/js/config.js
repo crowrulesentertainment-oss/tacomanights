@@ -1,0 +1,1 @@
+window.TACOMA_NIGHTS_CONFIG=Object.freeze({supabaseUrl:"https://cevylpnoexugwgygvtgu.supabase.co",supabasePublishableKey:"sb_publishable_AdfM5y6RqvF3tbvEVzDZSg_JuGTQLD-",episodeApi:"https://cevylpnoexugwgygvtgu.supabase.co/functions/v1/tacoma-nights-api",youtubeChannel:"UCOSm_4z9LIQUWHOc8yzPgkw",youtubePlaylist:"PLKfh6Jm08P-c",youtubeUrl:"https://www.youtube.com/@CrowRules_TV"});
