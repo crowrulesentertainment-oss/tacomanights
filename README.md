@@ -11,7 +11,7 @@ Pages: Home, Watch, Live & Premieres, Episode Archive, Perspectives, four segmen
 - Live page reads the existing `tacoma_nights_show_settings` premiere record and differentiates scheduled from live.
 - YouTube channel: `@CrowRules_TV`; playlist: `PLKfh6Jm08P-c`.
 
-No database tables, RLS policies, storage buckets, auth providers or records are created, altered or deleted. Inspect the live schema before Phase 2+.
+The original public website foundation preserved the existing database and storage setup. Phase 1 now adds the contributor-production schema and private upload bucket documented below; unrelated CrowRules tables, providers and records remain untouched.
 
 ## Deploy
 GitHub Actions workflow: `.github/workflows/pages.yml`. Set repository Settings → Pages → Build and deployment → GitHub Actions if needed. Project Pages path is normally `/tacomanights/`.
@@ -65,3 +65,35 @@ The shared `assets/css/network.css` provides the cinematic hybrid streaming/broa
 - Existing premiere and episode integrations remain the source of truth.
 - All news submissions require editorial review; community events require verification before promotion.
 - Camera/microphone recording requires explicit browser permission and user action.
+
+
+## Production & Contributor Management 2.0 — Phase 1
+
+### New portals
+- `production/contributor.html`: passwordless email sign-in, linked contributor identity, assigned work, resumable private video upload, and submission history.
+- `production/review.html`: administrator-only crew account linking, assignment creation, private signed-preview review, producer feedback, and approval/revision/rejection.
+- `assets/js/production.js`: shared authentication, assignment, resumable upload and review logic.
+
+### Database and storage
+- Migration: `supabase/migrations/202611160001_tacoma_nights_production_phase1.sql`.
+- Adds `user_id` to existing `tacoma_nights_crew` for an administrator-controlled Auth-to-crew link.
+- Adds `tacoma_nights_contributor_assignments` and `tacoma_nights_contributor_submissions`.
+- Creates private Storage bucket `tacoma-nights-submissions` (1 GB maximum, MP4/WebM/QuickTime).
+- RLS limits contributors to their linked profile, assignments, own submission metadata and own storage objects. Admin operations require `auth.jwt()->'app_metadata'->>'role' = 'admin'`.
+- New submission records automatically move their assignment to submitted; producer revision/approval decisions synchronize assignment status.
+
+### Setup and operational notes
+1. Confirm the signed-in producer has the existing Supabase `app_metadata.role=admin` claim.
+2. Add the deployed GitHub Pages portal URLs to Supabase Auth → URL Configuration → Redirect URLs: `https://crowrulesentertainment-oss.github.io/tacomanights/**`.
+3. A contributor signs in at `/production/contributor.html`; the portal displays their Supabase Auth UUID.
+4. An administrator links that UUID to the correct existing crew profile at `/production/review.html`. This is intentionally an explicit producer action to prevent account/profile impersonation.
+5. Create assignments only for linked crew profiles. Contributors upload footage into private storage; producers preview using short-lived signed URLs.
+6. Approved footage remains private in this phase. Publishing/moving it to public episode assets is a later, explicit workflow.
+
+### Security boundaries
+- No service-role key is used in browser code.
+- No existing public video bucket or podcast creator bucket is reused for raw contributor footage.
+- The private bucket is not publicly readable. Signed previews expire after five minutes.
+- Uploads are limited to video MIME types and 1 GB. Rights/consent confirmation is required in the portal.
+- Existing episode, public crew, clip upload and other CrowRules policies are not broadly replaced.
+- The producer dashboard does not automatically publish footage or modify YouTube.
