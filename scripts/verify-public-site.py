@@ -22,8 +22,10 @@ class Links(HTMLParser):
         self.base = None
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
-        if tag == "base" and attrs.get("href"):
-            self.base = attrs["href"]
+        if tag == "base":
+            if attrs.get("href"):
+                self.base = attrs["href"]
+            return
         for key in ("href", "src", "action", "poster"):
             value = attrs.get(key)
             if value:
