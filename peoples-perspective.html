@@ -65,7 +65,8 @@ body{background:var(--pp-bg);color:var(--pp-white)}
 .pp-callout b{color:#fff}
 @media(max-width:760px){.pp-hero{min-height:590px}.pp-hero:before{background:linear-gradient(90deg,rgba(5,9,14,.9),rgba(5,9,14,.54)),linear-gradient(0deg,#090d12 0%,transparent 75%),url("https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80") 55% center/cover no-repeat}.pp-strip .pp-wrap{grid-template-columns:1fr;gap:12px}.pp-section{padding:60px 0}.pp-video-shell{grid-template-columns:1fr;padding:24px}.pp-grid{grid-template-columns:1fr}.pp-form-layout{grid-template-columns:1fr;gap:25px}.pp-form{padding:20px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
-</style>
+
+.pp-studio{display:grid;grid-template-columns:minmax(260px,.9fr) minmax(280px,1.1fr);gap:34px;align-items:start}.pp-studio-frame{width:min(100%,390px);margin:auto;aspect-ratio:9/16;background:#030609;border:1px solid rgba(230,184,92,.45);position:relative;overflow:hidden;border-radius:8px;box-shadow:0 22px 70px rgba(0,0,0,.4)}.pp-studio-frame video{width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1)}.pp-frame-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:26px;color:#aeb8c3;background:radial-gradient(ellipse at 50% 40%,#1c2b39,#06090d 72%)}.pp-frame-empty b{display:block;color:#e6b85c;font:800 1.1rem Manrope,sans-serif;margin-bottom:8px}.pp-rec-indicator{position:absolute;top:14px;left:14px;display:none;align-items:center;gap:8px;background:#a51f2b;color:#fff;padding:7px 10px;border-radius:3px;font-size:.72rem;font-weight:800;letter-spacing:.12em}.pp-rec-indicator.active{display:flex}.pp-rec-dot{width:8px;height:8px;border-radius:50%;background:white;animation:ppblink 1s infinite}@keyframes ppblink{50%{opacity:.25}}.pp-studio-controls{border:1px solid var(--pp-line);background:var(--pp-panel);padding:26px}.pp-studio-controls h3{font:800 1.35rem Manrope,sans-serif;margin:0 0 10px}.pp-studio-controls p{color:var(--pp-muted);line-height:1.65}.pp-studio-actions{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.pp-studio-actions button:disabled{opacity:.38;cursor:not-allowed}.pp-studio-meta{display:flex;justify-content:space-between;gap:12px;align-items:center;border-top:1px solid var(--pp-line);padding-top:15px;color:#c8d0d8;font-size:.85rem}.pp-studio-meta strong{font-variant-numeric:tabular-nums;color:var(--pp-gold);font-size:1.15rem}.pp-studio-note{border-left:3px solid var(--pp-gold);padding:14px 16px;background:#0b1118;color:#bfc9d2;font-size:.85rem;line-height:1.65;margin-top:18px}.pp-studio-status{min-height:1.5em;color:var(--pp-gold);font-size:.9rem;margin-top:12px}.pp-upload-info{margin-top:20px;padding:18px;background:#0b1118;border:1px solid var(--pp-line)}.pp-upload-info b{color:#fff}@media(max-width:760px){.pp-studio{grid-template-columns:1fr}.pp-studio-frame{width:min(78vw,340px)}.pp-studio-controls{padding:20px}}</style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -104,23 +105,17 @@ body{background:var(--pp-bg);color:var(--pp-white)}
   </div>
  </div>
 </section>
-<section class="pp-section" id="submit-video">
- <div class="pp-wrap pp-form-layout">
-  <div class="pp-form-intro"><p class="pp-kicker">Your voice belongs here</p><h2>Send us your video.</h2><p>Record horizontally if possible, speak naturally and keep your video focused on one story or idea. Paste a shareable video link below and include a little context.</p><div class="pp-rule"></div><div class="pp-callout"><b>How video submissions work</b><br>This page currently collects video links by email rather than uploading files directly. Set your link so CrowRules can view it, then submit the form. Videos are not published automatically — each submission is reviewed first.</div></div>
-  <form class="pp-form" id="perspective-submit-form">
-   <label for="pp-name">Name or preferred credit <span aria-hidden="true">*</span><input id="pp-name" name="name" maxlength="80" required placeholder="How should we credit you?"></label>
-   <label for="pp-location">Where are you from?<input id="pp-location" name="location" maxlength="100" placeholder="Neighborhood, Tacoma, Pierce County…"></label>
-   <label for="pp-topic">What is your video about? <span aria-hidden="true">*</span><select id="pp-topic" name="topic" required><option value="">Choose a topic</option><option>My neighborhood</option><option>People making a difference</option><option>Everyday life / personal story</option><option>Community issue or idea</option><option>Tacoma culture, arts or sports</option><option>Something else</option></select></label>
-   <label for="pp-link">Video share link <span aria-hidden="true">*</span><input id="pp-link" name="video" type="url" required placeholder="https://…"></label>
-   <label for="pp-story">Tell us a little about it <span aria-hidden="true">*</span><textarea id="pp-story" name="story" maxlength="1500" required placeholder="What should viewers know about your story?"></textarea></label>
-   <label class="pp-consent"><input type="checkbox" name="rights" required><span>I created this video or have permission to submit it, and I have permission from identifiable people shown in it.</span></label>
-   <label class="pp-consent"><input type="checkbox" name="publish" required><span>I give CrowRules Entertainment permission to review this submission and, if selected, feature the video on Tacoma Nights and its related channels. I understand submission does not guarantee publication.</span></label>
-   <button class="pp-btn" type="submit">Prepare my video submission →</button>
-   <p class="pp-form-status" id="pp-form-status" role="status" aria-live="polite">The form will open your email app with your submission details ready to send.</p>
-  </form>
- </div>
-</section>
-<section class="pp-section dark">
+<section class="pp-section" id="recording-studio"><div class="pp-wrap">
+<div class="pp-heading"><p class="pp-kicker">The People's Perspective · Creator studio</p><h2>Step in front of your camera.</h2><p>Record your own vertical video story right here. This studio is for viewer voices — no host, no presenter, just you sharing your perspective with Tacoma.</p></div>
+<div class="pp-studio"><div><div class="pp-studio-frame"><video id="pp-camera-preview" autoplay muted playsinline></video><div class="pp-frame-empty" id="pp-frame-empty"><div><b>YOUR STORY STARTS HERE</b><span>Enable your camera to begin recording in vertical 9:16 format.</span></div></div><div class="pp-rec-indicator" id="pp-rec-indicator"><span class="pp-rec-dot"></span> REC</div></div><div class="pp-studio-meta"><span>VERTICAL VIDEO · 9:16</span><strong id="pp-timer">00:00</strong></div></div>
+<div class="pp-studio-controls"><p class="pp-kicker">Viewer recording studio</p><h3>Your camera. Your voice. Your Tacoma.</h3><p>Find a quiet spot, frame yourself vertically and tell one story. Your browser will ask permission to use your camera and microphone.</p>
+<label for="pp-camera-facing" style="display:block;font-weight:700;margin:16px 0 6px">Camera</label><select id="pp-camera-facing" style="width:100%;padding:12px;background:#0b1118;color:white;border:1px solid rgba(255,255,255,.2);border-radius:3px"><option value="user">Front-facing camera</option><option value="environment">Rear-facing camera</option></select>
+<div class="pp-studio-actions"><button class="pp-btn" type="button" id="pp-start-camera">Enable camera</button><button class="pp-btn" type="button" id="pp-start-record" disabled>● Record</button><button class="pp-btn secondary" type="button" id="pp-stop-record" disabled>Stop</button><button class="pp-btn secondary" type="button" id="pp-retake" disabled>Retake</button></div>
+<div class="pp-studio-actions"><a class="pp-btn" id="pp-download" hidden download="peoples-perspective-video.webm">Download video</a></div>
+<p class="pp-studio-status" id="pp-studio-status" role="status" aria-live="polite">Camera access requires HTTPS and your permission.</p>
+<div class="pp-studio-note"><b>Recording tip:</b> Hold your phone upright. Look toward the camera, introduce your topic in one sentence, then share your story. Aim for 30 seconds to 3 minutes.</div>
+<div class="pp-upload-info"><b>Your recording stays yours.</b><p>Recordings are created in your browser and can be downloaded to your device. Nothing is uploaded or published automatically. Your downloaded video remains under your control.</p></div>
+</div></div></div></section><section class="pp-section dark">
  <div class="pp-wrap">
   <div class="pp-heading"><p class="pp-kicker">A few ground rules</p><h2>Keep it real. Keep it respectful.</h2></div>
   <div class="pp-callout"><b>Before you submit:</b> Do not share private addresses, phone numbers, confidential information, threats, harassment or footage you do not have rights to use. Avoid copyrighted music in the background. If anyone under 18 appears in your video, a parent or legal guardian must provide permission. Do not film or identify someone in a private or sensitive situation without their consent. CrowRules may decline, edit for length or remove a submission.</div>
@@ -131,28 +126,23 @@ body{background:var(--pp-bg);color:var(--pp-white)}
 <div id="site-footer"></div>
 <script>
 (()=>{"use strict";
-const form=document.getElementById("perspective-submit-form"),status=document.getElementById("pp-form-status");
-form.addEventListener("submit",event=>{
- event.preventDefault();
- if(!form.reportValidity())return;
- const data=new FormData(form),url=String(data.get("video")||"").trim();
- let parsed;try{parsed=new URL(url)}catch(_){status.textContent="Please enter a valid video share link.";return}
- if(!["https:","http:"].includes(parsed.protocol)){status.textContent="Please use a secure web link.";return}
- const subject="The People's Perspective — Viewer Video Submission";
- const body=[
- "THE PEOPLE'S PERSPECTIVE — VIEWER VIDEO SUBMISSION","",
- "Name / preferred credit: "+data.get("name"),
- "Location: "+(data.get("location")||"Not provided"),
- "Topic: "+data.get("topic"),
- "Video link: "+url,"",
- "About this video:",data.get("story"),"",
- "Rights and permission confirmations: checked",
- "Publication permission confirmation: checked","",
- "Please review this viewer-submitted video for possible inclusion on Tacoma Nights."
- ].join("\n");
- status.textContent="Your email app should open with the submission details. Please send the email to complete your submission. If it does not open, email crowrulesentertainment@gmail.com and include your video link.";
- window.location.href="mailto:crowrulesentertainment@gmail.com?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
-});
+const $=id=>document.getElementById(id),preview=$("pp-camera-preview"),empty=$("pp-frame-empty"),status=$("pp-studio-status"),timer=$("pp-timer"),indicator=$("pp-rec-indicator"),startCamera=$("pp-start-camera"),startRecord=$("pp-start-record"),stopRecord=$("pp-stop-record"),retake=$("pp-retake"),download=$("pp-download"),facing=$("pp-camera-facing");
+let stream=null,recorder=null,chunks=[],recordedUrl=null,startedAt=0,tick=null;
+const say=t=>status.textContent=t;
+function stopTracks(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}preview.srcObject=null}
+function release(){if(recordedUrl)URL.revokeObjectURL(recordedUrl);recordedUrl=null;download.hidden=true;download.removeAttribute("href")}
+function resetTimer(){clearInterval(tick);tick=null;timer.textContent="00:00"}
+async function camera(){if(!navigator.mediaDevices?.getUserMedia){say("Camera recording is not supported here. Try an up-to-date browser on HTTPS.");return}stopTracks();release();resetTimer();try{stream=await navigator.mediaDevices.getUserMedia({audio:true,video:{facingMode:{ideal:facing.value},width:{ideal:1080},height:{ideal:1920},aspectRatio:{ideal:9/16}}});preview.srcObject=stream;preview.muted=true;preview.controls=false;preview.style.transform=facing.value==="user"?"scaleX(-1)":"none";await preview.play();empty.hidden=true;startRecord.disabled=false;startCamera.textContent="Restart camera";say("Camera ready. Check your framing, then press Record.")}catch(e){say(e.name==="NotAllowedError"?"Camera or microphone permission was denied. Allow access in browser settings and try again.":"Could not start camera: "+e.message)}}
+function mime(){return ["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm","video/mp4"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported(t))||""}
+startCamera.addEventListener("click",camera);facing.addEventListener("change",()=>{if(stream)camera()});
+startRecord.addEventListener("click",()=>{if(!stream)return;release();chunks=[];try{const m=mime();recorder=new MediaRecorder(stream,m?{mimeType:m}:undefined)}catch(e){say("This browser cannot record video: "+e.message);return}
+recorder.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data)};
+recorder.onerror=e=>say("Recording error: "+(e.error?.message||"Please try again."));
+recorder.onstop=()=>{const blob=new Blob(chunks,{type:recorder.mimeType||"video/webm"});if(!blob.size){say("No video data captured. Please try again.");return}recordedUrl=URL.createObjectURL(blob);download.href=recordedUrl;const ext=blob.type.includes("mp4")?"mp4":"webm";download.download="peoples-perspective-"+new Date().toISOString().replace(/[:.]/g,"-")+"."+ext;download.hidden=false;preview.srcObject=null;preview.src=recordedUrl;preview.muted=false;preview.controls=true;preview.style.transform="none";preview.play().catch(()=>{});startCamera.disabled=false;startRecord.disabled=true;stopRecord.disabled=true;retake.disabled=false;facing.disabled=false;indicator.classList.remove("active");resetTimer();say("Recording complete. Review your video, then download it to your device.")};
+recorder.start(500);startedAt=Date.now();tick=setInterval(()=>{const s=Math.floor((Date.now()-startedAt)/1000);timer.textContent=String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")},250);indicator.classList.add("active");startRecord.disabled=true;stopRecord.disabled=false;startCamera.disabled=true;facing.disabled=true;retake.disabled=true;say("Recording. Share your perspective naturally — press Stop when finished.")});
+stopRecord.addEventListener("click",()=>{if(recorder&&recorder.state!=="inactive")recorder.stop();stopTracks();facing.disabled=false;startCamera.disabled=false});
+retake.addEventListener("click",()=>{release();resetTimer();preview.removeAttribute("src");preview.controls=false;preview.muted=true;empty.hidden=false;retake.disabled=true;startRecord.disabled=true;say("Ready for another take. Enable your camera to begin.");camera()});
+window.addEventListener("pagehide",()=>{stopTracks();release();clearInterval(tick)});
 })();
 </script>
 </body>
