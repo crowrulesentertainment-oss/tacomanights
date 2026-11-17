@@ -34,3 +34,34 @@ Also add your local development origin when testing locally.
 
 ## Hero photography
 The Tacoma and Mount Rainier hero image is from the USGS Volcano Hazards Program and is marked public domain: https://www.usgs.gov/media/images/mount-rainier-and-tacoma-wa
+
+
+## Tacoma Nights Network expansion
+
+This branch expands the original foundation into a hybrid streaming-TV and community newsroom experience.
+
+### Public pages
+- Cinematic network homepage with existing premiere status, episode publishing service and published crew profile integration.
+- Watch and Live pages retain the official CrowRules TV channel, YouTube playlist and existing premiere settings.
+- Episode archive remains connected to the existing `tacoma-nights-api?action=episodes` Edge Function.
+- Nine dedicated segment pages: Main Conversation, Triton Segment, The Weekly Lineup, 253 Spotlight, Tacoma Then & Now, Neighbor's Mic, Tacoma Wishlist, Make It Happen and The Unfiltered Question.
+- Nine individual segment recording studios under `studios/`.
+- Tacoma Newsroom, news-tip submission, community events and event submission pages.
+- Production Center and episode detail player.
+
+### Recording studio behavior
+The individual studios use browser `getUserMedia` and `MediaRecorder` for horizontal camera + microphone capture, local preview and WebM download. Recordings remain in the contributor's browser and are not silently uploaded. A private upload/review queue must be connected only after the existing Supabase storage bucket, schema and RLS policies are inspected and verified.
+
+### News and event submissions
+The public submission forms prepare an email to `crowrulesentertainment@gmail.com`. The visitor must review and send the email from their own email application. No unverified database tables or Edge Function actions are assumed. A later milestone can connect these forms to moderated Supabase tables after schema and policy review.
+
+### Visual system
+The shared `assets/css/network.css` provides the cinematic hybrid streaming/broadcast styling. Photography uses remote image sources and should be replaced with owned or appropriately licensed Tacoma/Pacific Northwest imagery as the final asset library is curated.
+
+### Safety and integration boundaries
+- Reuses the existing browser-safe Supabase publishable key and existing project.
+- Does not expose a service-role key.
+- Does not create, alter or delete Supabase tables, policies, storage buckets, auth providers or existing records.
+- Existing premiere and episode integrations remain the source of truth.
+- All news submissions require editorial review; community events require verification before promotion.
+- Camera/microphone recording requires explicit browser permission and user action.
