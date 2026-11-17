@@ -1,1 +1,159 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101820"><meta name="description" content="Everyday people. Honest experiences. Community voices."><title>The People&#39;s Perspective | Tacoma Nights</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="./assets/css/site.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js" defer></script><script src="./assets/js/config.js" defer></script><script src="./assets/js/site.js" defer></script></head><body><a class="skip" href="#main">Skip to content</a><div id="site-header" data-active="perspectives"></div><main id="main"><section class="pagehero"><div class="wrap"><p class="eyebrow">COMMUNITY / 01</p><h1>The People&#39;s Perspective</h1><p>Everyday people. Honest experiences. Community voices.</p></div></section><section class="section"><div class="wrap"><p class="eyebrow">About this segment</p><h2>Everybody has a story.</h2><p class="lead">Everyday people. Honest experiences. Community voices.</p><div class="panel"><p class="eyebrow">Featured question</p><p class="question">What makes a community strong?</p><p class="muted">Written responses, community stories and vertical video submissions are planned. The recording studio arrives in Phase 3.</p><a class="btn gold" href="./community.html?category=Community">Join the conversation →</a></div></div></section><section class="section dark"><div class="wrap"><h2>More voices. More perspectives.</h2><p class="lead">This segment will grow into a dedicated home for stories, videos, discussions and contributors.</p><a class="btn outline" href="./join.html">Become a contributor →</a></div></section></main><div id="site-footer"></div></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090d12">
+<meta name="description" content="The People's Perspective — Tacoma stories told by the people who live them. Viewer-submitted videos, real voices, and community stories from Tacoma and the South Sound.">
+<title>The People's Perspective | Tacoma Nights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/css/site.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js" defer></script>
+<script src="./assets/js/config.js" defer></script>
+<script src="./assets/js/site.js" defer></script>
+<style>
+:root{--pp-bg:#090d12;--pp-panel:#111923;--pp-line:rgba(255,255,255,.12);--pp-gold:#e6b85c;--pp-white:#f5f3ee;--pp-muted:#aeb8c3}
+body{background:var(--pp-bg);color:var(--pp-white)}
+.pp-hero{position:relative;isolation:isolate;min-height:650px;display:flex;align-items:end;overflow:hidden;background:#101923}
+.pp-hero:before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(5,9,14,.94) 0%,rgba(5,9,14,.72) 48%,rgba(5,9,14,.18) 100%),linear-gradient(0deg,#090d12 0%,transparent 55%),url("https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=2200&q=85") center 48%/cover no-repeat;transform:scale(1.02)}
+.pp-hero:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(120deg,transparent 55%,rgba(230,184,92,.12))}
+.pp-wrap{width:min(1160px,calc(100% - 40px));margin:auto}
+.pp-hero-inner{padding:120px 0 88px;max-width:790px}
+.pp-kicker{color:var(--pp-gold);font-size:.75rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase}
+.pp-hero h1{font:800 clamp(3rem,8vw,6.6rem)/.94 Manrope,sans-serif;letter-spacing:-.065em;margin:20px 0 22px;max-width:850px}
+.pp-hero h1 span{color:var(--pp-gold)}
+.pp-hero p{color:#e1e5e8;font-size:clamp(1rem,2vw,1.2rem);line-height:1.75;max-width:620px}
+.pp-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.pp-btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 21px;border-radius:3px;text-decoration:none;font-weight:800;letter-spacing:.02em;border:1px solid var(--pp-gold);background:var(--pp-gold);color:#111820;cursor:pointer}
+.pp-btn.secondary{background:transparent;color:var(--pp-white);border-color:rgba(255,255,255,.35)}
+.pp-strip{border-top:1px solid var(--pp-line);border-bottom:1px solid var(--pp-line);background:#0d131b}
+.pp-strip .pp-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:23px 0}
+.pp-stat{display:flex;align-items:center;gap:12px;color:#d6dce2;font-size:.9rem}
+.pp-stat b{display:block;color:var(--pp-gold);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
+.pp-section{padding:82px 0}
+.pp-section.dark{background:#0d131b}
+.pp-heading{max-width:740px;margin-bottom:34px}
+.pp-heading h2{font:800 clamp(2rem,5vw,3.5rem)/1.05 Manrope,sans-serif;letter-spacing:-.045em;margin:12px 0}
+.pp-heading p{color:var(--pp-muted);line-height:1.75}
+.pp-video-shell{border:1px solid var(--pp-line);background:linear-gradient(145deg,#131e29,#0d131b);padding:34px;display:grid;grid-template-columns:1fr auto;gap:26px;align-items:center}
+.pp-video-shell h3{font:800 1.5rem Manrope,sans-serif;margin:8px 0}
+.pp-video-shell p{color:var(--pp-muted);line-height:1.7;margin:0}
+.pp-empty{margin-top:22px;border:1px dashed rgba(230,184,92,.48);background:rgba(230,184,92,.045);padding:32px;text-align:center}
+.pp-empty .symbol{font-size:2rem;color:var(--pp-gold)}
+.pp-empty h3{font:800 1.25rem Manrope,sans-serif;margin:10px 0}
+.pp-empty p{max-width:650px;margin:0 auto;color:var(--pp-muted);line-height:1.7}
+.pp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}
+.pp-card{border:1px solid var(--pp-line);background:var(--pp-panel);padding:23px;min-height:185px}
+.pp-card .num{color:var(--pp-gold);font-weight:800;font-size:.75rem;letter-spacing:.16em}
+.pp-card h3{font:800 1.15rem Manrope,sans-serif;margin:13px 0 8px}
+.pp-card p{color:var(--pp-muted);line-height:1.65;margin:0}
+.pp-form-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:44px;align-items:start}
+.pp-form-intro h2{font:800 clamp(2rem,4vw,3.2rem)/1.05 Manrope,sans-serif;letter-spacing:-.04em;margin:12px 0}
+.pp-form-intro p,.pp-note{color:var(--pp-muted);line-height:1.75}
+.pp-form{border:1px solid var(--pp-line);background:var(--pp-panel);padding:28px}
+.pp-form label{display:block;font-weight:700;font-size:.88rem;margin:0 0 17px}
+.pp-form input,.pp-form textarea,.pp-form select{display:block;width:100%;margin-top:8px;padding:13px 14px;border:1px solid rgba(255,255,255,.18);border-radius:3px;background:#0b1118;color:#fff;font:inherit}
+.pp-form textarea{min-height:110px;resize:vertical}
+.pp-form input:focus,.pp-form textarea:focus,.pp-form select:focus{outline:2px solid var(--pp-gold);outline-offset:2px}
+.pp-consent{display:flex!important;gap:10px;align-items:flex-start;font-weight:500!important;line-height:1.55}
+.pp-consent input{width:auto;margin:3px 0 0;flex:none}
+.pp-form-status{color:var(--pp-gold);font-size:.9rem;line-height:1.6;margin-top:14px}
+.pp-rule{border-top:1px solid var(--pp-line);margin:20px 0}
+.pp-callout{padding:22px;border-left:3px solid var(--pp-gold);background:#111923;color:#d8dfe6;line-height:1.7}
+.pp-callout b{color:#fff}
+@media(max-width:760px){.pp-hero{min-height:590px}.pp-hero:before{background:linear-gradient(90deg,rgba(5,9,14,.9),rgba(5,9,14,.54)),linear-gradient(0deg,#090d12 0%,transparent 75%),url("https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80") 55% center/cover no-repeat}.pp-strip .pp-wrap{grid-template-columns:1fr;gap:12px}.pp-section{padding:60px 0}.pp-video-shell{grid-template-columns:1fr;padding:24px}.pp-grid{grid-template-columns:1fr}.pp-form-layout{grid-template-columns:1fr;gap:25px}.pp-form{padding:20px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div id="site-header" data-active="perspectives"></div>
+<main id="main">
+<section class="pp-hero">
+ <div class="pp-wrap pp-hero-inner">
+  <p class="pp-kicker">Tacoma Nights · Community voices</p>
+  <h1>The People's<br><span>Perspective.</span></h1>
+  <p>Tacoma is made of people, not headlines. This is a place for neighbors, families, students, workers, creators and everyday people to share what life here really looks like — in their own words and on their own camera.</p>
+  <div class="pp-actions"><a class="pp-btn" href="#submit-video">Submit your video</a><a class="pp-btn secondary" href="#viewer-stories">Explore the stories</a></div>
+ </div>
+</section>
+<div class="pp-strip"><div class="pp-wrap">
+ <div class="pp-stat"><span>01</span><div><b>Viewer submitted</b>Stories come from the community</div></div>
+ <div class="pp-stat"><span>02</span><div><b>No host. No presenter.</b>The people are the voices</div></div>
+ <div class="pp-stat"><span>03</span><div><b>Tacoma & South Sound</b>Local stories, local perspectives</div></div>
+</div></div>
+<section class="pp-section" id="viewer-stories">
+ <div class="pp-wrap">
+  <div class="pp-heading"><p class="pp-kicker">The community video wall</p><h2>Real people. Real perspectives.</h2><p>Every featured video on this page is intended to come from a viewer submission. No staff-hosted segments, no presenter introductions and no staged host clips.</p></div>
+  <div class="pp-video-shell"><div><p class="pp-kicker">Viewer story collection</p><h3>Your stories belong here.</h3><p>Submissions are reviewed before they are featured. Approved videos will appear here as the community collection grows.</p></div><a class="pp-btn" href="#submit-video">Be among the first →</a></div>
+  <div class="pp-empty"><div class="symbol" aria-hidden="true">▶</div><h3>The first community stories are waiting for you.</h3><p>There are no viewer videos featured yet. Send in a video link and tell us what matters to you. Once reviewed and approved, selected submissions can be added to this page.</p></div>
+ </div>
+</section>
+<section class="pp-section dark">
+ <div class="pp-wrap">
+  <div class="pp-heading"><p class="pp-kicker">What can you share?</p><h2>Your Tacoma. Your point of view.</h2><p>Keep it personal, honest and respectful. You do not need professional equipment — a phone video is welcome.</p></div>
+  <div class="pp-grid">
+   <article class="pp-card"><span class="num">01 / NEIGHBORHOODS</span><h3>Life in your part of Tacoma</h3><p>What makes your neighborhood special? What would you like people to understand?</p></article>
+   <article class="pp-card"><span class="num">02 / PEOPLE</span><h3>The people who make a difference</h3><p>Shout out a neighbor, local volunteer, mentor, small business or community helper.</p></article>
+   <article class="pp-card"><span class="num">03 / EVERYDAY LIFE</span><h3>Your story, your experience</h3><p>Share a lesson, a challenge, a memory, a local tradition or a moment that changed your perspective.</p></article>
+   <article class="pp-card"><span class="num">04 / COMMUNITY</span><h3>What should change?</h3><p>Talk about an issue, an idea or one practical thing that could make Tacoma stronger.</p></article>
+   <article class="pp-card"><span class="num">05 / CULTURE</span><h3>What makes Tacoma Tacoma?</h3><p>Food, music, art, sports, local history, celebrations and the things that bring people together.</p></article>
+   <article class="pp-card"><span class="num">06 / OPEN PERSPECTIVE</span><h3>Anything worth sharing</h3><p>If it is meaningful to you and relevant to our community, we want to hear your perspective.</p></article>
+  </div>
+ </div>
+</section>
+<section class="pp-section" id="submit-video">
+ <div class="pp-wrap pp-form-layout">
+  <div class="pp-form-intro"><p class="pp-kicker">Your voice belongs here</p><h2>Send us your video.</h2><p>Record horizontally if possible, speak naturally and keep your video focused on one story or idea. Paste a shareable video link below and include a little context.</p><div class="pp-rule"></div><div class="pp-callout"><b>How video submissions work</b><br>This page currently collects video links by email rather than uploading files directly. Set your link so CrowRules can view it, then submit the form. Videos are not published automatically — each submission is reviewed first.</div></div>
+  <form class="pp-form" id="perspective-submit-form">
+   <label for="pp-name">Name or preferred credit <span aria-hidden="true">*</span><input id="pp-name" name="name" maxlength="80" required placeholder="How should we credit you?"></label>
+   <label for="pp-location">Where are you from?<input id="pp-location" name="location" maxlength="100" placeholder="Neighborhood, Tacoma, Pierce County…"></label>
+   <label for="pp-topic">What is your video about? <span aria-hidden="true">*</span><select id="pp-topic" name="topic" required><option value="">Choose a topic</option><option>My neighborhood</option><option>People making a difference</option><option>Everyday life / personal story</option><option>Community issue or idea</option><option>Tacoma culture, arts or sports</option><option>Something else</option></select></label>
+   <label for="pp-link">Video share link <span aria-hidden="true">*</span><input id="pp-link" name="video" type="url" required placeholder="https://…"></label>
+   <label for="pp-story">Tell us a little about it <span aria-hidden="true">*</span><textarea id="pp-story" name="story" maxlength="1500" required placeholder="What should viewers know about your story?"></textarea></label>
+   <label class="pp-consent"><input type="checkbox" name="rights" required><span>I created this video or have permission to submit it, and I have permission from identifiable people shown in it.</span></label>
+   <label class="pp-consent"><input type="checkbox" name="publish" required><span>I give CrowRules Entertainment permission to review this submission and, if selected, feature the video on Tacoma Nights and its related channels. I understand submission does not guarantee publication.</span></label>
+   <button class="pp-btn" type="submit">Prepare my video submission →</button>
+   <p class="pp-form-status" id="pp-form-status" role="status" aria-live="polite">The form will open your email app with your submission details ready to send.</p>
+  </form>
+ </div>
+</section>
+<section class="pp-section dark">
+ <div class="pp-wrap">
+  <div class="pp-heading"><p class="pp-kicker">A few ground rules</p><h2>Keep it real. Keep it respectful.</h2></div>
+  <div class="pp-callout"><b>Before you submit:</b> Do not share private addresses, phone numbers, confidential information, threats, harassment or footage you do not have rights to use. Avoid copyrighted music in the background. If anyone under 18 appears in your video, a parent or legal guardian must provide permission. Do not film or identify someone in a private or sensitive situation without their consent. CrowRules may decline, edit for length or remove a submission.</div>
+  <div class="pp-actions"><a class="pp-btn" href="#submit-video">Share your perspective</a><a class="pp-btn secondary" href="./community.html?category=Community">Join the conversation</a></div>
+ </div>
+</section>
+</main>
+<div id="site-footer"></div>
+<script>
+(()=>{"use strict";
+const form=document.getElementById("perspective-submit-form"),status=document.getElementById("pp-form-status");
+form.addEventListener("submit",event=>{
+ event.preventDefault();
+ if(!form.reportValidity())return;
+ const data=new FormData(form),url=String(data.get("video")||"").trim();
+ let parsed;try{parsed=new URL(url)}catch(_){status.textContent="Please enter a valid video share link.";return}
+ if(!["https:","http:"].includes(parsed.protocol)){status.textContent="Please use a secure web link.";return}
+ const subject="The People's Perspective — Viewer Video Submission";
+ const body=[
+ "THE PEOPLE'S PERSPECTIVE — VIEWER VIDEO SUBMISSION","",
+ "Name / preferred credit: "+data.get("name"),
+ "Location: "+(data.get("location")||"Not provided"),
+ "Topic: "+data.get("topic"),
+ "Video link: "+url,"",
+ "About this video:",data.get("story"),"",
+ "Rights and permission confirmations: checked",
+ "Publication permission confirmation: checked","",
+ "Please review this viewer-submitted video for possible inclusion on Tacoma Nights."
+ ].join("\n");
+ status.textContent="Your email app should open with the submission details. Please send the email to complete your submission. If it does not open, email crowrulesentertainment@gmail.com and include your video link.";
+ window.location.href="mailto:crowrulesentertainment@gmail.com?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+});
+})();
+</script>
+</body>
+</html>
