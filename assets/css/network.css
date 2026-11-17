@@ -14,3 +14,13 @@ body{background:radial-gradient(ellipse at 75% -10%,#23384b 0,transparent 42%),l
 .tn-footer{background:#060a0f;border-top:1px solid var(--tn-line);padding:35px 0 18px}.tn-footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:24px}.tn-footer a{display:block;color:var(--tn-muted);font-size:.82rem;padding:4px 0}.tn-footer b{color:var(--tn-gold)}.tn-footer-bottom{border-top:1px solid var(--tn-line);margin-top:25px;padding-top:14px;color:#8c9aa7;font-size:.72rem;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 @media(max-width:900px){.tn-grid,.tn-episode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tn-split,.tn-studio{grid-template-columns:1fr}.tn-footer-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:580px){.tn-grid,.tn-episode-grid{grid-template-columns:1fr}.tn-hero{min-height:560px}.tn-hero .wrap{padding:75px 0}.tn-section{padding:52px 0}.tn-head{display:block}.tn-footer-grid{grid-template-columns:1fr 1fr}.tn-footer-grid>div:first-child{grid-column:1/-1}}
+
+/* Production & contributor management */
+.tn-check{display:flex!important;grid-template-columns:auto 1fr;align-items:start;gap:10px!important;font-weight:600}.tn-check input{width:auto!important;margin-top:4px;accent-color:var(--tn-gold)}
+.tn-form label{min-width:0}.tn-form textarea{min-height:110px}.tn-form button{justify-self:start}
+.tn-meter{width:100%;margin:10px 0}.tn-meter span{transition:width .2s ease}
+.tn-panel video{max-height:480px;object-fit:contain}
+.tn-panel .tn-form{margin-top:14px}.tn-panel .tn-form label{font-size:.8rem}
+.tn-controls .tn-btn{font-size:.74rem;padding:9px 13px}
+#tn-user-id{display:block;overflow-wrap:anywhere;color:var(--tn-gold);font-size:.78rem;margin-top:10px}
+.tn-panel .tn-tag{margin-bottom:8px}
