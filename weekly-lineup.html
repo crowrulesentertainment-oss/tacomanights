@@ -14,6 +14,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js" defer></script>
 <script src="./assets/js/config.js" defer></script>
 <script src="./assets/js/site.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js" defer></script>
+<script src="./assets/js/weekly-lineup-studio.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -96,10 +98,30 @@
 <section class="section" id="studio">
  <div class="wrap wl-studio">
   <div class="wl-studio-photo" role="img" aria-label="Professional podcast and sports audio recording studio"></div>
-  <div class="wl-studio-copy"><p class="eyebrow">CREATOR WORKSPACE · PHASED ROLLOUT</p><h2>The Weekly Lineup <span class="wl-gold">Studio.</span></h2><p class="lead">A dedicated audio-first recording room for Kenneth and approved contributors.</p>
-   <ul class="wl-checks"><li>Browser microphone recording and input selection</li><li>Live audio meter, countdown and recording timer</li><li>Pause, resume, playback and retake</li><li>Talking points and episode assignment notes</li><li>Private Supabase upload and submission tracking</li><li>Producer review, revision requests and approval</li></ul>
-   <div class="wl-studio-status"><span class="wl-status-dot"></span><div><strong>Studio foundation planned</strong><small>Recording and private uploads will be enabled after the storage and contributor permissions are verified.</small></div></div>
+  <div class="wl-studio-copy"><p class="eyebrow">CREATOR WORKSPACE · AUDIO FIRST</p><h2>The Weekly Lineup <span class="wl-gold">Studio.</span></h2><p class="lead">Record a clean audio segment, review your take and submit it privately to the Tacoma Nights production team.</p>
+   <ul class="wl-checks"><li>Browser microphone recording and input selection</li><li>Live recording timer with pause and resume</li><li>Playback, retake and audio-level monitoring</li><li>Private Supabase Storage upload</li><li>Resumable uploads for larger recordings</li><li>Submission history and producer review</li></ul>
+   <div class="wl-studio-status"><span class="wl-status-dot"></span><div><strong>Private contributor studio</strong><small>Sign in with an approved crew account. Audio remains private until a producer approves it.</small></div></div>
   </div>
+ </div>
+ <div class="wrap wl-studio-app">
+  <div class="wl-studio-app-head"><div><p class="eyebrow">RECORDING BOOTH</p><h3>Your recording session</h3></div><span id="wl-record-state" class="wl-record-state">READY</span></div>
+  <div id="wl-studio-message" class="wl-studio-message" role="status" aria-live="polite">Checking your Tacoma Nights session…</div>
+  <div id="wl-studio-login" class="wl-studio-login" hidden><div><h4>Contributor sign-in required</h4><p>Only approved Tacoma Nights contributors can upload recordings to this private studio.</p></div><button class="btn gold" type="button" id="wl-studio-signin">Sign in to continue</button></div>
+  <div id="wl-studio-workspace" hidden>
+   <div class="wl-studio-userline">Signed in as <strong id="wl-studio-user"></strong></div>
+   <div class="wl-studio-fields">
+    <label>Recording title<input id="wl-title" maxlength="120" placeholder="e.g. Weekly Lineup — Seahawks outlook" required></label>
+    <label>Episode / assignment<input id="wl-episode" maxlength="120" value="The Weekly Lineup" placeholder="Episode or assignment"></label>
+    <label class="wl-wide">Talking points or producer notes<textarea id="wl-notes" rows="3" maxlength="2000" placeholder="Add context for the producer (optional)."></textarea></label>
+    <label>Microphone<input id="wl-mic-label" type="text" value="Available microphones appear after permission is granted." readonly><select id="wl-mic" aria-label="Choose microphone"><option value="">Default microphone</option></select></label>
+    <div class="wl-level-wrap"><span>INPUT LEVEL</span><meter id="wl-audio-level" min="0" max="1" value="0"></meter><small>Microphone level preview appears while recording.</small></div>
+   </div>
+   <div class="wl-recorder-panel"><div class="wl-recorder-readout"><span id="wl-timer">00:00</span><small>MAX SESSION 60:00</small></div><div class="wl-recorder-buttons"><button type="button" class="btn gold" id="wl-record">● Start recording</button><button type="button" class="btn outline" id="wl-pause" disabled>Pause</button><button type="button" class="btn outline" id="wl-stop" disabled>Stop</button><button type="button" class="btn outline" id="wl-retake" disabled>Retake</button></div></div>
+   <div id="wl-preview-wrap" class="wl-preview-wrap" hidden><div class="wl-preview-head"><strong>Review your recording</strong><span id="wl-file-size"></span></div><audio id="wl-preview" controls preload="metadata"></audio><label class="wl-rights"><input type="checkbox" id="wl-rights"> I own this recording or have permission to submit it, and I authorize Tacoma Nights to review and use it for the production purpose agreed with me.</label><button type="button" class="btn gold" id="wl-upload" disabled>Submit recording privately</button></div>
+   <div class="wl-submissions-head"><div><h4>My submissions</h4><p>Private recordings and their producer-review status.</p></div><button type="button" class="btn outline" id="wl-refresh-submissions">Refresh</button></div>
+   <div id="wl-my-submissions" class="wl-submission-list"><p class="muted">Loading your recordings…</p></div>
+  </div>
+  <div id="wl-producer-queue" class="wl-producer-queue" hidden><div class="wl-submissions-head"><div><p class="eyebrow">ADMIN WORKSPACE</p><h3>Producer review queue</h3><p>Review audio, approve it or request a revision by rejecting with feedback.</p></div></div><div id="wl-review-queue" class="wl-submission-list"></div></div>
  </div>
 </section>
 
