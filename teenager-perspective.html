@@ -1,1 +1,111 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101820"><meta name="description" content="A dedicated place for younger voices and the world they are growing up in."><title>The Teenager Perspective | Tacoma Nights</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="./assets/css/site.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js" defer></script><script src="./assets/js/config.js" defer></script><script src="./assets/js/site.js" defer></script></head><body><a class="skip" href="#main">Skip to content</a><div id="site-header" data-active="perspectives"></div><main id="main"><section class="pagehero"><div class="wrap"><p class="eyebrow">NEXT GENERATION / 02</p><h1>The Teenager Perspective</h1><p>A dedicated place for younger voices and the world they are growing up in.</p></div></section><section class="section"><div class="wrap"><p class="eyebrow">About this segment</p><h2>The future has something to say.</h2><p class="lead">A dedicated place for younger voices and the world they are growing up in.</p><div class="panel"><p class="eyebrow">Featured question</p><p class="question">What is one thing adults should understand about being a teenager today?</p><p class="muted">Youth participation will include age-appropriate moderation, privacy safeguards and guardian consent where required.</p><a class="btn gold" href="./community.html?category=Community">Join the conversation →</a></div></div></section><section class="section dark"><div class="wrap"><h2>More voices. More perspectives.</h2><p class="lead">This segment will grow into a dedicated home for stories, videos, discussions and contributors.</p><a class="btn outline" href="./join.html">Become a contributor →</a></div></section></main><div id="site-footer"></div></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101820">
+<meta name="description" content="The Teenager Perspective on Tacoma Nights, hosted by Triton Peterson. Real conversations, young voices and life from a teenage point of view.">
+<title>The Teenager Perspective | Tacoma Nights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/css/site.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js" defer></script>
+<script src="./assets/js/config.js" defer></script>
+<script src="./assets/js/site.js" defer></script>
+<style>
+:root{--tp-ink:#101820;--tp-gold:#e5b84c;--tp-cyan:#77d8e8}
+.tp-page{background:#0c1219;color:#f6f7f8;overflow:hidden}
+.tp-page .wrap{width:min(1160px,calc(100% - 40px));margin:auto}
+.tp-page .eyebrow{letter-spacing:.19em;text-transform:uppercase;font-size:.73rem;font-weight:800;color:var(--tp-gold)}
+.tp-hero{min-height:680px;display:flex;align-items:center;position:relative;background:linear-gradient(90deg,rgba(5,10,16,.94) 0%,rgba(5,10,16,.77) 45%,rgba(5,10,16,.22) 100%),linear-gradient(0deg,#0c1219 0%,transparent 28%),url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=2000&q=85') center 42%/cover}
+.tp-hero .hero-copy{max-width:690px;padding:100px 0 120px}
+.tp-hero h1{font-family:Manrope,sans-serif;font-size:clamp(3rem,7.2vw,6.6rem);line-height:.98;letter-spacing:-.065em;margin:.25em 0}
+.tp-hero h1 span{color:var(--tp-gold)}
+.tp-hero .hero-lead{font-size:clamp(1.05rem,2vw,1.3rem);line-height:1.7;color:#e0e6ec;max-width:620px}
+.tp-actions{display:flex;gap:13px;flex-wrap:wrap;margin-top:30px}
+.tp-btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 21px;border-radius:5px;text-decoration:none;font-weight:800;transition:transform .2s,background .2s}
+.tp-btn:hover{transform:translateY(-2px)}
+.tp-btn.primary{background:var(--tp-gold);color:#15191d}
+.tp-btn.secondary{border:1px solid rgba(255,255,255,.55);color:white;background:rgba(8,14,20,.38)}
+.tp-strip{border-top:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.12);background:#121c26}
+.tp-strip .wrap{display:flex;gap:24px;justify-content:space-between;align-items:center;flex-wrap:wrap;padding:19px 0}
+.tp-strip strong{font-family:Manrope,sans-serif;font-size:1.05rem}
+.tp-strip span{color:#b8c4ce;font-size:.9rem}
+.tp-section{padding:88px 0}
+.tp-section h2{font:800 clamp(2rem,4vw,3.5rem)/1.08 Manrope,sans-serif;letter-spacing:-.045em;margin:10px 0 18px}
+.tp-intro{display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:center}
+.tp-intro p,.tp-section .section-lead{color:#c0cad3;line-height:1.8;font-size:1.05rem}
+.tp-photo{position:relative;min-height:430px;border-radius:10px;overflow:hidden;background:#182430}
+.tp-photo img{width:100%;height:100%;min-height:430px;object-fit:cover;display:block}
+.tp-photo:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.65))}
+.tp-photo figcaption{position:absolute;z-index:1;bottom:22px;left:24px;font-weight:700;color:#fff}
+.tp-host{background:linear-gradient(120deg,#172633,#101820 70%);border:1px solid rgba(255,255,255,.13);border-radius:12px;padding:clamp(26px,5vw,54px);display:grid;grid-template-columns:180px 1fr;gap:34px;align-items:center}
+.tp-host-mark{width:170px;height:170px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#e7bd5a,#8e6725);color:#111820;font:900 3.6rem Manrope,sans-serif;border:6px solid rgba(255,255,255,.12);box-shadow:0 16px 45px #0007}
+.tp-host h3{font:800 clamp(1.8rem,3vw,2.7rem) Manrope,sans-serif;margin:6px 0}
+.tp-host p{color:#c5d0d9;line-height:1.75}
+.tp-host .handle{color:var(--tp-cyan);font-weight:800;text-decoration:none}
+.tp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:34px}
+.tp-card{background:#151f29;border:1px solid rgba(255,255,255,.1);border-radius:9px;overflow:hidden}
+.tp-card img{width:100%;height:205px;object-fit:cover;display:block}
+.tp-card .card-copy{padding:22px}
+.tp-card h3{font:800 1.25rem Manrope,sans-serif;margin:0 0 9px}
+.tp-card p{color:#bac5ce;line-height:1.65;margin:0}
+.tp-question{background:linear-gradient(100deg,rgba(12,18,25,.94),rgba(12,18,25,.72)),url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1800&q=85') center/cover;border-radius:10px;padding:clamp(28px,5vw,58px);border:1px solid rgba(255,255,255,.12)}
+.tp-question blockquote{font:800 clamp(1.7rem,4vw,3.3rem)/1.2 Manrope,sans-serif;letter-spacing:-.04em;max-width:850px;margin:14px 0 25px}
+.tp-note{font-size:.88rem!important;color:#aebbc6!important}
+.tp-page a:focus-visible{outline:3px solid var(--tp-cyan);outline-offset:4px}
+@media(max-width:800px){.tp-hero{min-height:600px;background-position:58% center}.tp-intro{grid-template-columns:1fr;gap:28px}.tp-grid{grid-template-columns:1fr 1fr}.tp-host{grid-template-columns:1fr;text-align:center}.tp-host-mark{margin:auto}}
+@media(max-width:560px){.tp-page .wrap{width:min(100% - 30px,1160px)}.tp-hero{min-height:590px}.tp-hero .hero-copy{padding:80px 0 95px}.tp-grid{grid-template-columns:1fr}.tp-card img{height:220px}.tp-strip .wrap{gap:8px;justify-content:flex-start}.tp-photo,.tp-photo img{min-height:300px}}
+@media(prefers-reduced-motion:reduce){.tp-btn{transition:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div id="site-header" data-active="perspectives"></div>
+<main id="main" class="tp-page">
+<section class="tp-hero">
+  <div class="wrap"><div class="hero-copy">
+    <p class="eyebrow">Tacoma Nights · Next Generation</p>
+    <h1>The <span>Teenager</span><br>Perspective</h1>
+    <p class="hero-lead">Real life. Real opinions. A generation with something to say. A space for young people to talk about what matters to them—in their own words and from their own point of view.</p>
+    <div class="tp-actions"><a class="tp-btn primary" href="#meet-the-host">Meet the Host</a><a class="tp-btn secondary" href="https://www.youtube.com/@KingCrow_TV" target="_blank" rel="noopener noreferrer">Watch Triton on YouTube ↗</a></div>
+  </div></div>
+</section>
+<div class="tp-strip"><div class="wrap"><strong>Hosted by Triton Peterson</strong><span>Young voices · Everyday life · Tacoma and beyond</span></div></div>
+<section class="tp-section"><div class="wrap tp-intro">
+  <div><p class="eyebrow">A generation in focus</p><h2>Not just talked about.<br><span style="color:var(--tp-gold)">Heard.</span></h2>
+  <p>The Teenager Perspective brings the experiences, questions, ideas and opinions of teenagers to the conversation. From school and friendships to technology, sports, creativity, family, goals and the pressure of growing up, this is a place for honest conversations without adults speaking for young people.</p>
+  <p>Built around the voices of the next generation, the segment aims to connect perspectives, encourage understanding and remind everyone that young people are part of the community right now—not just its future.</p></div>
+  <figure class="tp-photo"><img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1100&q=85" alt="A group of students spending time together on campus"><figcaption>Different experiences. One community.</figcaption></figure>
+</div></section>
+<section class="tp-section" id="meet-the-host" style="padding-top:12px"><div class="wrap">
+  <p class="eyebrow">Meet your host</p><h2>A young voice leading the conversation.</h2>
+  <div class="tp-host"><div class="tp-host-mark" aria-hidden="true">TP</div><div><p class="eyebrow">The Teenager Perspective Host</p><h3>Triton Peterson</h3>
+  <p>Triton Peterson brings the teenage point of view to Tacoma Nights as the host of The Teenager Perspective. Through this segment, Triton helps open up conversations about the things young people experience, care about and want their communities to understand.</p>
+  <a class="handle" href="https://www.youtube.com/@KingCrow_TV" target="_blank" rel="noopener noreferrer">YouTube: @KingCrow_TV ↗</a>
+  <div class="tp-actions"><a class="tp-btn primary" href="https://www.youtube.com/@KingCrow_TV" target="_blank" rel="noopener noreferrer">Visit Triton's YouTube Channel</a></div></div></div>
+</div></section>
+<section class="tp-section" style="background:#101923"><div class="wrap">
+  <p class="eyebrow">What we talk about</p><h2>Teen life, beyond the headlines.</h2><p class="section-lead">The topics come from real experiences and the questions young people are already asking.</p>
+  <div class="tp-grid">
+    <article class="tp-card"><img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=900&q=85" alt="Students learning together in a classroom"><div class="card-copy"><h3>School &amp; Everyday Life</h3><p>School pressure, learning, friendships, fitting in and finding your own path.</p></div></article>
+    <article class="tp-card"><img src="https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=900&q=85" alt="Young athletes playing basketball"><div class="card-copy"><h3>Sports &amp; Passions</h3><p>Teams, competition, music, gaming, creativity and the things that bring people together.</p></div></article>
+    <article class="tp-card"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=85" alt="Friends talking together outdoors"><div class="card-copy"><h3>Friends, Family &amp; Community</h3><p>Relationships, respect, belonging, community life and being understood.</p></div></article>
+  </div>
+</div></section>
+<section class="tp-section"><div class="wrap"><div class="tp-question">
+  <p class="eyebrow">This week's conversation starter</p>
+  <blockquote>“What is one thing you wish adults understood about being a teenager today?”</blockquote>
+  <p class="tp-note">A question to get the conversation started—not a test, and not a one-size-fits-all answer. Every teenager has a different story.</p>
+  <a class="tp-btn primary" href="./community.html?category=Community">Join the community conversation →</a>
+</div></div></section>
+<section class="tp-section" style="padding-top:0"><div class="wrap">
+  <p class="eyebrow">A respectful space for young voices</p><h2>Listen first. Respect every perspective.</h2>
+  <p class="section-lead">Participation should be safe, voluntary and age-appropriate. Personal details should stay private. Submissions and public participation are subject to moderation, and guardian permission will be obtained where required. No one should share their school name, home address, phone number or other identifying information in a public post.</p>
+  <div class="tp-actions"><a class="tp-btn secondary" href="./community.html?category=Community">Explore the Community</a><a class="tp-btn secondary" href="./">Back to Tacoma Nights</a></div>
+</div></section>
+</main>
+<div id="site-footer"></div>
+</body>
+</html>
