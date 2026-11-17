@@ -58,6 +58,30 @@
 @media(max-width:800px){.tp-hero{min-height:600px;background-position:58% center}.tp-intro{grid-template-columns:1fr;gap:28px}.tp-grid{grid-template-columns:1fr 1fr}.tp-host{grid-template-columns:1fr;text-align:center}.tp-host-mark{margin:auto}}
 @media(max-width:560px){.tp-page .wrap{width:min(100% - 30px,1160px)}.tp-hero{min-height:590px}.tp-hero .hero-copy{padding:80px 0 95px}.tp-grid{grid-template-columns:1fr}.tp-card img{height:220px}.tp-strip .wrap{gap:8px;justify-content:flex-start}.tp-photo,.tp-photo img{min-height:300px}}
 @media(prefers-reduced-motion:reduce){.tp-btn{transition:none}}
+
+.tp-studio{background:linear-gradient(145deg,#111d28,#0b1118);border:1px solid rgba(255,255,255,.13);border-radius:12px;padding:clamp(20px,4vw,38px);margin-top:30px}
+.tp-studio-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.8fr);gap:28px;align-items:start}
+.tp-camera-frame{width:min(100%,340px);aspect-ratio:9/16;margin:auto;background:#05080b;border:1px solid #3c4d5d;border-radius:15px;overflow:hidden;position:relative}
+.tp-camera-frame video{width:100%;height:100%;object-fit:cover}
+.tp-camera-placeholder{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:#aab7c2}
+.tp-rec-indicator{position:absolute;top:14px;left:14px;background:#9f2727;color:white;padding:5px 9px;border-radius:20px;font-size:.75rem;font-weight:900;display:none}
+.tp-rec-indicator.active{display:block}
+.tp-studio label{display:flex;gap:10px;align-items:flex-start;color:#d1dbe3;line-height:1.5;margin:18px 0}
+.tp-studio input[type=checkbox]{margin-top:5px;accent-color:#e5b84c}
+.tp-studio-controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.tp-studio button,.tp-download{border:0;border-radius:5px;padding:12px 16px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.tp-studio button:disabled{opacity:.45;cursor:not-allowed}
+.tp-studio .gold,.tp-download{background:#e5b84c;color:#101820}
+.tp-studio .outline{background:transparent;color:#f5f7f9;border:1px solid #738493}
+.tp-studio .danger{background:#a83232;color:white}
+.tp-studio-help{color:#aebbc6;font-size:.9rem;line-height:1.65}
+.tp-video-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:14px;margin-top:22px}
+.tp-wall-card{background:#17232e;border:1px solid #344453;border-radius:8px;padding:10px;min-width:0}
+.tp-wall-card video{display:block;width:100%;aspect-ratio:9/16;object-fit:cover;background:#05080b;border-radius:5px}
+.tp-wall-card p{font-size:.82rem;color:#c2cdd6;margin:8px 0}
+.tp-wall-empty{border:1px dashed #506171;border-radius:8px;padding:24px;color:#aebbc6;text-align:center;grid-column:1/-1}
+.tp-privacy-link{color:#8bdcec;font-weight:800}
+@media(max-width:760px){.tp-studio-grid{grid-template-columns:1fr}.tp-camera-frame{width:min(78vw,310px)}}
 </style>
 </head>
 <body>
@@ -100,12 +124,82 @@
   <p class="tp-note">A question to get the conversation started—not a test, and not a one-size-fits-all answer. Every teenager has a different story.</p>
   <a class="tp-btn primary" href="./community.html?category=Community">Join the community conversation →</a>
 </div></div></section>
+
+<section class="tp-section" id="teen-video-studio" style="background:#101923">
+ <div class="wrap">
+  <p class="eyebrow">Create in your own voice</p><h2>Teen Video Studio</h2>
+  <p class="section-lead">A vertical 9:16 recording space for teen perspectives, ideas and creative clips. Record, review and download on your own device.</p>
+  <div class="tp-studio">
+   <div class="tp-studio-grid">
+    <div>
+     <div class="tp-camera-frame">
+      <video id="tp-camera" autoplay muted playsinline></video>
+      <div class="tp-camera-placeholder" id="tp-camera-placeholder">Your camera preview will appear here after you choose to enable it.</div>
+      <span class="tp-rec-indicator" id="tp-rec-indicator">● REC</span>
+     </div>
+     <div class="tp-studio-controls">
+      <button class="gold" id="tp-enable-camera" type="button">Enable Camera</button>
+      <button class="danger" id="tp-record" type="button" disabled>Start Recording</button>
+      <button class="outline" id="tp-stop" type="button" disabled>Stop</button>
+     </div>
+    </div>
+    <div>
+     <p class="eyebrow">Before you begin</p>
+     <p class="tp-studio-help">This studio is intended for teens. Please have a parent or guardian review participation with you and provide permission wherever required. The checkbox is an acknowledgement only; this page does not verify age or guardian consent.</p>
+     <label><input id="tp-teen-confirm" type="checkbox"> <span>I am a teenager, and I have reviewed the privacy and safety information with a parent or guardian where required.</span></label>
+     <p class="tp-studio-help">Keep your clip under 2 minutes. Do not include your full name, school, address, phone number, live location or other identifying details. Check the background before recording.</p>
+     <p><a class="tp-privacy-link" href="./teen-privacy.html" target="_blank" rel="noopener">Read Teen Submissions Privacy &amp; Safety ↗</a></p>
+     <p class="tp-studio-help" id="tp-studio-status" role="status" aria-live="polite">Camera is off. Nothing is being recorded.</p>
+     <p class="tp-studio-help">Your recordings stay in this browser session until you leave or refresh this page. Nothing is automatically uploaded or published. Use Download to save a copy to your device.</p>
+    </div>
+   </div>
+   <div class="tp-wall-heading"><p class="eyebrow">Your session video wall</p><h3>Recorded clips</h3><p class="tp-studio-help">Only clips recorded in this current browser session appear here. This is a private local preview wall, not a public gallery or submission inbox.</p></div>
+   <div class="tp-video-wall" id="tp-video-wall"><div class="tp-wall-empty" id="tp-wall-empty">Your clips will appear here after you record them.</div></div>
+  </div>
+ </div>
+</section>
 <section class="tp-section" style="padding-top:0"><div class="wrap">
   <p class="eyebrow">A respectful space for young voices</p><h2>Listen first. Respect every perspective.</h2>
   <p class="section-lead">Participation should be safe, voluntary and age-appropriate. Personal details should stay private. Submissions and public participation are subject to moderation, and guardian permission will be obtained where required. No one should share their school name, home address, phone number or other identifying information in a public post.</p>
-  <div class="tp-actions"><a class="tp-btn secondary" href="./community.html?category=Community">Explore the Community</a><a class="tp-btn secondary" href="./">Back to Tacoma Nights</a></div>
+  <div class="tp-actions"><a class="tp-btn secondary" href="./teen-privacy.html">Teen Submissions Privacy &amp; Safety</a><a class="tp-btn secondary" href="./community.html?category=Community">Explore the Community</a><a class="tp-btn secondary" href="./">Back to Tacoma Nights</a></div>
 </div></section>
 </main>
 <div id="site-footer"></div>
+<script>
+(()=> {
+ const camera=document.getElementById('tp-camera'),placeholder=document.getElementById('tp-camera-placeholder');
+ const enable=document.getElementById('tp-enable-camera'),record=document.getElementById('tp-record'),stop=document.getElementById('tp-stop');
+ const confirm=document.getElementById('tp-teen-confirm'),status=document.getElementById('tp-studio-status');
+ const indicator=document.getElementById('tp-rec-indicator'),wall=document.getElementById('tp-video-wall'),empty=document.getElementById('tp-wall-empty');
+ let stream=null,recorder=null,chunks=[],clipCount=0,startedAt=0,limitTimer=null;
+ const say=t=>status.textContent=t;
+ const stopTracks=()=>{if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}camera.srcObject=null;placeholder.hidden=false;enable.disabled=false;};
+ enable.addEventListener('click',async()=>{
+  if(!confirm.checked){say('Please confirm you have reviewed the teen privacy and safety information first.');return;}
+  if(!navigator.mediaDevices?.getUserMedia){say('Camera access is not available in this browser. Try a current version of Chrome, Edge, Firefox or Safari over HTTPS.');return;}
+  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1080},height:{ideal:1920}},audio:true});camera.srcObject=stream;placeholder.hidden=true;enable.disabled=true;record.disabled=false;say('Camera ready. Check your surroundings and start when you are comfortable.');}
+  catch(e){say('Camera or microphone permission was not granted, or the device is unavailable. You can change browser permissions and try again.');}
+ });
+ confirm.addEventListener('change',()=>{if(!confirm.checked&&!recorder?.state?.match(/recording|paused/)){record.disabled=true;say('Please confirm the privacy and safety information before using the camera.');}else if(stream)record.disabled=false;});
+ record.addEventListener('click',()=>{
+  if(!stream||!confirm.checked)return;
+  if(!window.MediaRecorder){say('Video recording is not supported by this browser.');return;}
+  let type=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4'].find(t=>MediaRecorder.isTypeSupported(t));
+  try{chunks=[];recorder=new MediaRecorder(stream,type?{mimeType:type}:undefined);recorder.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data);};
+   recorder.onstop=()=>{clearTimeout(limitTimer);indicator.classList.remove('active');const blob=new Blob(chunks,{type:recorder.mimeType||'video/webm'});if(blob.size)addClip(blob);stopTracks();record.disabled=true;stop.disabled=true;enable.disabled=false;say('Recording finished. Your clip is shown only in this session video wall. Download it if you want to keep a copy.');};
+   recorder.start(250);startedAt=Date.now();record.disabled=true;stop.disabled=false;indicator.classList.add('active');say('Recording. You can stop at any time. The studio will stop automatically after 2 minutes.');limitTimer=setTimeout(()=>{if(recorder?.state==='recording')recorder.stop();},120000);
+  }catch(e){say('The browser could not start recording. Please check device permissions and try again.');}
+ });
+ stop.addEventListener('click',()=>{if(recorder?.state==='recording')recorder.stop();});
+ function addClip(blob){
+  clipCount++;if(empty)empty.remove();const url=URL.createObjectURL(blob),card=document.createElement('article');card.className='tp-wall-card';
+  const video=document.createElement('video');video.src=url;video.controls=true;video.playsInline=true;video.preload='metadata';
+  const label=document.createElement('p');label.textContent='My clip '+clipCount+' · '+Math.max(1,Math.round((Date.now()-startedAt)/1000))+' sec';
+  const link=document.createElement('a');link.className='tp-download';link.href=url;link.download='teen-perspective-clip-'+clipCount+'.'+(blob.type.includes('mp4')?'mp4':'webm');link.textContent='Download clip';
+  card.append(video,label,link);wall.prepend(card);
+ }
+ window.addEventListener('pagehide',()=>{clearTimeout(limitTimer);if(recorder?.state==='recording')recorder.stop();stopTracks();wall.querySelectorAll('video').forEach(v=>{if(v.src.startsWith('blob:'))URL.revokeObjectURL(v.src);});});
+})();
+</script>
 </body>
 </html>
