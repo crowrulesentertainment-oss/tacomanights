@@ -1,0 +1,5 @@
+{
+  "name": "tacoma-nights-public-smoke-tests",
+  "private": true,
+  "description": "Browser smoke tests for the deployed Tacoma Nights public website"
+}
