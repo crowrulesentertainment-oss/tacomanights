@@ -1,0 +1,40 @@
+name: Public Network QA
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, rebuild/phase-1-2-public-pages]
+permissions:
+  contents: read
+jobs:
+  static-public-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate public pages and local links
+        run: node scripts/qa-public-pages.mjs
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/site.js
+          node --check assets/js/pages.js
+          node --check assets/js/config.js
+  browser-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Playwright
+        run: npm install --no-save @playwright/test
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run desktop, mobile, navigation and form smoke tests
+        run: npx playwright test
