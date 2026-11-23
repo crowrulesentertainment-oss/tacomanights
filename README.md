@@ -23,15 +23,19 @@ This repository is undergoing an intentional fresh rebuild. The current `main` b
 - [x] Create network-first homepage shell
 - [x] Establish visual system and accessible navigation
 - [ ] Add dedicated public section pages
-- [ ] Connect verified Supabase public data
+- [x] Connect verified Supabase public broadcast state
 - [ ] Add browser smoke tests
 
 ### Phase 1.1 — Integration verification
-- [ ] Confirm project URL and browser-safe Supabase anon key through deployment configuration
-- [ ] Map existing Tacoma Nights tables and policies before using them
+- [x] Configure browser-safe Supabase project URL and publishable key
+- [x] Map existing live-network tables and owner-only RLS policies before using them
 - [ ] Verify contributor upload isolation with separate test accounts
 - [ ] Verify producer review and assignment workflows
 - [ ] Verify YouTube API-backed subscriber count and milestone progression
+
+## Live Studio integration
+
+The Programming workspace manages existing network programs and schedule rows. Media & Playout manages approved queue entries. Broadcast Studio signs in through Supabase Auth and pairs the signed-in session to the local Node bridge. The bridge polls approved queue entries, respects linked program schedule windows, updates queue status, and feeds a shared local browser-source player for OBS Studio and Streamlabs Desktop. OBS can add the browser source on connect; Streamlabs scenes need the source added once manually. See `bridge/README.md` for setup and the required local `.env` values.
 
 ## Local preview
 Open `index.html` directly for the static shell, or serve this directory with any static web server.
