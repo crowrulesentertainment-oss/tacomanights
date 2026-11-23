@@ -22,7 +22,7 @@ create table if not exists public.live_network_public_schedule (
 );
 
 alter table public.live_network_public_schedule enable row level security;
-grant select on public.live_network_public_schedule to anon, authenticated;
+grant select (program_title, program_description, category, format, host_name, starts_at, ends_at, status, updated_at) on public.live_network_public_schedule to anon;
 grant select, insert, update, delete on public.live_network_public_schedule to authenticated;
 
 create policy "published network schedule is public"
