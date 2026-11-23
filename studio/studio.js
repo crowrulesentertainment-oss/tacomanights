@@ -9,6 +9,15 @@ async function api(path,body){
  if(!r.ok)throw Error(d.error||"Bridge request failed ("+r.status+")");
  return d;
 }
+async function loadScenes(){
+ const select=$("scene-select"),engine=$("engine-select")?.value||"obs";if(!select)return;
+ select.disabled=true;select.innerHTML="<option value=\"\">Loading scenes…</option>";
+ try{const data=await api("/scenes?engine="+encodeURIComponent(engine));const names=(data.scenes||[]).map(x=>x.name).filter(Boolean);
+  select.innerHTML="";if(!names.length){select.add(new Option("No scenes returned", ""));setText("bridge-message","Connected to "+engine+", but no scenes were returned by the desktop app.");return}
+  names.forEach(name=>select.add(new Option(name,name)));const preferred=names.find(x=>x.toLowerCase()==="network main")||names[0];select.value=preferred;setText("bridge-message",names.length+" scenes loaded from "+(engine==="streamlabs"?"Streamlabs Desktop":"OBS Studio")+".");
+ }catch(e){select.innerHTML="";select.add(new Option("Unable to load scenes", ""));setText("bridge-message","Scene list unavailable: "+e.message)}
+ finally{select.disabled=false}
+}
 async function getYouTubeStatus(){
  try{
   const y=await api("/youtube/status");
@@ -95,6 +104,7 @@ async function connectBridge(){
   await auth.pairBridge(token);
   const engine=$("engine-select").value;
   await api("/command",{type:"engine:connect",engine});
+  await loadScenes();
   setText("bridge-message","Supabase session paired. "+engine+" connection requested.");
   await refresh();
   if(!lastHealth?.connected)throw Error("The bridge paired, but the selected encoder did not confirm a connection. Check the local bridge terminal and engine settings.");
@@ -105,8 +115,8 @@ async function runCommand(button){
  if(!bridgeToken){setText("bridge-message","Connect the local bridge first.");return}
  if(lastHealth&&!lastHealth.sessionPaired){setText("bridge-message","The local bridge is not paired to your signed-in account. Reconnect first.");return}
  const[type,rawValue]=button.dataset.command.split(":");
- const value=rawValue==="custom"?$("scene-name").value.trim():rawValue;
- if(type==="scene"&&!value){setText("bridge-message","Enter a scene name.");return}
+ const value=rawValue==="select"?$("scene-select")?.value:rawValue;
+ if(type==="scene"&&!value){setText("bridge-message","Select a scene from the connected encoder first.");return}
  button.disabled=true;
  try{const d=await api("/command",{type,value,engine:$("engine-select").value});setText("bridge-message",d.message||"Command sent successfully.");await refresh()}
  catch(e){setText("bridge-message","Command failed: "+e.message)}
@@ -123,6 +133,8 @@ async function start(){
   finally{button.disabled=false}
  });
  $("connect-bridge")?.addEventListener("click",connectBridge);
+ $("refresh-scenes")?.addEventListener("click",loadScenes);
+ $("engine-select")?.addEventListener("change",()=>{const select=$("scene-select");if(select){select.disabled=true;select.innerHTML="<option value=\"\">Connect selected encoder to load scenes</option>"}setText("bridge-message","Selected engine changed. Connect the selected encoder, then refresh its scene list.")});
  $("connect-youtube")?.addEventListener("click",()=>{window.location.href=base+"/youtube/auth"});
  $("check-youtube")?.addEventListener("click",()=>getYouTubeStatus());
  document.querySelectorAll("[data-command]").forEach(button=>button.addEventListener("click",()=>runCommand(button)));
