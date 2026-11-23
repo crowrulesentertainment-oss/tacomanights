@@ -1,6 +1,6 @@
 (()=>{"use strict";
 const $=id=>document.getElementById(id),base="http://127.0.0.1:8787";
-let bridgeToken=sessionStorage.getItem("tn_bridge_token")||"",lastHealth=null,refreshBusy=false;
+let bridgeToken=sessionStorage.getItem("tn_bridge_token")||"",lastHealth=null,refreshBusy=false,previewBusy=false;
 const headers=()=>({"Content-Type":"application/json",...(bridgeToken?{Authorization:"Bearer "+bridgeToken}:{})});
 const setText=(id,value)=>{const el=$(id);if(el)el.textContent=value};
 async function api(path,body){
@@ -37,6 +37,16 @@ async function getHealth(){
  const engineSelect=$("engine-select");if(engineSelect&&h.engine)engineSelect.value=h.engine;
  return h;
 }
+async function refreshMasterPreview(h){
+ const image=$("master-preview-image"),placeholder=$("master-preview-placeholder"),sceneLabel=$("preview-scene-label"),detail=$("monitor-preview-detail");
+ if(!image||previewBusy)return;
+ if(!h?.connected){image.hidden=true;if(placeholder)placeholder.hidden=false;if(sceneLabel)sceneLabel.hidden=true;setText("monitor-message","AWAITING BRIDGE");if(detail)detail.textContent="Connect the broadcast computer and OBS to display its current program output.";return}
+ if(h.engine!=="obs"){image.hidden=true;if(placeholder)placeholder.hidden=false;if(sceneLabel)sceneLabel.hidden=true;setText("monitor-message","STREAMLABS CONNECTED");if(detail)detail.textContent="Streamlabs controls are connected. Use the Streamlabs Desktop Preview window for local visual monitoring; this bridge does not expose its frame feed.";return}
+ previewBusy=true;
+ try{const shot=await api("/preview/screenshot");if(shot.image){image.src=shot.image;image.hidden=false;if(placeholder)placeholder.hidden=true;if(sceneLabel){sceneLabel.textContent="OBS · "+(shot.scene||"PROGRAM");sceneLabel.hidden=false}setText("monitor-message","LIVE LOCAL PREVIEW");if(detail)detail.textContent="OBS program output · refreshed automatically. YouTube transmission is verified separately."}}
+ catch(e){image.hidden=true;if(placeholder)placeholder.hidden=false;setText("monitor-message","PREVIEW UNAVAILABLE");if(detail)detail.textContent=e.message}
+ finally{previewBusy=false}
+}
 function renderNetwork(h,queued){
  const paired=!!(h?.ok&&h.sessionPaired),connected=!!(h?.ok&&h.connected);
  const status=paired&&connected?"ONLINE":paired?"BRIDGE PAIRED · ENGINE OFFLINE":h?.ok?"BRIDGE ONLINE · NOT PAIRED":"OFFLINE";
@@ -69,6 +79,7 @@ async function refresh(){
   }
   let h;try{h=await getHealth()}catch(e){lastHealth=null;h={ok:false,connected:false,sessionPaired:false};setText("bridge-health","OFFLINE");setText("engine-status","ENGINE: NOT CONNECTED");setText("active-engine","—");setText("monitor-message","AWAITING BRIDGE");}
   renderNetwork(h,queued);
+  await refreshMasterPreview(h);
   await getYouTubeStatus();
  }catch(e){setText("scheduler-health","ERROR");setText("data-error",e.message)}
  finally{refreshBusy=false}
