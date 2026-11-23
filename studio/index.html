@@ -11,7 +11,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" defer></script>
 <script src="../assets/js/config.js" defer></script>
 <script src="studio-auth.js" defer></script>
-<script src="studio.js" defer></script>
+<script src="studio.js" defer></script><script src="workflow.js" defer></script>
 </head>
 <body>
 <div class="studio-shell">
@@ -32,7 +32,7 @@
 <article><small>YOUTUBE OUTPUT</small><strong id="youtube-output-status">NOT VERIFIED</strong><span>Confirm destination and live state in YouTube Studio</span></article>
 <article><small>PROGRAM</small><strong id="active-program">No program loaded</strong><span>Current network rundown</span></article>
 </section>
-<section class="control-grid">
+<section class="studio-panel quick-start"><h2>Start here — your simplest setup</h2><p>First time? Open Setup and follow the numbered steps. For each show, connect your encoder, then use Producer Desk to switch between prerecorded segments and remote hosts.</p><div class="row-actions"><a href="settings.html">Open setup guide ↗</a><a href="producer.html">Open producer handoff desk ↗</a><a href="hosts.html">Set up remote host ↗</a></div></section><section class="control-grid">
 <article class="studio-panel"><div class="panel-head"><div><small>PROGRAM OUTPUT</small><h2>Master Preview</h2></div><span class="badge-neutral">LOCAL BRIDGE</span></div>
 <div class="monitor"><div class="monitor-overlay"><span>TN / NETWORK OUTPUT</span><strong id="monitor-message">AWAITING BRIDGE</strong><small>Preview status is local. YouTube transmission is verified separately.</small></div></div>
 <div class="monitor-actions"><button type="button" data-command="scene:Network Main">Network Main</button><button type="button" data-command="scene:Standby">Standby Slate</button><button type="button" data-command="record:start">Start Recording</button><button type="button" data-command="record:stop">Stop Recording</button></div></article>
@@ -48,7 +48,7 @@
 <div class="rundown-row"><span>NOTE</span><strong>Sample rundown removed</strong><small>These rows no longer imply that placeholder programs are scheduled.</small></div>
 </section>
 <section class="studio-panel"><h2>Production systems</h2><div class="system-grid">
-<span>Website portal<b>READY</b></span><span>Local bridge<b id="bridge-health">CHECKING</b></span><span>OBS adapter<b>SUPPORTED</b></span><span>Streamlabs adapter<b>SUPPORTED</b></span><span>Supabase scheduler<b id="scheduler-health">WAITING FOR SIGN-IN</b></span><span>Remote host video<b>INTEGRATION REQUIRED</b></span>
+<span>Website portal<b>READY</b></span><span>Local bridge<b id="bridge-health">CHECKING</b></span><span>OBS adapter<b>SUPPORTED</b></span><span>Streamlabs adapter<b>SUPPORTED</b></span><span>Supabase scheduler<b id="scheduler-health">WAITING FOR SIGN-IN</b></span><span>Remote host handoff<b>VDO.NINJA WORKFLOW</b></span>
 </div></section>
 </main></div>
 </body></html>
