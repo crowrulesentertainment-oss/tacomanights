@@ -10,7 +10,20 @@ async function api(path,body){
  return d;
 }
 async function getYouTubeStatus(){
- try{const y=await api("/youtube/status");setText("youtube-output-status",y.status||"NOT VERIFIED");setText("youtube-output-detail",y.title?y.title+" · "+(y.message||""):y.message||"No YouTube status returned.");const el=$("youtube-output-status");if(el)el.dataset.status=String(y.status||"").toLowerCase();return y}catch(e){setText("youtube-output-status","UNAVAILABLE");setText("youtube-output-detail",e.message);return null}
+ try{
+  const y=await api("/youtube/status");
+  setText("youtube-output-status",y.status||"NOT VERIFIED");
+  setText("youtube-output-detail",y.title?y.title+" · "+(y.message||""):y.message||"No YouTube status returned.");
+  const el=$("youtube-output-status");if(el)el.dataset.status=String(y.status||"").toLowerCase();
+  const auth=await window.TNStudioReady,session=auth.getSession();
+  if(session?.user){
+   const publicVideoId=y.status==="LIVE"&&y.privacyStatus==="public"?y.videoId:null;
+   const update=await auth.client.from("live_network_public_state").update({youtube_video_id:publicVideoId,youtube_channel_id:window.TACOMA_NIGHTS_CONFIG?.youtubeChannelId||null}).eq("owner_id",session.user.id);
+   if(update.error)throw update.error;
+   setText("youtube-output-detail",(y.message||"YouTube status checked.")+(publicVideoId?" Public live feed synced to Network.":" Public Network feed will not expose this test/private broadcast."));
+  }
+  return y;
+ }catch(e){setText("youtube-output-status","UNAVAILABLE");setText("youtube-output-detail",e.message);return null}
 }
 async function getHealth(){
  const r=await fetch(base+"/health",{headers:headers(),cache:"no-store"});
