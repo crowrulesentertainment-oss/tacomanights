@@ -88,4 +88,7 @@ Release 1 foundation and the first Release 2 on-air graphics/schedule foundation
 - Anonymous readers receive column-level SELECT only for public display fields; owner IDs and source schedule IDs are not granted to anon. RLS permits public reads only where `is_published = true`; authenticated writes remain owner-scoped.
 - Bridge refreshes the projection every 15 seconds, prunes unpublished/deleted rows, and copies no producer notes or playout queue data. Private program titles are also suppressed from the public live-state record.
 - Public guide supports 7-, 14- and 30-day views, grouped by Tacoma/Pacific calendar date, with live/on-air markers.
-- Migration is staged in `supabase/migrations/20261123120000_public_network_epg.sql`; it has not been applied to the production Supabase project. Apply and verify the migration before deploying the matching Pages/bridge code.
+- Production Supabase migrations applied: `public_network_epg_20261123`, `restrict_public_network_epg_anon_columns`, and `revoke_anon_private_network_schedule_access`.
+- Anonymous access is limited to the public display columns. Anonymous SELECT on `live_network_schedule` and `live_network_programs` is revoked; the owner-only authenticated RLS policies remain in place.
+- Verified with SQL role tests: anonymous can select the allowed EPG display fields; anonymous cannot select owner/source/publication fields or query the private schedule/program tables. A temporary published-row visibility test was rolled back; no test data remains.
+- The GitHub Pages/browser rendering and local bridge synchronization still require an end-to-end test after the local bridge is updated/restarted. No OBS/Streamlabs or YouTube encoder test has been performed.
