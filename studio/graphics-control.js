@@ -44,6 +44,7 @@ function loadFile(file){if(!file)return;const reader=new FileReader();reader.onl
 function bindCopy(){document.querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",async()=>{const e=$(b.dataset.copy);if(!e)return;try{await navigator.clipboard.writeText(e.textContent.trim());b.textContent="Copied";setTimeout(()=>b.textContent="Copy URL",1200);}catch{setStatus("COPY BLOCKED","Select and copy the URL manually.");}}));}
 document.addEventListener("DOMContentLoaded",()=>{
  write(defaults);
+ $("graphics-preview")?.addEventListener("load",()=>preview());
  const url=new URL("../network/overlay.html",location.href);url.searchParams.set("mode","lower-third");$("url-lower").textContent=url.href;
  const full=new URL(url);full.searchParams.set("mode","full");$("url-full").textContent=full.href;
  $("graphics-mode").addEventListener("change",loadPreset);
