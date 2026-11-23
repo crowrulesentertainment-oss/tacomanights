@@ -7,11 +7,11 @@
 <meta name="description" content="Tacoma Nights Network broadcast master control for authorized producers.">
 <title>Broadcast Studio | Tacoma Nights Network</title>
 <link rel="stylesheet" href="../assets/css/site.css">
-<link rel="stylesheet" href="studio.css?v=20261123">
+<link rel="stylesheet" href="studio.css?v=20261123-controlroom">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" defer></script>
 <script src="../assets/js/config.js" defer></script>
 <script src="studio-auth.js" defer></script>
-<script src="studio.js?v=20261123-scenes" defer></script><script src="workflow.js" defer></script>
+<script src="studio.js?v=20261123-controlroom" defer></script><script src="workflow.js" defer></script>
 </head>
 <body>
 <div class="studio-shell">
@@ -42,12 +42,13 @@
 <button class="primary-action" id="connect-bridge" type="button">Connect local bridge</button><button type="button" data-command="scene:select">Switch to selected scene</button><button type="button" data-command="stream:start">Start stream</button><button type="button" data-command="stream:stop" class="danger-action">Stop stream</button>
 <p id="bridge-message" role="status" aria-live="polite">Bridge offline. Start it on the broadcast computer.</p></article>
 </section>
-<section class="studio-panel"><div class="panel-head"><div><small>NETWORK RUN OF SHOW</small><h2>Next on the network</h2></div><a href="programming.html">Manage schedule ↗</a></div>
-<div class="rundown-row"><span>NOW</span><strong>Schedule managed in Programming</strong><small>Live schedule data is not loaded on this panel yet.</small></div>
-<div class="rundown-row"><span>NEXT</span><strong>No next program displayed</strong><small>Add or update a schedule entry.</small></div>
-<div class="rundown-row"><span>NOTE</span><strong>Sample rundown removed</strong><small>These rows no longer imply that placeholder programs are scheduled.</small></div>
-</section>
-<section class="studio-panel"><h2>Production systems</h2><div class="system-grid">
+<section class="studio-panel"><div class="panel-head"><div><small>NETWORK RUN OF SHOW</small><h2>Live rundown</h2></div><div class="row-actions"><button type="button" id="refresh-rundown">Refresh rundown</button><a href="programming.html">Manage schedule ↗</a></div></div>
+<div id="rundown-list" class="rundown-list" aria-live="polite"><div class="rundown-row"><span>NOW</span><strong>Sign in to load the schedule</strong><small>Private schedule details are only shown to the authorized account.</small></div></div>
+<p id="rundown-message" class="workflow-message" role="status">Schedule is read from your existing Programming entries.</p></section>
+<section class="studio-panel"><div class="panel-head"><div><small>PLAYOUT OPERATIONS</small><h2>Queue snapshot</h2></div><div class="row-actions"><a href="playlist.html">Open Playlist Control ↗</a><button type="button" id="refresh-queue-snapshot">Refresh queue</button></div></div>
+<div class="queue-snapshot-grid"><article><small>QUEUED</small><strong id="queue-pending-count">—</strong></article><article><small>PLAYING</small><strong id="queue-playing-count">—</strong></article><article><small>NEEDS APPROVAL</small><strong id="queue-approval-count">—</strong></article></div>
+<div id="queue-snapshot-list" class="queue-snapshot-list"><p>Sign in to load your queue.</p></div></section>
+<section class="studio-panel"><div class="panel-head"><div><small>OPERATIONS</small><h2>Production systems</h2></div><a href="monitoring.html">Full diagnostics ↗</a></div><div class="system-grid">
 <span>Website portal<b>READY</b></span><span>Local bridge<b id="bridge-health">CHECKING</b></span><span>OBS adapter<b>SUPPORTED</b></span><span>Streamlabs adapter<b>SUPPORTED</b></span><span>Supabase scheduler<b id="scheduler-health">WAITING FOR SIGN-IN</b></span><span>Remote host handoff<b>VDO.NINJA WORKFLOW</b></span>
 </div></section>
 </main></div>
