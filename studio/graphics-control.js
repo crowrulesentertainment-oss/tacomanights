@@ -1,119 +1,74 @@
 (() => {
   "use strict";
-
   const $ = (id) => document.getElementById(id);
-  const modes = ["lower-third", "next", "schedule", "full"];
+  const modes = ["lower-third","next","schedule","full","breaking","guest","social","quote","score","countdown","logo"];
   const urls = Object.create(null);
-
-  function setText(id, value) {
-    const element = $(id);
-    if (element) element.textContent = value;
-  }
-
+  const channelName = "tacoma-nights-onair-graphics-v1";
+  let client = null, channel = null, currentGraphic = null;
+  const fields = () => ({
+    mode: $("graphics-mode").value,
+    title: $("graphic-title").value.trim(),
+    subtitle: $("graphic-subtitle").value.trim(),
+    kicker: $("graphic-kicker").value.trim(),
+    host: $("graphic-host").value.trim(),
+    color: $("graphic-color").value,
+    secondary: $("graphic-secondary").value
+  });
+  function setText(id, value) { const e=$(id); if(e)e.textContent=value; }
   function buildGraphics() {
-    for (const mode of modes) {
-      const url = new URL("../network/overlay.html", window.location.href);
-      url.searchParams.set("mode", mode);
-      urls[mode] = url.href;
-
-      const label = mode === "lower-third" ? "url-lower" : `url-${mode}`;
-      setText(label, url.href);
+    for (const mode of modes.slice(0,4)) {
+      const url=new URL("../network/overlay.html",window.location.href); url.searchParams.set("mode",mode); urls[mode]=url.href;
+      setText(mode==="lower-third"?"url-lower":`url-${mode}`,url.href);
     }
-
-    const selector = $("graphics-mode");
-    const preview = $("graphics-preview");
-    if (selector && preview && urls[selector.value]) {
-      preview.src = urls[selector.value];
-    }
+    const preview=$("graphics-preview"), selector=$("graphics-mode");
+    if(preview && selector) preview.src=new URL("../network/overlay.html?mode="+encodeURIComponent(selector.value),window.location.href).href;
   }
-
-  async function refreshNetworkStatus() {
-    const config = window.TACOMA_NIGHTS_CONFIG || {};
-    if (!config.supabaseUrl || !config.supabaseAnonKey) {
-      setText("graphics-state", "CONFIGURATION MISSING");
-      setText("graphics-detail", "The public Supabase browser configuration did not load. Check assets/js/config.js.");
-      return;
+  function previewCommand(payload) {
+    const frame=$("graphics-preview");
+    try { frame?.contentWindow?.postMessage({type:"tacoma-graphics-command",payload},"*"); } catch {}
+  }
+  async function connectRealtime() {
+    const config=window.TACOMA_NIGHTS_CONFIG||{};
+    if(!window.supabase?.createClient || !config.supabaseUrl || !config.supabaseAnonKey) {
+      setText("graphics-state","CONFIGURATION MISSING"); setText("graphics-detail","Supabase browser configuration or client library did not load."); return;
     }
-
-    const endpoint = config.supabaseUrl.replace(/\/$/, "") +
-      "/rest/v1/live_network_public_state" +
-      "?select=public_status,current_program_title,next_program_title,updated_at" +
-      "&is_published=eq.true&limit=1";
-
     try {
-      const response = await fetch(endpoint, {
-        headers: {
-          apikey: config.supabaseAnonKey,
-          Authorization: "Bearer " + config.supabaseAnonKey
-        },
-        cache: "no-store"
+      client=window.supabase.createClient(config.supabaseUrl,config.supabaseAnonKey);
+      channel=client.channel(channelName,{config:{broadcast:{self:false}}});
+      await new Promise((resolve,reject)=>{
+        channel.subscribe(status=>{
+          if(status==="SUBSCRIBED"){setText("graphics-state","CONTROL CONNECTED");setText("graphics-detail","Connected. SHOW ON AIR and HIDE GRAPHIC control all connected graphics browser sources.");resolve();}
+          if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"){setText("graphics-state","CONNECTION ERROR");setText("graphics-detail","Realtime channel unavailable. Check that Supabase Realtime is enabled.");reject(new Error(status));}
+        });
       });
-
-      if (!response.ok) {
-        throw new Error("Public network state request failed (" + response.status + ").");
-      }
-
-      const rows = await response.json();
-      const state = rows[0];
-
-      setText("graphics-state", state ? "PUBLISHED STATE AVAILABLE" : "NO PUBLISHED STATE");
-      setText(
-        "graphics-detail",
-        state
-          ? "Now: " + (state.current_program_title || "Network standby") +
-            " · Next: " + (state.next_program_title || "Not scheduled") +
-            " · Updated " + (state.updated_at ? new Date(state.updated_at).toLocaleString() : "unknown")
-          : "Publish a network state from Master Control to populate on-air graphics."
-      );
-    } catch (error) {
-      setText("graphics-state", "UNAVAILABLE");
-      setText("graphics-detail", error.message || "Could not load the published network state.");
-    }
+    } catch(e) { setText("graphics-state","OFFLINE"); setText("graphics-detail",e.message||"Could not connect to graphics channel."); }
   }
-
+  async function sendCommand(action) {
+    const payload={action,graphic:action==="hide"?null:(currentGraphic||fields()),sentAt:new Date().toISOString()};
+    previewCommand(payload);
+    if(!channel){setText("graphics-state","NOT CONNECTED");setText("graphics-detail","The preview was updated locally, but on-air sources are not connected.");return;}
+    try {
+      const result=await channel.send({type:"broadcast",event:"graphics-command",payload});
+      if(result!=="ok") throw new Error("Realtime command was not acknowledged.");
+      setText("graphics-state",action==="hide"?"GRAPHIC HIDDEN":"GRAPHIC ON AIR");
+      setText("graphics-detail",action==="hide"?"Hide command sent to connected browser sources.":"Graphic sent to connected browser sources.");
+    } catch(e){setText("graphics-state","SEND FAILED");setText("graphics-detail",e.message||"Could not send graphics command.");}
+  }
   function bindCopyButtons() {
-    document.querySelectorAll("[data-copy]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        const source = $(button.dataset.copy);
-        if (!source) return;
-
-        const value = source.textContent.trim();
-        try {
-          await navigator.clipboard.writeText(value);
-        } catch {
-          const textarea = document.createElement("textarea");
-          textarea.value = value;
-          document.body.appendChild(textarea);
-          textarea.select();
-          document.execCommand("copy");
-          textarea.remove();
-        }
-
-        const originalLabel = button.textContent;
-        button.textContent = "Copied";
-        window.setTimeout(() => {
-          button.textContent = originalLabel;
-        }, 1600);
-      });
-    });
+    document.querySelectorAll("[data-copy]").forEach(button=>button.addEventListener("click",async()=>{
+      const source=$(button.dataset.copy);if(!source)return;
+      try{await navigator.clipboard.writeText(source.textContent.trim());}catch{const t=document.createElement("textarea");t.value=source.textContent.trim();document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();}
+      const old=button.textContent;button.textContent="Copied";setTimeout(()=>button.textContent=old,1400);
+    }));
   }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    buildGraphics();
-    refreshNetworkStatus();
-
-    $("graphics-mode")?.addEventListener("change", buildGraphics);
-    $("graphics-refresh")?.addEventListener("click", () => {
-      const selector = $("graphics-mode");
-      const preview = $("graphics-preview");
-      if (selector && preview && urls[selector.value]) {
-        const previewUrl = new URL(urls[selector.value]);
-        previewUrl.searchParams.set("refresh", String(Date.now()));
-        preview.src = previewUrl.href;
-      }
-      refreshNetworkStatus();
-    });
-
-    bindCopyButtons();
+  document.addEventListener("DOMContentLoaded",()=>{
+    buildGraphics();connectRealtime();bindCopyButtons();
+    $("graphics-mode")?.addEventListener("change",()=>{buildGraphics();currentGraphic=fields();previewCommand({action:"preview",graphic:currentGraphic});});
+    $("graphics-refresh")?.addEventListener("click",()=>{const f=$("graphics-preview");if(f)f.src="../network/overlay.html?mode="+encodeURIComponent($("graphics-mode").value)+"&refresh="+Date.now();});
+    $("graphic-apply")?.addEventListener("click",()=>{currentGraphic=fields();previewCommand({action:"preview",graphic:currentGraphic});setText("graphics-detail","Edits applied to the preview. Select SHOW ON AIR to send them to the network.");});
+    $("graphic-show")?.addEventListener("click",()=>{currentGraphic=fields();sendCommand("show");});
+    $("graphic-hide")?.addEventListener("click",()=>sendCommand("hide"));
+    $("graphic-reset")?.addEventListener("click",()=>{ $("graphic-title").value="Tacoma Nights";$("graphic-subtitle").value="One network. All day. All night.";$("graphic-kicker").value="CROW RULES ENTERTAINMENT PRESENTS";$("graphic-host").value="";$("graphic-color").value="#e74759";$("graphic-secondary").value="#e6bd70";currentGraphic=fields();previewCommand({action:"preview",graphic:currentGraphic});});
+    ["graphic-title","graphic-subtitle","graphic-kicker","graphic-host","graphic-color","graphic-secondary"].forEach(id=>$(id)?.addEventListener("input",()=>{currentGraphic=fields();previewCommand({action:"preview",graphic:currentGraphic});}));
   });
 })();
