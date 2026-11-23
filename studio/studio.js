@@ -1,1 +1,112 @@
-(()=>{"use strict";const $=id=>document.getElementById(id),base="http://127.0.0.1:8787";let bridgeToken=sessionStorage.getItem("tn_bridge_token")||"",paired=false;const headers=()=>({"Content-Type":"application/json",...(bridgeToken?{Authorization:"Bearer "+bridgeToken}:{})});async function api(path,body){const r=await fetch(base+path,{method:body?"POST":"GET",headers:headers(),...(body?{body:JSON.stringify(body)}:{})});const d=await r.json();if(!r.ok)throw Error(d.error||"Bridge request failed ("+r.status+")");return d}async function start(){const auth=await window.TNStudioReady;const c=auth.client;async function refresh(){const u=auth.getSession()?.user;if(!u){$("scheduler-health").textContent="SIGN IN REQUIRED";return}const [p,q,s,stateResult]=await Promise.all([c.from("live_network_programs").select("id",{count:"exact",head:true}),c.from("live_network_playout_queue").select("id",{count:"exact",head:true}).eq("status","queued"),c.from("live_network_schedule").select("id",{count:"exact",head:true}).gte("ends_at",new Date().toISOString()),c.from("live_network_public_state").select("*").maybeSingle()]);for(const x of [p,q,s,stateResult])if(x.error)throw x.error;let state=stateResult.data;if(!state)throw Error("No network-state row belongs to this signed-in account. Use the network owner account; no duplicate row was created.");$("scheduler-health").textContent="CONNECTED";let bridge={ok:false};try{const response=await fetch(base+"/health",{headers:headers(),cache:"no-store"});if(response.ok)bridge=await response.json()}catch{}const bridgeOnline=!!(bridge.ok&&bridge.sessionPaired);const engineOnline=!!bridge.connected;$("network-status").textContent=(bridgeOnline&&engineOnline?"ONLINE":bridgeOnline?"BRIDGE PAIRED · ENGINE OFFLINE":"OFFLINE")+" · "+(q.count||0)+" QUEUED";$("network-status").title="Local bridge: "+(bridgeOnline?"online":"offline")+"; "+(engineOnline?"encoder connected":"encoder disconnected")+"; public broadcast: "+String(state.public_status||"offline");$("active-program").textContent=state.current_program_title||"No program loaded";$("publish-toggle").hidden=false;$("publish-toggle").textContent=state.is_published?"Unpublish public status":"Publish public status";$("publish-toggle").dataset.published=String(!!state.is_published)}$("publish-toggle")?.addEventListener("click",async()=>{try{const next=$("publish-toggle").dataset.published!=="true",r=await c.from("live_network_public_state").update({is_published:next,network_name:"Tacoma Nights Network"}).eq("owner_id",auth.getSession().user.id);if(r.error)throw r.error;await refresh()}catch(e){$("data-error").textContent=e.message}});try{await refresh()}catch(e){$("data-error").textContent=e.message}setInterval(refresh,20000);async function health(){try{const h=await fetch(base+"/health").then(r=>r.json());$("bridge-health").textContent=h.sessionPaired?"PAIRED":"ONLINE";$("engine-status").textContent="ENGINE: "+String(h.engine).toUpperCase()+(h.connected?" CONNECTED":" OFFLINE");$("active-engine").textContent=h.engine;$("monitor-message").textContent=h.playout||"BRIDGE READY";if(h.playout)$("network-status").textContent="PLAYING";return h}catch(e){$("bridge-health").textContent="OFFLINE";throw e}}$("connect-bridge")?.addEventListener("click",async()=>{if(!auth.getSession()){ $("bridge-message").textContent="Sign in to Supabase first.";return}const token=prompt("Enter the local BRIDGE_TOKEN from bridge/.env. It is kept only in this browser tab.");if(!token||token.length<32){$("bridge-message").textContent="A valid local bridge token is required.";return}bridgeToken=token;sessionStorage.setItem("tn_bridge_token",token);try{await auth.pairBridge(token);const engine=$("engine-select").value;const result=await api("/command",{type:"engine:connect",engine});paired=true;$("bridge-message").textContent="Paired to Supabase and connected to "+engine+"."; $("engine-status").textContent="ENGINE: "+engine.toUpperCase()+" CONNECTED";$("active-engine").textContent=engine;$("bridge-health").textContent="ONLINE";$("monitor-message").textContent="BRIDGE PAIRED";$("scheduler-health").textContent="RUNNING";await health()}catch(e){paired=false;$("bridge-message").textContent="Bridge pairing failed: "+e.message;$("bridge-health").textContent="OFFLINE"}});document.querySelectorAll("[data-command]").forEach(b=>b.addEventListener("click",async()=>{if(!bridgeToken){$("bridge-message").textContent="Connect the local bridge first.";return}let[type,value]=b.dataset.command.split(":");if(value==="custom")value=$("scene-name").value.trim();try{const d=await api("/command",{type,value,engine:$("engine-select").value});$("bridge-message").textContent=d.message||"Command sent";await health()}catch(e){$("bridge-message").textContent="Command failed: "+e.message}}));if(bridgeToken&&auth.getSession()){try{await auth.pairBridge(bridgeToken);await health();$("bridge-message").textContent="Local bridge session restored."}catch(e){$("bridge-message").textContent="Bridge not paired: "+e.message}}}window.TNStudioReady?start().catch(e=>console.error(e)):window.addEventListener("load",()=>start().catch(console.error))})();
+(()=>{"use strict";
+const $=id=>document.getElementById(id),base="http://127.0.0.1:8787";
+let bridgeToken=sessionStorage.getItem("tn_bridge_token")||"",lastHealth=null,refreshBusy=false;
+const headers=()=>({"Content-Type":"application/json",...(bridgeToken?{Authorization:"Bearer "+bridgeToken}:{})});
+const setText=(id,value)=>{const el=$(id);if(el)el.textContent=value};
+async function api(path,body){
+ const r=await fetch(base+path,{method:body?"POST":"GET",headers:headers(),cache:"no-store",...(body?{body:JSON.stringify(body)}:{})});
+ const d=await r.json().catch(()=>({}));
+ if(!r.ok)throw Error(d.error||"Bridge request failed ("+r.status+")");
+ return d;
+}
+async function getHealth(){
+ const r=await fetch(base+"/health",{headers:headers(),cache:"no-store"});
+ const h=await r.json().catch(()=>({}));
+ if(!r.ok||!h.ok)throw Error(h.error||"Local bridge is not responding.");
+ lastHealth=h;
+ setText("bridge-health",h.sessionPaired?"PAIRED":h.ok?"ONLINE":"OFFLINE");
+ setText("engine-status","ENGINE: "+String(h.engine||"UNKNOWN").toUpperCase()+(h.connected?" CONNECTED":" OFFLINE"));
+ setText("active-engine",h.engine||"—");
+ setText("monitor-message",h.playout|| (h.connected?"BRIDGE READY":"ENGINE OFFLINE"));
+ const engineSelect=$("engine-select");if(engineSelect&&h.engine)engineSelect.value=h.engine;
+ return h;
+}
+function renderNetwork(h,queued){
+ const paired=!!(h?.ok&&h.sessionPaired),connected=!!(h?.ok&&h.connected);
+ const status=paired&&connected?"ONLINE":paired?"BRIDGE PAIRED · ENGINE OFFLINE":h?.ok?"BRIDGE ONLINE · NOT PAIRED":"OFFLINE";
+ setText("network-status",status+" · "+queued+" QUEUED");
+ const el=$("network-status");if(el)el.title="Bridge: "+(h?.ok?"reachable":"unavailable")+"; Supabase session: "+(paired?"paired":"not paired")+"; encoder: "+(connected?"connected":"disconnected")+". YouTube output is verified separately in YouTube Studio.";
+}
+async function refresh(){
+ if(refreshBusy)return;refreshBusy=true;
+ try{
+  let queued=0;const user=window.TNStudioReady?null:null;
+  const auth=await window.TNStudioReady,session=auth.getSession();
+  if(session?.user){
+   const[q,stateResult]=await Promise.all([
+    auth.client.from("live_network_playout_queue").select("id",{count:"exact",head:true}).eq("status","queued"),
+    auth.client.from("live_network_public_state").select("*").maybeSingle()
+   ]);
+   if(q.error)throw q.error;
+   queued=q.count||0;
+   if(stateResult.error)throw stateResult.error;
+   const state=stateResult.data;
+   if(state){
+    setText("scheduler-health","CONNECTED");
+    setText("active-program",state.current_program_title||"No program loaded");
+    const toggle=$("publish-toggle");if(toggle){toggle.hidden=false;toggle.textContent=state.is_published?"Unpublish public status":"Publish public status";toggle.dataset.published=String(!!state.is_published)}
+   }else{
+    setText("scheduler-health","NO NETWORK STATE");
+    const toggle=$("publish-toggle");if(toggle)toggle.hidden=true;
+    setText("active-program","No program loaded");
+    setText("data-error","No network-state row is associated with this account. Sign in with the network owner account; the Studio will not create a duplicate row.");
+   }
+  }else{
+   setText("scheduler-health","SIGN IN REQUIRED");
+   const toggle=$("publish-toggle");if(toggle)toggle.hidden=true;
+  }
+  let h;try{h=await getHealth()}catch(e){h={ok:false,connected:false,sessionPaired:false};setText("bridge-health","OFFLINE");setText("engine-status","ENGINE: NOT CONNECTED");setText("active-engine","—");setText("monitor-message","AWAITING BRIDGE");}
+  renderNetwork(h,queued);
+ }catch(e){setText("scheduler-health","ERROR");setText("data-error",e.message)}
+ finally{refreshBusy=false}
+}
+async function connectBridge(){
+ const auth=await window.TNStudioReady;
+ if(!auth.getSession()){setText("bridge-message","Sign in to Supabase first.");return}
+ const token=prompt("Enter the local BRIDGE_TOKEN from bridge/.env. It is stored only in this browser tab.");
+ if(!token||token.length<32){setText("bridge-message","A valid local bridge token is required.");return}
+ const button=$("connect-bridge");if(button)button.disabled=true;
+ bridgeToken=token;sessionStorage.setItem("tn_bridge_token",token);
+ try{
+  await auth.pairBridge(token);
+  const engine=$("engine-select").value;
+  await api("/command",{type:"engine:connect",engine});
+  setText("bridge-message","Supabase session paired. "+engine+" connection requested.");
+  await refresh();
+  if(!lastHealth?.connected)throw Error("The bridge paired, but the selected encoder did not confirm a connection. Check the local bridge terminal and engine settings.");
+ }catch(e){setText("bridge-message","Connection failed: "+e.message);await refresh()}
+ finally{if(button)button.disabled=false}
+}
+async function runCommand(button){
+ if(!bridgeToken){setText("bridge-message","Connect the local bridge first.");return}
+ if(lastHealth&&!lastHealth.sessionPaired){setText("bridge-message","The local bridge is not paired to your signed-in account. Reconnect first.");return}
+ const[type,rawValue]=button.dataset.command.split(":");
+ const value=rawValue==="custom"?$("scene-name").value.trim():rawValue;
+ if(type==="scene"&&!value){setText("bridge-message","Enter a scene name.");return}
+ button.disabled=true;
+ try{const d=await api("/command",{type,value,engine:$("engine-select").value});setText("bridge-message",d.message||"Command sent successfully.");await refresh()}
+ catch(e){setText("bridge-message","Command failed: "+e.message)}
+ finally{button.disabled=false}
+}
+async function start(){
+ const auth=await window.TNStudioReady;
+ $("publish-toggle")?.addEventListener("click",async()=>{
+  const button=$("publish-toggle");button.disabled=true;
+  try{
+   const next=button.dataset.published!=="true",result=await auth.client.from("live_network_public_state").update({is_published:next,network_name:"Tacoma Nights Network"}).eq("owner_id",auth.getSession()?.user?.id);
+   if(result.error)throw result.error;setText("data-error","");await refresh();
+  }catch(e){setText("data-error",e.message)}
+  finally{button.disabled=false}
+ });
+ $("connect-bridge")?.addEventListener("click",connectBridge);
+ document.querySelectorAll("[data-command]").forEach(button=>button.addEventListener("click",()=>runCommand(button)));
+ auth.client.auth.onAuthStateChange(()=>{refresh().catch(e=>setText("data-error",e.message))});
+ await refresh();
+ if(bridgeToken&&auth.getSession()){
+  try{await auth.pairBridge(bridgeToken);setText("bridge-message","Saved local bridge session restored.");await refresh()}
+  catch(e){setText("bridge-message","Bridge session restore failed: "+e.message)}
+ }
+ window.setInterval(()=>refresh().catch(e=>setText("data-error",e.message)),20000);
+}
+window.TNStudioReady?start().catch(e=>{setText("data-error",e.message);console.error(e)}):window.addEventListener("load",()=>start().catch(e=>{setText("data-error",e.message);console.error(e)}));
+})();
