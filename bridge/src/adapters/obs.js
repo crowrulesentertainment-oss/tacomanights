@@ -3,6 +3,7 @@ export class OBSAdapter{
  constructor(c){this.c=c;this.obs=new OBSWebSocket();this.connected=false;}
  async connect(){await this.obs.connect(this.c.address,this.c.password);this.connected=true;await this.ensurePlayoutSource();return this.status();}
  async status(){if(!this.connected)return{connected:false,engine:"obs"};const s=await this.obs.call("GetStreamStatus").catch(()=>({outputActive:false}));return{connected:true,engine:"obs",streaming:!!s.outputActive};}
+ async scenes(){if(!this.connected)throw Error("OBS is not connected");const result=await this.obs.call("GetSceneList");return(result.scenes||[]).map(x=>({name:x.sceneName}));}
  async scene(name){if(!this.connected)throw Error("OBS is not connected");await this.obs.call("SetCurrentProgramScene",{sceneName:name});return{ok:true,scene:name};}
  async stream(start){if(!this.connected)throw Error("OBS is not connected");return start?this.obs.call("StartStream"):this.obs.call("StopStream");}
  async record(start){if(!this.connected)throw Error("OBS is not connected");return start?this.obs.call("StartRecord"):this.obs.call("StopRecord");}
