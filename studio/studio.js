@@ -144,9 +144,15 @@ async function loadRundown(){
 async function loadQueueSnapshot(){
  const auth=await window.TNStudioReady,session=auth.getSession();if(!session?.user){setText("queue-snapshot-list","Sign in to view the queue.");return}
  try{
-  const r=await auth.client.from("live_network_playout_queue").select("id,title,status,approved,scheduled_at").eq("owner_id",session.user.id).in("status",["queued","playing"]).order("queue_position",{ascending:true,nullsFirst:true}).order("scheduled_at",{ascending:true,nullsFirst:true}).limit(8);if(r.error)throw r.error;
-  const rows=r.data||[],queued=rows.filter(x=>x.status==="queued"),playing=rows.filter(x=>x.status==="playing"),approval=queued.filter(x=>!x.approved);
-  setText("queue-pending-count",String(queued.length));setText("queue-playing-count",String(playing.length));setText("queue-approval-count",String(approval.length));
+  const [r,qCount,pCount,aCount]=await Promise.all([
+   auth.client.from("live_network_playout_queue").select("id,title,status,approved,scheduled_at").eq("owner_id",session.user.id).in("status",["queued","playing"]).order("queue_position",{ascending:true,nullsFirst:true}).order("scheduled_at",{ascending:true,nullsFirst:true}).limit(8),
+   auth.client.from("live_network_playout_queue").select("id",{count:"exact",head:true}).eq("owner_id",session.user.id).eq("status","queued"),
+   auth.client.from("live_network_playout_queue").select("id",{count:"exact",head:true}).eq("owner_id",session.user.id).eq("status","playing"),
+   auth.client.from("live_network_playout_queue").select("id",{count:"exact",head:true}).eq("owner_id",session.user.id).eq("status","queued").eq("approved",false)
+  ]);
+  for(const result of [r,qCount,pCount,aCount])if(result.error)throw result.error;
+  const rows=r.data||[];
+  setText("queue-pending-count",String(qCount.count||0));setText("queue-playing-count",String(pCount.count||0));setText("queue-approval-count",String(aCount.count||0));
   const list=$("queue-snapshot-list");if(!list)return;list.replaceChildren();if(!rows.length){list.textContent="No queued or playing items.";return}
   for(const item of rows){const row=document.createElement("div");row.className="queue-snapshot-item";const name=document.createElement("strong");name.textContent=item.title||"Untitled item";const meta=document.createElement("small");meta.textContent=item.status.toUpperCase()+" · "+(item.approved?"Approved":"Awaiting approval")+" · "+(item.scheduled_at?new Date(item.scheduled_at).toLocaleString():"Immediate");row.append(name,meta);list.append(row)}
  }catch(e){setText("queue-snapshot-list","Queue unavailable: "+e.message)}
