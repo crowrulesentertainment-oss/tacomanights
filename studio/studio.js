@@ -1,6 +1,6 @@
 (()=>{"use strict";
 const $=id=>document.getElementById(id),base="http://127.0.0.1:8787";
-let bridgeToken=sessionStorage.getItem("tn_bridge_token")||"",lastHealth=null,refreshBusy=false,previewBusy=false;
+let bridgeToken=sessionStorage.getItem("tn_bridge_token")||"",lastHealth=null,refreshBusy=false,previewBusy=false,presenceChannel=null;\nconst logKey=()=> "tn-master-control-events-v2:"+((window.TNStudioReady?.getSession?.()?.user?.id)||"guest");\nconst checklistKey=()=> "tn-master-control-checklist-v2:"+((window.TNStudioReady?.getSession?.()?.user?.id)||"guest");
 const headers=()=>({"Content-Type":"application/json",...(bridgeToken?{Authorization:"Bearer "+bridgeToken}:{})});
 const setText=(id,value)=>{const el=$(id);if(el)el.textContent=value};
 async function api(path,body){
@@ -14,7 +14,7 @@ async function loadScenes(){
  select.disabled=true;select.innerHTML="<option value=\"\">Loading scenes…</option>";
  try{const data=await api("/scenes?engine="+encodeURIComponent(engine));const names=(data.scenes||[]).map(x=>x.name).filter(Boolean);
   select.innerHTML="";if(!names.length){select.add(new Option("No scenes returned", ""));setText("bridge-message","Connected to "+engine+", but no scenes were returned by the desktop app.");return}
-  names.forEach(name=>select.add(new Option(name,name)));const preferred=names.find(x=>x.toLowerCase()==="network main")||names[0];select.value=preferred;setText("bridge-message",names.length+" scenes loaded from "+(engine==="streamlabs"?"Streamlabs Desktop":"OBS Studio")+".");
+  names.forEach(name=>select.add(new Option(name,name)));const preferred=names.find(x=>x.toLowerCase()==="network main")||names[0];select.value=preferred;setText("bridge-message",names.length+" scenes loaded from "+(engine==="streamlabs"?"Streamlabs Desktop":"OBS Studio")+".");\n const standby=$("emergency-standby");if(standby)standby.disabled=!(lastHealth?.ok&&lastHealth?.connected&&lastHealth?.sessionPaired);
  }catch(e){select.innerHTML="";select.add(new Option("Unable to load scenes", ""));setText("bridge-message","Scene list unavailable: "+e.message)}
  finally{select.disabled=false}
 }
@@ -39,7 +39,7 @@ async function getHealth(){
  const h=await r.json().catch(()=>({}));
  if(!r.ok||!h.ok)throw Error(h.error||"Local bridge is not responding.");
  lastHealth=h;
- setText("bridge-health",h.sessionPaired?"PAIRED":h.ok?"ONLINE":"OFFLINE");
+ setText("bridge-health",h.sessionPaired?"PAIRED":h.ok?"ONLINE":"OFFLINE");\n const standby=$("emergency-standby");if(standby)standby.disabled=!(h.ok&&h.connected&&h.sessionPaired);
  setText("engine-status","ENGINE: "+String(h.engine||"UNKNOWN").toUpperCase()+(h.connected?" CONNECTED":" OFFLINE"));
  setText("active-engine",h.engine||"—");
  setText("monitor-message",h.playout|| (h.connected?"BRIDGE READY":"ENGINE OFFLINE"));
@@ -87,7 +87,7 @@ async function refresh(){
    setText("scheduler-health","SIGN IN REQUIRED");const toggle=$("publish-toggle");if(toggle)toggle.hidden=true;
   }
   let h;try{h=await getHealth()}catch(e){lastHealth=null;h={ok:false,connected:false,sessionPaired:false};setText("bridge-health","OFFLINE");setText("engine-status","ENGINE: NOT CONNECTED");setText("active-engine","—");setText("monitor-message","AWAITING BRIDGE");}
-  renderNetwork(h,queued);
+  renderNetwork(h,queued);\n recordEvent("Status refresh · bridge "+(h?.ok?"online":"offline")+", encoder "+(h?.connected?"connected":"disconnected")+", queue "+queued+".","status");
   await refreshMasterPreview(h);
   await getYouTubeStatus();
  }catch(e){setText("scheduler-health","ERROR");setText("data-error",e.message)}
@@ -105,10 +105,10 @@ async function connectBridge(){
   const engine=$("engine-select").value;
   await api("/command",{type:"engine:connect",engine});
   await loadScenes();
-  setText("bridge-message","Supabase session paired. "+engine+" connection requested.");
+  setText("bridge-message","Supabase session paired. "+engine+" connection requested.");recordEvent("Local bridge paired; "+engine+" connection requested.","success");
   await refresh();
   if(!lastHealth?.connected)throw Error("The bridge paired, but the selected encoder did not confirm a connection. Check the local bridge terminal and engine settings.");
- }catch(e){setText("bridge-message","Connection failed: "+e.message);await refresh()}
+ }catch(e){setText("bridge-message","Connection failed: "+e.message);recordEvent("Bridge connection failed: "+e.message,"error");await refresh()}
  finally{if(button)button.disabled=false}
 }
 async function runCommand(button){
@@ -122,7 +122,7 @@ async function runCommand(button){
  const commandType=(type==="stream"||type==="record")?type+":"+rawValue:type;
  if(type==="scene"&&!value){setText("bridge-message","Select a scene from the connected encoder first.");return}
  button.disabled=true;
- try{const d=await api("/command",{type:commandType,value,engine:$("engine-select").value});setText("bridge-message",d.message||"Command sent successfully.");await refresh()}
+ try{const d=await api("/command",{type:commandType,value,engine:$("engine-select").value});setText("bridge-message",d.message||"Command sent successfully.");recordEvent("Encoder command: "+commandType+" · "+String(value||""),"control");await refresh()}
  catch(e){setText("bridge-message","Command failed: "+e.message)}
  finally{button.disabled=false}
 }
@@ -158,7 +158,14 @@ async function loadQueueSnapshot(){
  }catch(e){setText("queue-snapshot-list","Queue unavailable: "+e.message)}
 }
 
-async function start(){
+function readLog(){try{return JSON.parse(localStorage.getItem(logKey())||"[]")}catch{return[]}}
+function recordEvent(message,kind="info"){const entries=readLog();entries.unshift({at:new Date().toISOString(),message:String(message).slice(0,240),kind});localStorage.setItem(logKey(),JSON.stringify(entries.slice(0,60)));renderEventLog()}
+function renderEventLog(){const host=$("master-event-log");if(!host)return;const entries=readLog();host.replaceChildren();if(!entries.length){host.textContent="No events recorded yet.";return}for(const item of entries){const row=document.createElement("div");row.className="event-log-row";const time=document.createElement("time");time.textContent=new Date(item.at).toLocaleString();const msg=document.createElement("span");msg.textContent=item.message;const tag=document.createElement("small");tag.textContent=item.kind.toUpperCase();row.append(time,msg,tag);host.append(row)}}
+function initChecklist(){const checks=[...document.querySelectorAll("[data-check]")];let saved={};try{saved=JSON.parse(localStorage.getItem(checklistKey())||"{}")}catch{}for(const box of checks)box.checked=!!saved[box.dataset.check];updateChecklist();checks.forEach(box=>box.addEventListener("change",()=>{const state={};checks.forEach(x=>state[x.dataset.check]=x.checked);localStorage.setItem(checklistKey(),JSON.stringify(state));updateChecklist();recordEvent("Pre-show checklist updated: "+box.parentElement.textContent.trim(), "checklist")}))}
+function updateChecklist(){const checks=[...document.querySelectorAll("[data-check]")],done=checks.filter(x=>x.checked).length;setText("checklist-progress",done+" / "+checks.length+" complete");setText("checklist-status",done===checks.length?"All checklist items marked complete.":(checks.length-done)+" checks remaining.");}
+function startPresence(auth){if(presenceChannel){auth.client.removeChannel(presenceChannel).catch(()=>{});presenceChannel=null}const user=auth.getSession()?.user;if(!user)return;const label=user.user_metadata?.full_name||user.user_metadata?.name||user.email||"Signed-in operator";presenceChannel=auth.client.channel("tn-master-control-presence-v2",{config:{presence:{key:user.id}}});presenceChannel.on("presence",{event:"sync"},()=>{const state=presenceChannel.presenceState(),list=$("producer-presence");if(!list)return;const people=Object.entries(state).flatMap(([key,rows])=>rows.map((x)=>({key,...x})));setText("presence-count",people.length+" online");list.replaceChildren();if(!people.length){list.textContent="No other active Studio sessions.";return}for(const person of people){const row=document.createElement("div");row.className="presence-row";const dot=document.createElement("i");dot.className="presence-dot";const name=document.createElement("strong");name.textContent=person.name||"Studio operator";const status=document.createElement("small");status.textContent=person.key===user.id?"This session":"Active Studio session";row.append(dot,name,status);list.append(row)}}).subscribe(async status=>{if(status==="SUBSCRIBED"){await presenceChannel.track({name:label,online_at:new Date().toISOString(),page:"master-control"});recordEvent("Studio presence connected.","team")}})}
+async function emergencyStandby(){if(!bridgeToken||!lastHealth?.ok||!lastHealth?.connected||!lastHealth?.sessionPaired){setText("bridge-message","Emergency standby unavailable: connect and pair the local bridge first.");return}const scene=$("scene-select")?.value;if(!scene){setText("bridge-message","Load the encoder scene list and select the designated Standby scene first.");return}if(!/standby|emergency/i.test(scene)){setText("bridge-message","Safety check: select a scene named Standby or Emergency before using this control.");return}if(!confirm("Switch the active program scene to "+scene+" now? This does not stop the livestream or recording."))return;const button=$("emergency-standby");button.disabled=true;try{const result=await api("/command",{type:"scene",value:scene,engine:$("engine-select").value});setText("bridge-message",result.message||"Emergency standby scene requested.");recordEvent("Emergency standby scene requested: "+scene,"warning");await refresh()}catch(e){setText("bridge-message","Emergency standby failed: "+e.message);recordEvent("Emergency standby failed: "+e.message,"error")}finally{button.disabled=false}}
+\nasync function start(){
  const auth=await window.TNStudioReady;
  $("publish-toggle")?.addEventListener("click",async()=>{
   const button=$("publish-toggle");button.disabled=true;
@@ -168,7 +175,7 @@ async function start(){
   }catch(e){setText("data-error",e.message)}
   finally{button.disabled=false}
  });
- $("connect-bridge")?.addEventListener("click",connectBridge);
+ $("connect-bridge")?.addEventListener("click",connectBridge);\n initChecklist();renderEventLog();\n $("reset-checklist")?.addEventListener("click",()=>{if(!confirm("Reset all pre-show checklist items?"))return;document.querySelectorAll("[data-check]").forEach(x=>x.checked=false);localStorage.removeItem(checklistKey());updateChecklist();recordEvent("Pre-show checklist reset.","checklist")});\n $("clear-event-log")?.addEventListener("click",()=>{if(!confirm("Clear this browser’s local event log?"))return;localStorage.removeItem(logKey());renderEventLog()});\n $("emergency-standby")?.addEventListener("click",emergencyStandby);
  $("refresh-scenes")?.addEventListener("click",loadScenes);
  $("engine-select")?.addEventListener("change",()=>{const select=$("scene-select");if(select){select.disabled=true;select.innerHTML="<option value=\"\">Connect selected encoder to load scenes</option>"}setText("bridge-message","Selected engine changed. Connect the selected encoder, then refresh its scene list.")});
  $("connect-youtube")?.addEventListener("click",()=>{window.location.href=base+"/youtube/auth"});
@@ -176,7 +183,7 @@ async function start(){
  $("refresh-rundown")?.addEventListener("click",loadRundown);
  $("refresh-queue-snapshot")?.addEventListener("click",loadQueueSnapshot);
  document.querySelectorAll("[data-command]").forEach(button=>button.addEventListener("click",()=>runCommand(button)));
- auth.client.auth.onAuthStateChange(()=>{refresh().catch(e=>setText("data-error",e.message));loadRundown();loadQueueSnapshot()});
+ auth.client.auth.onAuthStateChange((_event,session)=>{refresh().catch(e=>setText("data-error",e.message));loadRundown();loadQueueSnapshot();startPresence(auth);initChecklist();renderEventLog()});\n startPresence(auth);
  await refresh();await Promise.all([loadRundown(),loadQueueSnapshot()]);
  window.setInterval(()=>refreshMasterPreview(lastHealth),2500);
  if(bridgeToken&&auth.getSession()){
