@@ -4,7 +4,7 @@
 - YouTube programming includes actual playout and on-screen playlist graphics.
 - Broadcast format is hybrid: live shows plus prerecorded programming.
 - Automation is producer-controlled with automation assistance; no unattended automatic stream start/stop.
-- Studio access is for administrators, producers and approved hosts, enforced by existing authentication and RLS.
+- Studio access target: administrators, producers and approved hosts. Inspect existing role sources and RLS before adding role gates; sign-in alone must not be treated as proof of a producer role.
 - Full scope: workspace, YouTube programming, broadcast control, production team, graphics/audience and post-production.
 
 ## Preservation requirements
@@ -29,6 +29,7 @@
 - Provide producer workflow for adding, previewing, approving and skipping queue items.
 - Keep existing Studio pages and login flow.
 - Make the new workspace responsive on desktop, tablet and mobile.
+- Verify the actual allowed user roles against existing Supabase policies before describing the new page as role-restricted.
 
 ## Release 2 — YouTube Programming 2.0
 - Build on existing playlist queue and local playout implementation.
@@ -64,7 +65,7 @@
 
 ## Validation gates
 - Existing login, RLS and current Studio pages continue to work.
-- New playlist workspace reads/writes only the signed-in user's queue rows.
+- New playlist workspace reads/writes only the signed-in user's queue rows under current RLS.
 - A producer can add a YouTube playlist and approve it.
 - Local bridge reports the active playlist in /playout/state.
 - OBS and Streamlabs both render the same local playout source.
@@ -73,4 +74,4 @@
 - No credentials or secrets are committed.
 
 ## Current branch status
-This branch begins the additive Release 1 foundation. Playlist Control reuses the existing queue schema and local bridge. It does not change Supabase schema or RLS. Further releases remain gated on inspection and end-to-end testing of the bridge and encoder installations.
+This branch begins the additive Release 1 foundation. Playlist Control reuses the existing queue schema and local bridge. It does not change Supabase schema or RLS. Explicit role-based access remains a validation item before claiming that all target roles are enforced. Further releases remain gated on inspection and end-to-end testing of the bridge and encoder installations.
