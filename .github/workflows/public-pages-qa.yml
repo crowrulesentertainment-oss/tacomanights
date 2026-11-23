@@ -24,7 +24,7 @@ jobs:
           node --check assets/js/pages.js
           node --check assets/js/config.js
           node --check network/network.js
-          node --check studio/studio.js
+          node --check studio/studio.js\n          studio/workflow.js
           node --check studio/studio-auth.js
           node --check studio/studio-data.js
           node --check bridge/src/index.js
