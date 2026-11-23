@@ -7,3 +7,5 @@
 [hidden]{display:none!important}
 
 .manager-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.story-body{white-space:pre-wrap;color:#d0d1d3;line-height:1.8;margin-top:22px}.community-feed{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}.community-feed:empty{display:none}@media(max-width:700px){.community-feed{grid-template-columns:1fr}}
+
+.photo-credit{max-width:var(--max);margin:18px auto 0;padding:12px 24px;color:#8e9299;font-size:11px;line-height:1.6;border-top:1px solid #ffffff14}.photo-credit a{color:#c9b78f;text-decoration:underline;text-underline-offset:3px}
