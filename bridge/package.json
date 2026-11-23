@@ -1,0 +1,1 @@
+{"name":"tacoma-nights-broadcast-bridge","version":"1.0.0","private":true,"type":"module","scripts":{"start":"node src/index.js","check":"node --check src/index.js"},"engines":{"node":">=20"},"dependencies":{"dotenv":"16.4.7","express":"4.21.2","obs-websocket-js":"5.0.6","ws":"8.18.0"}}
