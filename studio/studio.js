@@ -128,6 +128,7 @@ async function start(){
  document.querySelectorAll("[data-command]").forEach(button=>button.addEventListener("click",()=>runCommand(button)));
  auth.client.auth.onAuthStateChange(()=>{refresh().catch(e=>setText("data-error",e.message))});
  await refresh();
+ window.setInterval(()=>refreshMasterPreview(lastHealth),2500);
  if(bridgeToken&&auth.getSession()){
   try{await auth.pairBridge(bridgeToken);setText("bridge-message","Saved local bridge session restored.");await refresh()}
   catch(e){setText("bridge-message","Bridge session restore failed: "+e.message)}
