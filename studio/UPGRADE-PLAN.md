@@ -33,6 +33,11 @@
 
 ## Release 2 — YouTube Programming 2.0
 - Build on existing playlist queue and local playout implementation.
+- Additive graphics foundation now implemented on this branch: transparent OBS/Streamlabs browser-source overlays for Now Playing, Next Up, network ticker and full-screen slate.
+- Studio Graphics page now provides live preview, source URLs and copy controls.
+- Public network homepage and program guide now display current and next program from the existing published public-state record.
+- Bridge now publishes the next scheduled program and start time to existing public-state fields during its 15-second heartbeat.
+- Current public schedule presentation is current + next only; a full multi-entry public EPG requires verifying existing public schedule read policy or designing a narrowly scoped public projection before exposing more schedule rows.
 - Add playlist/video preview, producer approval and clear queue states.
 - Add now-playing / next-up graphics as a separate browser-source overlay, driven by safe public state.
 - Add queue diagnostics for non-embeddable videos, private playlists, unavailable media and playback errors.
@@ -74,4 +79,4 @@
 - No credentials or secrets are committed.
 
 ## Current branch status
-This branch begins the additive Release 1 foundation. Playlist Control reuses the existing queue schema and local bridge. It does not change Supabase schema or RLS. Explicit role-based access remains a validation item before claiming that all target roles are enforced. Further releases remain gated on inspection and end-to-end testing of the bridge and encoder installations.
+Release 1 foundation and the first Release 2 on-air graphics/schedule foundation are implemented additively on this branch. Playlist Control reuses the existing queue schema and local bridge. Graphics reuse the existing published public-state record and require no schema or RLS changes. The bridge now syncs the next scheduled program into existing next-program fields. The public guide currently shows current + next, not a full multi-row EPG. Explicit role-based access remains a validation item before claiming that all target roles are enforced. Further releases remain gated on inspection and end-to-end testing of the bridge and encoder installations.
