@@ -80,3 +80,12 @@
 
 ## Current branch status
 Release 1 foundation and the first Release 2 on-air graphics/schedule foundation are implemented additively on this branch. Playlist Control reuses the existing queue schema and local bridge. Graphics reuse the existing published public-state record and require no schema or RLS changes. The bridge now syncs the next scheduled program into existing next-program fields. The public guide currently shows current + next, not a full multi-row EPG. Explicit role-based access remains a validation item before claiming that all target roles are enforced. Further releases remain gated on inspection and end-to-end testing of the bridge and encoder installations.
+
+
+## Public EPG extension — staged
+- Add an explicit `is_public` producer checkbox and per-entry Publish/Unpublish action. New schedule entries default to private.
+- Add `live_network_public_schedule`, a narrow read model populated by the authenticated local bridge from explicitly listed schedule entries only.
+- Anonymous readers receive column-level SELECT only for public display fields; owner IDs and source schedule IDs are not granted to anon. RLS permits public reads only where `is_published = true`; authenticated writes remain owner-scoped.
+- Bridge refreshes the projection every 15 seconds, prunes unpublished/deleted rows, and copies no producer notes or playout queue data. Private program titles are also suppressed from the public live-state record.
+- Public guide supports 7-, 14- and 30-day views, grouped by Tacoma/Pacific calendar date, with live/on-air markers.
+- Migration is staged in `supabase/migrations/20261123120000_public_network_epg.sql`; it has not been applied to the production Supabase project. Apply and verify the migration before deploying the matching Pages/bridge code.
