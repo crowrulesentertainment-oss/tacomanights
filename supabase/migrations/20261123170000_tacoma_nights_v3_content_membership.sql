@@ -23,3 +23,24 @@ drop policy if exists "tn saved content own" on public.tn_saved_content;create p
 drop policy if exists "tn notifications own" on public.tn_notifications;create policy "tn notifications own" on public.tn_notifications for all to authenticated using(user_id=auth.uid()) with check(user_id=auth.uid());
 grant select on public.tn_content to anon,authenticated;grant insert on public.tn_submissions to anon,authenticated;grant select,insert,delete on public.tn_saved_content to authenticated;grant select,update on public.tn_notifications to authenticated;grant select on public.tn_memberships to authenticated;grant select,insert,update,delete on public.tn_content to authenticated;grant select,update on public.tn_submissions to authenticated;
 -- Membership roles cannot be self-assigned through the browser.
+
+-- Automatically provision a basic free member row after email signup.
+-- Role is fixed to member; public signup cannot grant elevated permissions.
+create or replace function public.tn_handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.tn_memberships(user_id, display_name, role, status)
+  values (new.id, coalesce(new.raw_user_meta_data->>'display_name',''), 'member', 'active')
+  on conflict (user_id) do nothing;
+  return new;
+end;
+$$;
+revoke all on function public.tn_handle_new_user() from public;
+drop trigger if exists tn_auth_user_created on auth.users;
+create trigger tn_auth_user_created
+after insert on auth.users
+for each row execute function public.tn_handle_new_user();
