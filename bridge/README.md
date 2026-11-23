@@ -10,7 +10,7 @@
 7. Run `start-bridge.bat` on Windows, or `npm install && npm start` in this folder.
 
 ## Pair Broadcast Studio
-Open the Studio on GitHub Pages or from a local static web server. Sign in with an existing Supabase account that owns the network program/schedule/queue records. Click Connect local bridge and enter the local `BRIDGE_TOKEN`. The browser sends the signed-in user's short-lived Supabase access token to localhost; the bridge validates it with Supabase Auth and keeps it in memory. The bridge then uses that user's RLS permissions to read and update only their network rows. The token is not committed or sent to GitHub.
+Open the Studio on GitHub Pages or from a local static web server. Sign in with an existing Supabase account that owns the network program/schedule/queue records. Click Connect local bridge and enter the local `BRIDGE_TOKEN`. The browser sends the signed-in user's Supabase access token and refresh token to localhost; the bridge validates the access token with Supabase Auth and keeps both tokens in process memory only. The bridge refreshes the session itself as it approaches expiry, so the Studio tab does not need to remain open for continuous playout. A bridge restart requires pairing again. The bridge uses that user's RLS permissions to read and update only their network rows. Neither token is committed to GitHub.
 
 The local bridge must remain running for automatic playout. The Studio browser tab may close after pairing; the Node process continues polling the queue. Supabase access tokens expire; keep Studio open periodically so Supabase can refresh and re-pair the local bridge.
 
