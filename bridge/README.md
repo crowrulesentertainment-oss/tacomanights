@@ -2,7 +2,7 @@
 
 ## Install on the broadcast computer
 1. Install Node.js 20 or newer.
-2. Download this bridge folder from GitHub.
+2. Download and extract the **entire tacomanights repository ZIP**. Do not download only the `bridge` folder. The `studio`, `assets`, and `network` folders must remain alongside `bridge` in the extracted project root.
 3. Copy `.env.example` to `.env`.
 4. Set a random `BRIDGE_TOKEN` at least 32 characters long.
 5. Set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` to the same public project values used by `assets/js/config.js`.
@@ -10,7 +10,7 @@
 7. Run `start-bridge.bat` on Windows, or `npm install && npm start` in this folder.
 
 ## Pair Broadcast Studio
-With the bridge running, open **http://127.0.0.1:8787/studio/** on the broadcast computer. The bridge serves the Studio and its assets locally, avoiding browser local-network permission/CORS issues. Sign in with an existing Supabase account that owns the network program/schedule/queue records. You can also use the GitHub Pages Studio if your browser permits the page to access localhost. Click Connect local bridge and enter the local `BRIDGE_TOKEN`. The browser sends the signed-in user's Supabase access token and refresh token to localhost; the bridge validates the access token with Supabase Auth and keeps both tokens in process memory only. The bridge refreshes its own session as it approaches expiry, so the Studio tab does not need to remain open for continuous playout. The browser-side Studio session does not auto-refresh to avoid racing the bridge's rotating refresh token; sign in again when you need to resume editing after the browser session expires. A bridge restart requires pairing again. The bridge uses that user's RLS permissions to read and update only their network rows. Neither token is committed to GitHub.
+With the bridge running from `<extracted-project-folder>/bridge`, open **http://127.0.0.1:8787/studio/** on the broadcast computer. The expected folder layout is `tacomanights/bridge`, `tacomanights/studio/index.html`, `tacomanights/assets/`, and `tacomanights/network/`. If you see `Cannot GET /studio/`, the bridge cannot find the sibling `studio` folder—re-extract the full repository ZIP and run `npm start` from its `bridge` folder. The bridge serves the Studio and its assets locally, avoiding browser local-network permission/CORS issues. Sign in with an existing Supabase account that owns the network program/schedule/queue records. You can also use the GitHub Pages Studio if your browser permits the page to access localhost. Click Connect local bridge and enter the local `BRIDGE_TOKEN`. The browser sends the signed-in user's Supabase access token and refresh token to localhost; the bridge validates the access token with Supabase Auth and keeps both tokens in process memory only. The bridge refreshes its own session as it approaches expiry, so the Studio tab does not need to remain open for continuous playout. The browser-side Studio session does not auto-refresh to avoid racing the bridge's rotating refresh token; sign in again when you need to resume editing after the browser session expires. A bridge restart requires pairing again. The bridge uses that user's RLS permissions to read and update only their network rows. Neither token is committed to GitHub.
 
 The local bridge must remain running for automatic playout. The Studio browser tab may close after pairing; the Node process continues polling the queue. Supabase access tokens expire; keep Studio open periodically so Supabase can refresh and re-pair the local bridge.
 
