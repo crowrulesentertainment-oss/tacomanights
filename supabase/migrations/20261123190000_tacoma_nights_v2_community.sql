@@ -91,7 +91,7 @@ create policy "tn community upload incoming only"
   with check (
     bucket_id = 'tn-community-submissions'
     and (storage.foldername(name))[1] = 'incoming'
-    and (storage.foldername(name))[2] is not null
+    and array_length(storage.foldername(name), 1) >= 1
   );
 
 drop policy if exists "tn community staff read private uploads" on storage.objects;
