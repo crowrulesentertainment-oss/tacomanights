@@ -1,6 +1,6 @@
 (()=>{"use strict";
 const $=id=>document.getElementById(id),base="http://127.0.0.1:8787";
-let bridgeToken=sessionStorage.getItem("tn_bridge_token")||"",lastHealth=null,refreshBusy=false,previewBusy=false,presenceChannel=null;\nconst logKey=()=> "tn-master-control-events-v2:"+((window.TNStudioReady?.getSession?.()?.user?.id)||"guest");\nconst checklistKey=()=> "tn-master-control-checklist-v2:"+((window.TNStudioReady?.getSession?.()?.user?.id)||"guest");
+let bridgeToken=sessionStorage.getItem("tn_bridge_token")||"",lastHealth=null,refreshBusy=false,previewBusy=false,presenceChannel=null,lastLoggedStatus="";\nconst logKey=()=> "tn-master-control-events-v2:"+((window.TNStudioReady?.getSession?.()?.user?.id)||"guest");\nconst checklistKey=()=> "tn-master-control-checklist-v2:"+((window.TNStudioReady?.getSession?.()?.user?.id)||"guest");
 const headers=()=>({"Content-Type":"application/json",...(bridgeToken?{Authorization:"Bearer "+bridgeToken}:{})});
 const setText=(id,value)=>{const el=$(id);if(el)el.textContent=value};
 async function api(path,body){
@@ -87,7 +87,7 @@ async function refresh(){
    setText("scheduler-health","SIGN IN REQUIRED");const toggle=$("publish-toggle");if(toggle)toggle.hidden=true;
   }
   let h;try{h=await getHealth()}catch(e){lastHealth=null;h={ok:false,connected:false,sessionPaired:false};setText("bridge-health","OFFLINE");setText("engine-status","ENGINE: NOT CONNECTED");setText("active-engine","—");setText("monitor-message","AWAITING BRIDGE");}
-  renderNetwork(h,queued);\n recordEvent("Status refresh · bridge "+(h?.ok?"online":"offline")+", encoder "+(h?.connected?"connected":"disconnected")+", queue "+queued+".","status");
+  renderNetwork(h,queued);\n const statusSignature=(h?.ok?"online":"offline")+"|"+(h?.connected?"connected":"disconnected")+"|"+queued;if(statusSignature!==lastLoggedStatus){lastLoggedStatus=statusSignature;recordEvent("Status changed · bridge "+(h?.ok?"online":"offline")+", encoder "+(h?.connected?"connected":"disconnected")+", queue "+queued+".","status");}
   await refreshMasterPreview(h);
   await getYouTubeStatus();
  }catch(e){setText("scheduler-health","ERROR");setText("data-error",e.message)}
