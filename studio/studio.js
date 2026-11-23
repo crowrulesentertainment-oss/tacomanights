@@ -119,9 +119,10 @@ async function runCommand(button){
  if(!lastHealth?.ok||!lastHealth?.sessionPaired){setText("bridge-message","The bridge must be online and paired to your signed-in account before sending encoder commands.");return}
  const[type,rawValue]=button.dataset.command.split(":");
  const value=rawValue==="select"?$("scene-select")?.value:rawValue;
+ const commandType=(type==="stream"||type==="record")?type+":"+rawValue:type;
  if(type==="scene"&&!value){setText("bridge-message","Select a scene from the connected encoder first.");return}
  button.disabled=true;
- try{const d=await api("/command",{type,value,engine:$("engine-select").value});setText("bridge-message",d.message||"Command sent successfully.");await refresh()}
+ try{const d=await api("/command",{type:commandType,value,engine:$("engine-select").value});setText("bridge-message",d.message||"Command sent successfully.");await refresh()}
  catch(e){setText("bridge-message","Command failed: "+e.message)}
  finally{button.disabled=false}
 }
