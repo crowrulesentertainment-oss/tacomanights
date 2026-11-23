@@ -28,6 +28,7 @@ jobs:
           node --check studio/studio-auth.js
           node --check studio/studio-data.js
           node --check bridge/src/index.js
+          node --check bridge/src/index.js
           node --check bridge/src/adapters/obs.js
           node --check bridge/src/adapters/streamlabs.js
   browser-smoke:
