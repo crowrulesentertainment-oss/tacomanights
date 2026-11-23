@@ -1,72 +1,27 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Network Graphics | Tacoma Nights Studio</title>
-<link rel="stylesheet" href="../assets/css/site.css">
-<link rel="stylesheet" href="studio.css">
-<link rel="stylesheet" href="graphics-control.css">
+<link rel="stylesheet" href="../assets/css/site.css"><link rel="stylesheet" href="studio.css"><link rel="stylesheet" href="graphics-control.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js?v=20261123" defer></script>
-<script src="../assets/js/config.js?v=20261123" defer></script>
-<script src="studio-auth.js?v=20261123" defer></script>
-<script src="workflow.js?v=20261123" defer></script>
-<script src="graphics-control.js?v=20261123" defer></script>
-</head>
-<body>
-<main class="studio-main graphics-main">
-<p class="eyebrow">PRODUCTION / VISUALS / STUDIO 2.0</p>
-<h1>On-Air <span>Graphics</span></h1>
-<p class="lede">Build, edit and control live graphics for OBS Studio and Streamlabs Desktop. Changes sent from this control room appear on connected Tacoma Nights browser sources.</p>
-<div class="auth-bar">
-<span id="auth-state">Checking account…</span>
-<form id="studio-login">
-<input id="studio-email" type="email" autocomplete="username" placeholder="Email" required>
-<input id="studio-password" type="password" autocomplete="current-password" placeholder="Password" required>
-<button class="primary-action" type="submit">Sign in</button>
-</form>
-<button id="studio-signout" type="button" hidden>Sign out</button>
-</div>
-<p id="auth-message" role="status" aria-live="polite"></p>
-<section class="studio-panel">
-<div class="graphics-title"><div><small>LIVE CONTROL ROOM</small><h2>Graphic preview</h2></div><span id="graphics-state" class="graphics-state">CONNECTING</span></div>
-<p id="graphics-detail">Connect this control room to send graphics to browser sources.</p>
-<div class="graphics-preview"><iframe id="graphics-preview" title="On-air graphics preview" src="../network/overlay.html?mode=lower-third"></iframe></div>
-<div class="graphics-toolbar">
-<label>Graphic type<select id="graphics-mode">
-<option value="lower-third">Now Playing · Lower Third</option><option value="next">Next Up</option><option value="schedule">Network Schedule Strip</option><option value="full">Full-Screen Program Slate</option><option value="breaking">Breaking News</option><option value="guest">Guest Introduction</option><option value="social">Social / Website Promo</option><option value="quote">Quote Card</option><option value="score">Scoreboard</option><option value="countdown">Countdown</option><option value="logo">Network Bug / Logo</option>
-</select></label>
-<button id="graphics-refresh" type="button">Refresh preview</button>
-</div>
-</section>
-<section class="studio-panel graphics-editor">
-<div class="graphics-title"><div><small>GRAPHIC BUILDER</small><h2>Edit your on-air graphic</h2></div><span class="graphics-state">LIVE EDITOR</span></div>
-<div class="editor-grid">
-<label>Headline / main text<input id="graphic-title" maxlength="100" value="Tacoma Nights"></label>
-<label>Subtitle / supporting text<input id="graphic-subtitle" maxlength="160" value="One network. All day. All night."></label>
-<label>Eyebrow / label<input id="graphic-kicker" maxlength="60" value="CROW RULES ENTERTAINMENT PRESENTS"></label>
-<label>Accent color<input id="graphic-color" type="color" value="#e74759"></label>
-<label>Secondary color<input id="graphic-secondary" type="color" value="#e6bd70"></label>
-<label>Host / attribution<input id="graphic-host" maxlength="80" placeholder="Host name or attribution"></label>
-</div>
-<div class="graphics-toolbar editor-actions">
-<button id="graphic-apply" type="button" class="primary-action">Apply changes</button>
-<button id="graphic-show" type="button" class="go-live">SHOW ON AIR</button>
-<button id="graphic-hide" type="button" class="hide-live">HIDE GRAPHIC</button>
-<button id="graphic-reset" type="button">Reset fields</button>
-</div>
-<p class="graphics-help">SHOW ON AIR sends the selected graphic and edited text to every connected Tacoma Nights graphics browser source. HIDE GRAPHIC clears it from those sources without stopping the broadcast.</p>
-</section>
-<section class="graphics-grid">
-<article class="studio-panel"><small>01 / NOW PLAYING</small><h2>Program lower third</h2><p>Program title, host, show description and live indicator.</p><code id="url-lower"></code><button type="button" data-copy="url-lower">Copy OBS / Streamlabs URL</button></article>
-<article class="studio-panel"><small>02 / NEXT UP</small><h2>Upcoming program card</h2><p>Upcoming show and its scheduled Pacific start time.</p><code id="url-next"></code><button type="button" data-copy="url-next">Copy OBS / Streamlabs URL</button></article>
-<article class="studio-panel"><small>03 / NETWORK SCHEDULE</small><h2>Schedule ticker</h2><p>Current program and next scheduled program across the bottom of the screen.</p><code id="url-schedule"></code><button type="button" data-copy="url-schedule">Copy OBS / Streamlabs URL</button></article>
-<article class="studio-panel"><small>04 / FULL SCREEN</small><h2>Program slate</h2><p>Full-screen network identity, current show and next program for standby or transitions.</p><code id="url-full"></code><button type="button" data-copy="url-full">Copy OBS / Streamlabs URL</button></article>
-</section>
-<section class="studio-panel"><h2>More graphics included</h2><p>Breaking News · Guest Introduction · Social / Website Promo · Quote Card · Scoreboard · Countdown · Network Bug. Select any style in the builder, edit its text and colors, then send it on air.</p>
-<h2>Install in OBS Studio or Streamlabs</h2>
-<ol class="setup-list"><li>Add a <strong>Browser Source</strong> to your scene.</li><li>Paste one of the graphics URLs above and set width to <strong>1920</strong> and height to <strong>1080</strong>.</li><li>Place the source above your camera or video source.</li><li>Keep the browser source active in the scene. Use SHOW ON AIR and HIDE GRAPHIC in this control room to control connected sources.</li></ol>
-<p class="warning-note">Live control uses a Supabase Realtime broadcast channel and the existing public browser-safe configuration. No new database table or service-role key is required. Make sure Realtime is enabled for your Supabase project and the browser sources are connected.</p>
-<div class="row-actions"><a href="../network/schedule.html" target="_blank" rel="noopener">View public program guide ↗</a><a href="../network/overlay.html?mode=full" target="_blank" rel="noopener">Open full-screen slate ↗</a></div></section>
-</main>
-</body></html>
+<script src="../assets/js/config.js?v=20261123" defer></script><script src="studio-auth.js?v=20261123" defer></script><script src="workflow.js?v=20261123" defer></script><script src="graphics-control.js?v=20261123" defer></script>
+</head><body><main class="studio-main graphics-main">
+<p class="eyebrow">PRODUCTION / VISUALS / STUDIO 3.0</p><h1>On-Air <span>Graphics</span></h1>
+<p class="lede">A full graphics designer and live control room. Customize every text field, color, size, position, alignment, background, and animation. Send graphics to OBS or Streamlabs and take them off air independently of your broadcast.</p>
+<div class="auth-bar"><span id="auth-state">Checking account…</span><form id="studio-login"><input id="studio-email" type="email" autocomplete="username" placeholder="Email" required><input id="studio-password" type="password" autocomplete="current-password" placeholder="Password" required><button class="primary-action" type="submit">Sign in</button></form><button id="studio-signout" type="button" hidden>Sign out</button></div><p id="auth-message" role="status" aria-live="polite"></p>
+<section class="studio-panel"><div class="graphics-title"><div><small>LIVE CONTROL ROOM</small><h2>Program preview</h2></div><span id="graphics-state" class="graphics-state">CONNECTING</span></div><p id="graphics-detail">Connecting to the graphics control channel…</p><div class="graphics-preview"><iframe id="graphics-preview" title="On-air graphics preview" src="../network/overlay.html?mode=lower-third"></iframe></div>
+<div class="graphics-toolbar"><label>Graphic template<select id="graphics-mode">
+<option value="lower-third">Program Lower Third</option><option value="next">Next Up Card</option><option value="schedule">Schedule Ticker</option><option value="full">Full-Screen Slate</option><option value="breaking">Breaking News</option><option value="guest">Guest Introduction</option><option value="social">Social / Website Promo</option><option value="quote">Quote / Testimonial</option><option value="score">Sports Scoreboard</option><option value="countdown">Countdown / Coming Soon</option><option value="logo">Network Logo Bug</option><option value="weather">Weather Update</option><option value="event">Community Event</option><option value="announcement">Announcement</option><option value="poll">Audience Poll</option><option value="sponsor">Sponsor / Partner</option><option value="headline">News Headline</option><option value="full-banner">Full-Width Banner</option><option value="side-panel">Side Information Panel</option><option value="thankyou">Thank You / Credits</option>
+</select></label><button id="graphics-refresh" type="button">Refresh preview</button></div></section>
+<section class="studio-panel graphics-editor"><div class="graphics-title"><div><small>COMPLETE GRAPHIC DESIGNER</small><h2>Every element is editable</h2></div><span class="graphics-state">DESIGN STUDIO</span></div>
+<div class="editor-section"><h3>Text and content</h3><div class="editor-grid">
+<label>Top label / eyebrow<input id="graphic-kicker" maxlength="100" value="CROW RULES ENTERTAINMENT"></label><label>Main headline<input id="graphic-title" maxlength="160" value="Tacoma Nights"></label><label>Subtitle / second line<input id="graphic-subtitle" maxlength="220" value="One network. All day. All night."></label><label>Additional text / details<input id="graphic-extra" maxlength="240" placeholder="Add details, event information, score, or message"></label><label>Host / attribution<input id="graphic-host" maxlength="100" placeholder="Host, guest, team, or attribution"></label><label>Footer / call to action<input id="graphic-footer" maxlength="140" placeholder="Website, social handle, or call to action"></label><label>Badge / small tag<input id="graphic-badge" maxlength="40" placeholder="LIVE • NEW • BREAKING"></label></div></div>
+<div class="editor-section"><h3>Colors and appearance</h3><div class="editor-grid">
+<label>Accent color<input id="graphic-color" type="color" value="#e74759"></label><label>Secondary color<input id="graphic-secondary" type="color" value="#e6bd70"></label><label>Background color<input id="graphic-background" type="color" value="#080d16"></label><label>Text color<input id="graphic-text-color" type="color" value="#ffffff"></label><label>Background opacity <output id="opacity-value">92%</output><input id="graphic-opacity" type="range" min="0" max="100" value="92"></label><label>Font family<select id="graphic-font"><option value="Arial,Helvetica,sans-serif">Arial</option><option value="Georgia,serif">Georgia</option><option value="Impact,sans-serif">Impact</option><option value="Verdana,sans-serif">Verdana</option><option value="'Trebuchet MS',sans-serif">Trebuchet</option></select></label></div></div>
+<div class="editor-section"><h3>Size and placement</h3><div class="editor-grid">
+<label>Width (%)<input id="graphic-width" type="range" min="20" max="100" value="91"><output id="width-value">91%</output></label><label>Height (px)<input id="graphic-height" type="range" min="80" max="700" value="180"><output id="height-value">180px</output></label><label>Horizontal position (%)<input id="graphic-x" type="range" min="0" max="100" value="4.5"><output id="x-value">4.5%</output></label><label>Vertical position (%)<input id="graphic-y" type="range" min="0" max="100" value="78"><output id="y-value">78%</output></label><label>Headline size (px)<input id="graphic-size" type="range" min="18" max="110" value="58"><output id="size-value">58px</output></label><label>Text alignment<select id="graphic-align"><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></label></div></div>
+<div class="editor-section"><h3>Motion and timing</h3><div class="editor-grid"><label>Entrance animation<select id="graphic-animation"><option value="fade">Fade</option><option value="slide-up">Slide Up</option><option value="slide-left">Slide Left</option><option value="zoom">Zoom</option><option value="none">None</option></select></label><label>Auto-hide after (seconds; 0 = stay until hidden)<input id="graphic-duration" type="number" min="0" max="3600" value="0"></label><label>Corner style<select id="graphic-corners"><option value="square">Square</option><option value="soft">Soft</option><option value="round">Rounded</option></select></label><label>Border style<select id="graphic-border"><option value="accent">Accent bar</option><option value="outline">Outline</option><option value="none">No border</option></select></label></div></div>
+<div class="graphics-toolbar editor-actions"><button id="graphic-apply" type="button" class="primary-action">UPDATE PREVIEW</button><button id="graphic-show" type="button" class="go-live">SHOW ON AIR</button><button id="graphic-hide" type="button" class="hide-live">HIDE GRAPHIC</button><button id="graphic-reset" type="button">Reset template</button><button id="graphic-save" type="button">Save design file</button><label class="import-design">Load design<input id="graphic-load" type="file" accept="application/json,.json"></label></div>
+<p class="graphics-help">Preview updates as you edit. SHOW ON AIR sends the finished design to connected browser sources. HIDE GRAPHIC removes it. A duration greater than zero automatically hides the graphic after that many seconds.</p></section>
+<section class="studio-panel"><h2>Browser source URLs</h2><div class="graphics-grid"><article><b>Standard overlay</b><code id="url-lower"></code><button data-copy="url-lower">Copy URL</button></article><article><b>Full-screen overlay</b><code id="url-full"></code><button data-copy="url-full">Copy URL</button></article></div><h2>Broadcast setup</h2><ol class="setup-list"><li>Add a Browser Source in OBS or Streamlabs.</li><li>Use the standard overlay URL, set dimensions to 1920 × 1080.</li><li>Keep the source active and visible in the scene; use this control room to show and hide individual graphics.</li><li>Realtime must be enabled in Supabase. All graphics browser sources must be connected to the same project.</li></ol><p class="warning-note">This graphics control channel is separate from the video playout and YouTube broadcast. Hiding a graphic never stops the livestream. Design files can be exported and loaded as JSON.</p></section>
+</main></body></html>
