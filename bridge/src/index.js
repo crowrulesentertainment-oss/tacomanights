@@ -38,8 +38,7 @@ async function getNextScheduleSlot(){const now=new Date().toISOString(),p=new UR
 async function syncPublicSchedule(){
   try{
     const now=new Date(),from=new Date(now.getTime()-24*60*60*1000).toISOString(),to=new Date(now.getTime()+90*24*60*60*1000).toISOString();
-    const p=new URLSearchParams({select:"id,program_id,host_name,starts_at,ends_at,status,live_network_programs(title,description,category,format)",owner_id:"eq."+session.userId,is_public:"eq.true",starts_at:"gte."+from,ends_at:"gt."+now.toISOString(),status:"in.(scheduled,ready,on_air)",order:"starts_at.asc",limit:"250"});
-    p.set("starts_at","gte."+from);p.set("ends_at","gt."+now.toISOString());
+    const p=new URLSearchParams({select:"id,program_id,host_name,starts_at,ends_at,status,live_network_programs(title,description,category,format)",owner_id:"eq."+session.userId,is_public:"eq.true",and:"(starts_at.gte."+from+",starts_at.lte."+to+")",ends_at:"gt."+now.toISOString(),status:"in.(scheduled,ready,on_air)",order:"starts_at.asc",limit:"250"});
     const rows=await db("live_network_schedule?"+p.toString());
     const publicRows=(rows||[]).filter(x=>x.live_network_programs&&(Array.isArray(x.live_network_programs)?x.live_network_programs[0]:x.live_network_programs));
     const projection=publicRows.map(x=>{const program=Array.isArray(x.live_network_programs)?x.live_network_programs[0]:x.live_network_programs;return{owner_id:session.userId,source_schedule_id:x.id,program_title:program.title||"Tacoma Nights program",program_description:program.description||null,category:program.category||null,format:program.format||null,host_name:x.host_name||null,starts_at:x.starts_at,ends_at:x.ends_at,status:x.status,is_published:true,updated_at:new Date().toISOString()}});
