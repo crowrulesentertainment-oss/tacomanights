@@ -10,6 +10,10 @@ A CrowRules Entertainment community television and participation network for Tac
 - Supabase for authentication, database, moderation and private production storage.
 - YouTube for public episodes and premiere playback.
 
+## Network build
+
+The public network portal is available at `network/`; the Broadcast Studio interface is at `studio/`. The local Node.js bridge is in `bridge/`. Start with `docs/broadcast-network-architecture.md` and the OBS / Streamlabs setup guides. The bridge is a local control service, not a public internet endpoint.
+
 ## Development status
 This repository is undergoing an intentional fresh rebuild. The current `main` branch is the source of truth; legacy public pages are not being restored wholesale.
 
