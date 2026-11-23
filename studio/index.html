@@ -38,8 +38,8 @@
 <div class="monitor-actions"><button type="button" data-command="scene:Network Main">Network Main</button><button type="button" data-command="scene:Standby">Standby Slate</button><button type="button" data-command="record:start">Start Recording</button><button type="button" data-command="record:stop">Stop Recording</button></div></article>
 <article class="studio-panel quick-panel"><small>MASTER CONTROL</small><h2>Broadcast actions</h2>
 <label>Engine<select id="engine-select"><option value="obs">OBS Studio</option><option value="streamlabs">Streamlabs Desktop</option></select></label>
-<label>Scene name<input id="scene-name" value="Network Main" autocomplete="off"></label>
-<button class="primary-action" id="connect-bridge" type="button">Connect local bridge</button><button type="button" data-command="scene:custom">Switch scene</button><button type="button" data-command="stream:start">Start stream</button><button type="button" data-command="stream:stop" class="danger-action">Stop stream</button>
+<label>Scenes from connected encoder<select id="scene-select" disabled><option value="">Connect encoder to load scenes</option></select></label><button type="button" id="refresh-scenes">Refresh scene list</button>
+<button class="primary-action" id="connect-bridge" type="button">Connect local bridge</button><button type="button" data-command="scene:select">Switch to selected scene</button><button type="button" data-command="stream:start">Start stream</button><button type="button" data-command="stream:stop" class="danger-action">Stop stream</button>
 <p id="bridge-message" role="status" aria-live="polite">Bridge offline. Start it on the broadcast computer.</p></article>
 </section>
 <section class="studio-panel"><div class="panel-head"><div><small>NETWORK RUN OF SHOW</small><h2>Next on the network</h2></div><a href="programming.html">Manage schedule ↗</a></div>
