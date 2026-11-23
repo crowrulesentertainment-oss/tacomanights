@@ -1,5 +1,7 @@
 import "dotenv/config";
 import express from "express";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
 import { OBSAdapter } from "./adapters/obs.js";
 import { StreamlabsAdapter } from "./adapters/streamlabs.js";
@@ -10,10 +12,14 @@ if(bridgeToken.length<32){console.error("BRIDGE_TOKEN must be at least 32 charac
 if(!supabaseUrl||!publishableKey)console.warn("Supabase scheduler disabled until SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY are configured in .env");
 const adapters={obs:new OBSAdapter({address:env.OBS_ADDRESS||"ws://127.0.0.1:4455",password:env.OBS_PASSWORD||""}),streamlabs:new StreamlabsAdapter({url:env.STREAMLABS_WS_URL||"",token:env.STREAMLABS_TOKEN||""})};
 let activeEngine=env.ACTIVE_ENGINE==="streamlabs"?"streamlabs":"obs",session=null,currentPlayout=null,activeQueue=null,endedSignal=null,lastScheduleId=null,schedulerBusy=false,lastPublicSync=0;
-const app=express();app.disable("x-powered-by");app.use(express.json({limit:"32kb"}));
+const app=express(),rootDir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../..");app.disable("x-powered-by");app.use(express.json({limit:"32kb"}));
 const allowedOrigins=new Set(["https://crowrulesentertainment-oss.github.io","http://localhost:8000","http://127.0.0.1:8000"]);
 app.use((req,res,next)=>{const origin=req.headers.origin;if(origin&&allowedOrigins.has(origin)){res.setHeader("Access-Control-Allow-Origin",origin);res.setHeader("Access-Control-Allow-Private-Network","true")}res.setHeader("Vary","Origin");res.setHeader("Access-Control-Allow-Headers","Authorization,Content-Type");res.setHeader("Access-Control-Allow-Methods","GET,POST,OPTIONS");if(req.method==="OPTIONS")return res.sendStatus(204);next()});
-app.use((req,res,next)=>{if(["/health","/playout","/playout/state","/playout/ended"].includes(req.path))return next();const supplied=(req.headers.authorization||"").replace(/^Bearer\s+/i,"");if(supplied!==bridgeToken)return res.status(401).json({error:"Unauthorized local bridge token"});next()});
+app.use((req,res,next)=>{if(["/health","/playout","/playout/state","/playout/ended"].includes(req.path)||req.path==="/studio"||req.path.startsWith("/studio/")||req.path.startsWith("/assets/")||req.path==="/network"||req.path.startsWith("/network/"))return next();const supplied=(req.headers.authorization||"").replace(/^Bearer\s+/i,"");if(supplied!==bridgeToken)return res.status(401).json({error:"Unauthorized local bridge token"});next()});
+app.use("/studio",express.static(path.join(rootDir,"studio"),{index:"index.html"}));
+app.use("/assets",express.static(path.join(rootDir,"assets")));
+app.use("/network",express.static(path.join(rootDir,"network"),{index:"index.html"}));
+app.get("/",(_q,r)=>r.redirect("/studio/"));
 function apiHeaders(){return{apikey:publishableKey,Authorization:"Bearer "+session.accessToken,"Content-Type":"application/json"}}
 async function refreshSessionIfNeeded(){if(!session?.refreshToken||!session.expiresAt||session.expiresAt*1000-Date.now()>120000)return;const r=await fetch(supabaseUrl+"/auth/v1/token?grant_type=refresh_token",{method:"POST",headers:{apikey:publishableKey,"Content-Type":"application/json"},body:JSON.stringify({refresh_token:session.refreshToken})});const d=await r.json();if(!r.ok||!d.access_token)throw Error("Supabase session refresh failed: "+JSON.stringify(d).slice(0,300));session={...session,accessToken:d.access_token,refreshToken:d.refresh_token||session.refreshToken,expiresAt:d.expires_at||Math.floor(Date.now()/1000)+(d.expires_in||3600)}}
 async function db(path,options={}){if(!session)throw Error("No Supabase user session paired");await refreshSessionIfNeeded();const r=await fetch(supabaseUrl+"/rest/v1/"+path,{...options,headers:{...apiHeaders(),...(options.headers||{})}});const body=await r.text();if(!r.ok)throw Error("Supabase "+r.status+": "+body.slice(0,500));return body?JSON.parse(body):null}
