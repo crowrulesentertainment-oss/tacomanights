@@ -1,0 +1,76 @@
+# Tacoma Nights Studio 2.0 — implementation plan
+
+## Approved product decisions
+- YouTube programming includes actual playout and on-screen playlist graphics.
+- Broadcast format is hybrid: live shows plus prerecorded programming.
+- Automation is producer-controlled with automation assistance; no unattended automatic stream start/stop.
+- Studio access is for administrators, producers and approved hosts, enforced by existing authentication and RLS.
+- Full scope: workspace, YouTube programming, broadcast control, production team, graphics/audience and post-production.
+
+## Preservation requirements
+1. Keep current Master Control, Programming, Media Library, Producer Desk, Host Control, Graphics, Monitoring and Settings pages.
+2. Reuse existing Supabase tables and policies wherever possible. Do not drop, rename, truncate or broadly relax RLS policies.
+3. Reuse the existing local bridge at 127.0.0.1:8787, OBS and Streamlabs adapters, YouTube read-only OAuth status, and live_network_playout_queue.
+4. Keep YouTube stream start/stop a deliberate producer action. Playlist transitions must not stop or recreate the YouTube livestream.
+5. Keep secrets, OAuth client secrets, bridge tokens, encoder passwords and stream keys off GitHub Pages and out of browser code.
+6. Add features behind existing auth and explicit producer approval. Keep public network pages separate from internal controls.
+
+## Existing architecture found during inspection
+- Static GitHub Pages Studio under studio/.
+- Existing Supabase browser client and studio-auth.js session flow.
+- Existing tables: live_network_programs, live_network_schedule, live_network_playout_queue and live_network_public_state.
+- Existing local Node bridge with OBS and Streamlabs adapters.
+- Existing local /playout browser source supports YouTube playlist items through the YouTube IFrame Player API and advances the queue after the final playlist video.
+- Existing Media & Playout page accepts YouTube playlist URLs and stores them as youtube-playlist://<playlistId>.
+
+## Release 1 — Studio 2.0 workspace and usability
+- Add direct navigation to Playlist Control.
+- Surface bridge, current playout and queue status.
+- Provide producer workflow for adding, previewing, approving and skipping queue items.
+- Keep existing Studio pages and login flow.
+- Make the new workspace responsive on desktop, tablet and mobile.
+
+## Release 2 — YouTube Programming 2.0
+- Build on existing playlist queue and local playout implementation.
+- Add playlist/video preview, producer approval and clear queue states.
+- Add now-playing / next-up graphics as a separate browser-source overlay, driven by safe public state.
+- Add queue diagnostics for non-embeddable videos, private playlists, unavailable media and playback errors.
+- Add explicit producer skip/replay controls only after verifying bridge command semantics and safe queue-state transitions.
+
+## Release 3 — Broadcast Control 2.0
+- Verify OBS WebSocket and Streamlabs Remote Control adapters against actual local installations.
+- Add bridge health, encoder health, stream state and YouTube state as separate indicators.
+- Add scene presets, standby recovery and broadcast event log.
+- Keep start/stop stream controls separate from playout queue transitions.
+- Add emergency standby only after testing each supported encoder adapter.
+
+## Release 4 — Production Team 2.0
+- Host and guest availability, assignments and call sheets.
+- Producer notes and pre-show connection checks.
+- Role-based views for administrator, producer and approved host.
+- Reuse existing account/profile sources where available; do not create duplicate member identities.
+
+## Release 5 — Graphics and Audience 2.0
+- Broadcast lower thirds, now-playing, next-up, community ticker and approved viewer messages.
+- Producer preview before graphics go on air.
+- Moderation and approval for all viewer-submitted material.
+- Public graphics/browser sources must not expose private producer notes or account data.
+
+## Release 6 — Post-Production 2.0
+- Episode package and recording references.
+- Publishing checklist, YouTube metadata preparation and archive sync.
+- Chapter/timestamp planning, thumbnail workflow and promotional assets.
+- Analytics sourced from available YouTube data; never fabricate audience metrics.
+
+## Validation gates
+- Existing login, RLS and current Studio pages continue to work.
+- New playlist workspace reads/writes only the signed-in user's queue rows.
+- A producer can add a YouTube playlist and approve it.
+- Local bridge reports the active playlist in /playout/state.
+- OBS and Streamlabs both render the same local playout source.
+- A playlist reaches its final video and the queue advances without ending the YouTube livestream.
+- Live host handoff and emergency standby are tested independently.
+- No credentials or secrets are committed.
+
+## Current branch status
+This branch begins the additive Release 1 foundation. Playlist Control reuses the existing queue schema and local bridge. It does not change Supabase schema or RLS. Further releases remain gated on inspection and end-to-end testing of the bridge and encoder installations.
