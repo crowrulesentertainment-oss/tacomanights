@@ -23,3 +23,42 @@
 .custom-active.mode-schedule .custom-graphic p{font-size:9px;margin:0}
 .is-hidden .custom-graphic{opacity:0;visibility:hidden}
 @media(max-width:700px){.custom-graphic{left:3%;right:3%;bottom:6%;padding:16px}.custom-active.mode-social .custom-graphic{width:80vw}.custom-active.mode-quote .custom-graphic{inset:12% 5%}.custom-active.mode-schedule .custom-graphic{gap:10px;padding:12px 3%}}
+
+/* Studio 3.0 fully editable graphic canvas */
+.custom-graphic{position:absolute;z-index:20;display:none;flex-direction:column;justify-content:center;gap:0;padding:24px 34px;background:var(--custom-bg,rgba(8,13,22,.92));color:var(--custom-text,#fff);font-family:var(--custom-font,Arial,Helvetica,sans-serif);border-left:8px solid var(--red);border-top:1px solid #ffffff3b;box-shadow:0 15px 45px #0008;overflow:hidden;max-width:100vw}
+.custom-active .custom-graphic{display:flex}
+.custom-graphic p{margin:0 0 10px;color:var(--gold);font-size:clamp(9px,1vw,15px);font-weight:900;letter-spacing:2px;text-transform:uppercase}
+.custom-graphic h1{margin:0 0 10px;color:var(--custom-text,#fff);font-size:var(--headline-size,58px);line-height:1.02;font-weight:900;letter-spacing:-1.5px;overflow-wrap:anywhere}
+.custom-graphic #custom-subtitle{color:var(--custom-text,#fff);font-size:clamp(14px,1.6vw,24px);letter-spacing:.2px;text-transform:none;font-weight:500}
+.custom-graphic #custom-extra{color:var(--custom-text,#fff);font-size:clamp(12px,1.2vw,18px);line-height:1.35;text-transform:none;font-weight:500;letter-spacing:0}
+.custom-graphic #custom-host{display:block;color:var(--gold);font-size:12px;letter-spacing:1px;margin-top:10px}
+.custom-graphic footer{color:var(--custom-text,#fff);font-size:12px;margin-top:12px;letter-spacing:1px}
+.custom-badge{align-self:flex-start;padding:7px 12px;margin-bottom:12px;background:var(--red);color:#fff;font-size:10px;font-weight:900;letter-spacing:1.5px}
+.custom-badge[hidden],.custom-graphic [hidden]{display:none!important}
+.custom-graphic.border-outline{border:2px solid var(--red)}
+.custom-graphic.border-none{border:0}
+.custom-graphic.corner-soft{border-radius:10px}
+.custom-graphic.corner-round{border-radius:26px}
+.custom-graphic.anim-fade{animation:tnFade .35s ease both}
+.custom-graphic.anim-slide-up{animation:tnUp .45s cubic-bezier(.2,.8,.2,1) both}
+.custom-graphic.anim-slide-left{animation:tnLeft .45s cubic-bezier(.2,.8,.2,1) both}
+.custom-graphic.anim-zoom{animation:tnZoom .35s ease both}
+.custom-graphic.anim-none{animation:none}
+@keyframes tnFade{from{opacity:0}to{opacity:1}}
+@keyframes tnUp{from{opacity:0;transform:translateY(45px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tnLeft{from{opacity:0;transform:translateX(55px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tnZoom{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+.custom-active.mode-full .custom-graphic{inset:0!important;width:100%!important;height:100%!important;min-height:100%!important;align-items:center;justify-content:center;text-align:center;padding:8%;border:0;border-radius:0}
+.custom-active.mode-breaking .custom-graphic{border-left:14px solid #ff263d}
+.custom-active.mode-guest .custom-graphic{border-left-color:var(--gold)}
+.custom-active.mode-social .custom-graphic{border-right:8px solid var(--red);border-left:0}
+.custom-active.mode-quote .custom-graphic{border-top:6px solid var(--gold)}
+.custom-active.mode-score .custom-graphic{border:2px solid var(--gold);align-items:center;text-align:center}
+.custom-active.mode-countdown .custom-graphic{border:2px solid var(--red);align-items:center;text-align:center}
+.custom-active.mode-logo .custom-graphic{padding:12px 18px}
+.custom-active.mode-logo .custom-graphic h1{font-size:clamp(20px,2vw,34px)}
+.custom-active.mode-weather .custom-graphic,.custom-active.mode-event .custom-graphic,.custom-active.mode-announcement .custom-graphic,.custom-active.mode-poll .custom-graphic,.custom-active.mode-sponsor .custom-graphic,.custom-active.mode-headline .custom-graphic,.custom-active.mode-thankyou .custom-graphic{border-left:10px solid var(--gold)}
+.custom-active.mode-full-banner .custom-graphic{left:0!important;width:100%!important;border-left:0;border-top:4px solid var(--red);border-radius:0}
+.custom-active.mode-side-panel .custom-graphic{left:auto!important;right:4%!important;width:34%!important;min-height:60%!important;top:20%!important;border-left:0;border-right:7px solid var(--red)}
+.is-hidden .custom-graphic{opacity:0!important;visibility:hidden!important;pointer-events:none}
+@media(max-width:700px){.custom-graphic{padding:15px 18px}.custom-graphic h1{font-size:clamp(20px,6vw,var(--headline-size,40px))}.custom-active.mode-side-panel .custom-graphic{width:60%!important;right:3%!important}}
