@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main, rebuild/phase-1-2-public-pages]
+    branches: [main, rebuild/phase-1-2-public-pages, rebuild/tacoma-nights-3.0-complete]
 permissions:
   contents: read
 jobs:
@@ -20,6 +20,8 @@ jobs:
         run: node scripts/qa-public-pages.mjs
       - name: Check JavaScript syntax
         run: |
+          node --check assets/js/v3.js
+          node --check assets/js/member-profile.js
           node --check assets/js/site.js
           node --check assets/js/pages.js
           node --check assets/js/config.js
