@@ -9,7 +9,10 @@ async function api(path,body){
  if(!r.ok)throw Error(d.error||"Bridge request failed ("+r.status+")");
  return d;
 }
-async function getYouTubeStatus(){\n try{const y=await api("/youtube/status");setText("youtube-output-status",y.status||"NOT VERIFIED");setText("youtube-output-detail",y.title?y.title+" · "+(y.message||""):y.message||"No YouTube status returned.");const el=$("youtube-output-status");if(el)el.dataset.status=String(y.status||"").toLowerCase();return y}catch(e){setText("youtube-output-status","UNAVAILABLE");setText("youtube-output-detail",e.message);return null}\n}\nasync function getHealth(){
+async function getYouTubeStatus(){
+ try{const y=await api("/youtube/status");setText("youtube-output-status",y.status||"NOT VERIFIED");setText("youtube-output-detail",y.title?y.title+" · "+(y.message||""):y.message||"No YouTube status returned.");const el=$("youtube-output-status");if(el)el.dataset.status=String(y.status||"").toLowerCase();return y}catch(e){setText("youtube-output-status","UNAVAILABLE");setText("youtube-output-detail",e.message);return null}
+}
+async function getHealth(){
  const r=await fetch(base+"/health",{headers:headers(),cache:"no-store"});
  const h=await r.json().catch(()=>({}));
  if(!r.ok||!h.ok)throw Error(h.error||"Local bridge is not responding.");
@@ -52,7 +55,8 @@ async function refresh(){
    setText("scheduler-health","SIGN IN REQUIRED");const toggle=$("publish-toggle");if(toggle)toggle.hidden=true;
   }
   let h;try{h=await getHealth()}catch(e){lastHealth=null;h={ok:false,connected:false,sessionPaired:false};setText("bridge-health","OFFLINE");setText("engine-status","ENGINE: NOT CONNECTED");setText("active-engine","—");setText("monitor-message","AWAITING BRIDGE");}
-  renderNetwork(h,queued);\n  await getYouTubeStatus();
+  renderNetwork(h,queued);
+  await getYouTubeStatus();
  }catch(e){setText("scheduler-health","ERROR");setText("data-error",e.message)}
  finally{refreshBusy=false}
 }
@@ -94,7 +98,9 @@ async function start(){
   }catch(e){setText("data-error",e.message)}
   finally{button.disabled=false}
  });
- $("connect-bridge")?.addEventListener("click",connectBridge);\n $("connect-youtube")?.addEventListener("click",()=>{window.location.href=base+"/youtube/auth"});\n $("check-youtube")?.addEventListener("click",()=>getYouTubeStatus());
+ $("connect-bridge")?.addEventListener("click",connectBridge);
+ $("connect-youtube")?.addEventListener("click",()=>{window.location.href=base+"/youtube/auth"});
+ $("check-youtube")?.addEventListener("click",()=>getYouTubeStatus());
  document.querySelectorAll("[data-command]").forEach(button=>button.addEventListener("click",()=>runCommand(button)));
  auth.client.auth.onAuthStateChange(()=>{refresh().catch(e=>setText("data-error",e.message))});
  await refresh();
