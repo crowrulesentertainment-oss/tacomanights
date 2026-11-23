@@ -30,32 +30,28 @@ function renderNetwork(h,queued){
 async function refresh(){
  if(refreshBusy)return;refreshBusy=true;
  try{
-  let queued=0;const user=window.TNStudioReady?null:null;
-  const auth=await window.TNStudioReady,session=auth.getSession();
+  let queued=0;const auth=await window.TNStudioReady,session=auth.getSession();
   if(session?.user){
-   const[q,stateResult]=await Promise.all([
-    auth.client.from("live_network_playout_queue").select("id",{count:"exact",head:true}).eq("status","queued"),
-    auth.client.from("live_network_public_state").select("*").maybeSingle()
-   ]);
-   if(q.error)throw q.error;
-   queued=q.count||0;
-   if(stateResult.error)throw stateResult.error;
-   const state=stateResult.data;
-   if(state){
-    setText("scheduler-health","CONNECTED");
-    setText("active-program",state.current_program_title||"No program loaded");
-    const toggle=$("publish-toggle");if(toggle){toggle.hidden=false;toggle.textContent=state.is_published?"Unpublish public status":"Publish public status";toggle.dataset.published=String(!!state.is_published)}
-   }else{
-    setText("scheduler-health","NO NETWORK STATE");
-    const toggle=$("publish-toggle");if(toggle)toggle.hidden=true;
-    setText("active-program","No program loaded");
-    setText("data-error","No network-state row is associated with this account. Sign in with the network owner account; the Studio will not create a duplicate row.");
-   }
+   try{
+    const[q,stateResult]=await Promise.all([
+     auth.client.from("live_network_playout_queue").select("id",{count:"exact",head:true}).eq("status","queued"),
+     auth.client.from("live_network_public_state").select("*").maybeSingle()
+    ]);
+    if(q.error)throw q.error;queued=q.count||0;if(stateResult.error)throw stateResult.error;
+    const state=stateResult.data;
+    if(state){
+     setText("scheduler-health","CONNECTED");setText("data-error","");
+     setText("active-program",state.current_program_title||"No program loaded");
+     const toggle=$("publish-toggle");if(toggle){toggle.hidden=false;toggle.textContent=state.is_published?"Unpublish public status":"Publish public status";toggle.dataset.published=String(!!state.is_published)}
+    }else{
+     setText("scheduler-health","NO NETWORK STATE");const toggle=$("publish-toggle");if(toggle)toggle.hidden=true;
+     setText("active-program","No program loaded");setText("data-error","No network-state row is associated with this account. Sign in with the network owner account; the Studio will not create a duplicate row.");
+    }
+   }catch(e){setText("scheduler-health","ERROR");setText("data-error","Supabase scheduler: "+e.message)}
   }else{
-   setText("scheduler-health","SIGN IN REQUIRED");
-   const toggle=$("publish-toggle");if(toggle)toggle.hidden=true;
+   setText("scheduler-health","SIGN IN REQUIRED");const toggle=$("publish-toggle");if(toggle)toggle.hidden=true;
   }
-  let h;try{h=await getHealth()}catch(e){h={ok:false,connected:false,sessionPaired:false};setText("bridge-health","OFFLINE");setText("engine-status","ENGINE: NOT CONNECTED");setText("active-engine","—");setText("monitor-message","AWAITING BRIDGE");}
+  let h;try{h=await getHealth()}catch(e){lastHealth=null;h={ok:false,connected:false,sessionPaired:false};setText("bridge-health","OFFLINE");setText("engine-status","ENGINE: NOT CONNECTED");setText("active-engine","—");setText("monitor-message","AWAITING BRIDGE");}
   renderNetwork(h,queued);
  }catch(e){setText("scheduler-health","ERROR");setText("data-error",e.message)}
  finally{refreshBusy=false}
