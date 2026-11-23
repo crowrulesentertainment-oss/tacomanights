@@ -92,3 +92,23 @@ Release 1 foundation and the first Release 2 on-air graphics/schedule foundation
 - Anonymous access is limited to the public display columns. Anonymous SELECT on `live_network_schedule` and `live_network_programs` is revoked; the owner-only authenticated RLS policies remain in place.
 - Verified with SQL role tests: anonymous can select the allowed EPG display fields; anonymous cannot select owner/source/publication fields or query the private schedule/program tables. A temporary published-row visibility test was rolled back; no test data remains.
 - The GitHub Pages/browser rendering and local bridge synchronization still require an end-to-end test after the local bridge is updated/restarted. No OBS/Streamlabs or YouTube encoder test has been performed.
+
+
+## Studio 3.0 — Multi-Channel Network foundation (Release 1 + 2)
+
+### Implemented on branch: `studio-3.0-network-foundation`
+- Added `network_channels` as an owner-scoped channel registry with channel key, description, lifecycle status, single/multiple operating mode, distribution preference, website path, YouTube channel ID and playlist ID. No stream keys or OAuth secrets are stored.
+- Added nullable `channel_id` associations to programs, schedules, playout queue entries, and the public EPG projection. Existing records remain NULL/unassigned and continue to use the legacy network-wide workflow.
+- Added the Studio Channel Manager at `studio/channels.html` with create/list/pause/activate controls.
+- Added channel selectors to program creation and schedule creation. Programs and schedule entries can be assigned independently; schedule selection follows the selected program's channel when available.
+- Added a Channel Manager link to the existing Master Control navigation.
+- Added owner-only RLS for the channel registry. Anonymous privileges are explicitly revoked; authenticated table privileges are granted and constrained by `auth.uid() = owner_id`.
+- The migration is additive. Existing OBS/Streamlabs adapters, local bridge routes, YouTube OAuth status flow, stream start/stop controls, public guide page and current queue behavior were not modified by this release.
+- The new channel_id field on the playout queue is groundwork only; the existing bridge continues to consume the existing queue behavior until a separately tested channel-aware playout release.
+- Public channel pages, multi-channel EPG rendering, YouTube output activation and simultaneous encoder sessions remain later releases.
+
+### Validation still required
+- Verify the new channel table is available through the project's Data API and that anonymous reads/writes are denied.
+- Sign in to Studio, create a test channel, assign a program and schedule entry, and confirm owner-scoped reads/writes.
+- Verify legacy unassigned programs, schedule entries, queue items and current public guide remain unchanged.
+- Do not test encoder switching or stream start/stop as part of this foundation release.
