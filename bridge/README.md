@@ -21,3 +21,18 @@ The queue uses the existing `live_network_playout_queue` table. Only rows with `
 
 ## Safety
 The service binds to `127.0.0.1` by default. Keep it local; never expose this API or OBS/Streamlabs control ports to the internet. Never commit `.env`, OBS passwords, Streamlabs tokens, YouTube stream keys, or Supabase secret/service-role keys. The bridge never starts or stops the YouTube stream automatically; stream start/stop remains a deliberate producer action.
+
+
+## Verify the actual YouTube broadcast
+
+The Master Control dashboard keeps encoder status separate from YouTube's own broadcast status. To enable automatic verification:
+
+1. In Google Cloud Console, create or select a project and enable **YouTube Data API v3**.
+2. Configure the OAuth consent screen. If the app is in Testing mode, add the CrowRules TV Google account as a test user.
+3. Create an OAuth 2.0 **Web application** client ID.
+4. Add this exact authorized redirect URI: `http://127.0.0.1:8787/youtube/callback`.
+5. In the local `bridge/.env`, set `YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`, and `YOUTUBE_REDIRECT_URI=http://127.0.0.1:8787/youtube/callback`. Never put the client secret in GitHub or a browser page.
+6. Restart the bridge, open local Master Control, and select **Connect YouTube account**. Sign in to the Google account that owns the CrowRules TV channel and approve the read-only YouTube permission.
+7. Return to Master Control and select **Check YouTube now**. The dashboard checks the authenticated account's active broadcasts through `liveBroadcasts.list` and reports LIVE only when YouTube returns a broadcast whose lifecycle status is `live`.
+
+The OAuth refresh token is stored locally in `bridge/.youtube-token.json` and is not committed. Keep the bridge computer private. If the Google OAuth app remains in Testing mode, refresh tokens may expire after seven days; publish/verify the consent configuration as appropriate for your app. The dashboard's YouTube check is read-only: it does not start, stop, or alter a YouTube broadcast. A missing active broadcast, API permission problem, or OAuth setup problem is shown as a separate status instead of guessing from the encoder state.
