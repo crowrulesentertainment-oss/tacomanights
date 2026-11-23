@@ -23,6 +23,11 @@ jobs:
           node --check assets/js/site.js
           node --check assets/js/pages.js
           node --check assets/js/config.js
+          node --check network/network.js
+          node --check studio/studio.js
+          node --check bridge/src/index.js
+          node --check bridge/src/adapters/obs.js
+          node --check bridge/src/adapters/streamlabs.js
   browser-smoke:
     runs-on: ubuntu-latest
     steps:
