@@ -14,18 +14,53 @@ function showDetail(){const host=$("#tn2-show-title");if(!host)return;const key=
 function addNav(){}
 async function weeklyQuestion(){const host=$("[data-tn2-question]");if(!host||!db)return;try{const{data,error}=await db.from("tn_weekly_questions").select("id,question,context,closes_at,episode_slug").eq("status","active").order("opens_at",{ascending:false}).limit(1).maybeSingle();if(error)throw error;if(data){host.innerHTML='<span class="tn2-eyebrow">THE PEOPLE’S PERSPECTIVE · QUESTION OF THE WEEK</span><h3>'+esc(data.question)+'</h3><p>'+esc(data.context||"Share your perspective with Tacoma Nights.")+'</p><a class="tn2-link" href="'+(document.body.dataset.root||"./")+'people-perspective/?question='+encodeURIComponent(data.id)+'">Share your answer ↗</a>'}}catch(e){console.info("Weekly question feed unavailable until the 2.0 migration is applied.",e)}}
 async function crew(){const host=$("[data-tn2-crew]");if(!host||!db)return;try{const{data,error}=await db.from("tn_people_profiles").select("slug,display_name,role_title,department,bio,avatar_url").eq("status","published").order("sort_order").order("display_name").limit(6);if(error)throw error;if(!data?.length){host.innerHTML='<p class="tn2-footer-note">Crew profiles will appear here as they are approved for publication.</p>';return}host.innerHTML=data.map(p=>'<article class="tn2-crew-card">'+(p.avatar_url?'<img loading="lazy" src="'+esc(p.avatar_url)+'" alt="">':'<div class="tn2-photo" style="min-height:180px"></div>')+'<h3>'+esc(p.display_name)+'</h3><p>'+esc(p.role_title||p.department||"Tacoma Nights contributor")+'</p><a class="tn2-link" href="'+(document.body.dataset.root||"./")+'crew/?profile='+encodeURIComponent(p.slug)+'">Meet '+esc(p.display_name.split(" ")[0])+' ↗</a></article>').join("")}catch(e){console.info("Crew directory awaits the 2.0 migration.",e)}}
-async function submitPerspective(form){const status=form.querySelector(".tn2-status"),d=new FormData(form),file=form.elements.media?.files?.[0]||null,type=d.get("media_type"),questionId=d.get("question_id")||null;let bucketPath=null;
+async function submitPerspective(form){
+const status=form.querySelector(".tn2-status"),uploadStatus=form.querySelector("[data-tn2-upload-status]"),d=new FormData(form),file=form.elements.media?.files?.[0]||null,type=d.get("media_type"),questionId=d.get("question_id")||null;
+let bucketPath=null;
 if(!db){status.textContent="Secure submissions are not configured. Please try again later.";return}
 if(!d.get("consent")){status.textContent="Please confirm the permission statement before submitting.";return}
-const limits={video:150*1024*1024,audio:30*1024*1024,photo:15*1024*1024},mimes={video:["video/mp4","video/webm","video/quicktime"],audio:["audio/mpeg","audio/mp4","audio/wav","audio/webm","audio/ogg"],photo:["image/jpeg","image/png","image/webp"]};
-if(type!=="written"){if(!file){status.textContent="Choose a file to upload.";return}if(!mimes[type]?.includes(file.type)){status.textContent="That file format is not supported. Please choose an MP4/WebM/MOV video, supported audio, or JPG/PNG/WebP image.";return}if(file.size>limits[type]){status.textContent="This file is larger than the "+(limits[type]/1024/1024)+" MiB limit for this format.";return}}
+const limits={video:50*1024*1024*1024,audio:30*1024*1024,photo:15*1024*1024},mimes={video:["video/mp4","video/webm","video/quicktime","video/x-m4v"],audio:["audio/mpeg","audio/mp4","audio/wav","audio/webm","audio/ogg"],photo:["image/jpeg","image/png","image/webp"]};
+if(type!=="written"){
+ if(!file){status.textContent="Choose a file for your "+type+" response.";return}
+ if(!mimes[type]?.includes(file.type)){status.textContent="That file format is not supported for this response type.";return}
+ if(file.size>limits[type]){status.textContent="This file is larger than the "+(limits[type]/1024/1024/1024).toFixed(type==="video"?0:2)+" GB limit for this format.";return}
+}
+const submitButton=form.querySelector('button[type="submit"]');if(submitButton)submitButton.disabled=true;
 status.textContent="Preparing your submission…";
 try{
-if(file){const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,"_").slice(-90),path="incoming/"+crypto.randomUUID()+"-"+safe;status.textContent="Uploading your private media…";const{error:uploadError}=await db.storage.from("tn-community-submissions").upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});if(uploadError)throw uploadError;bucketPath=path}
-const metadata={category:"peoples_perspective",question_id:questionId,media_type:type,storage_bucket:bucketPath?"tn-community-submissions":null,object_path:bucketPath,permission_to_review_and_consider_publication:true,guardian_consent: d.get("guardian_consent")==="on",contact_permission:d.get("contact_permission")==="on",submitted_at:new Date().toISOString()};
-const{error}=await db.from("tn_submissions").insert({submission_type:"community-submit",submitter_name:d.get("name")||"",submitter_email:d.get("email")||"",title:d.get("title")||"People’s Perspective response",message:d.get("message")||"Community media submission",metadata,status:"pending"});
-if(error)throw error;form.reset();status.textContent="Thank you. Your response is safely submitted for private review. It will not appear publicly unless selected and approved."
-}catch(e){console.error(e);status.textContent="We couldn't complete the submission: "+(e.message||"Please try again later.")}}
+ if(file){
+  const{data:{session},error:sessionError}=await db.auth.getSession();
+  if(sessionError)throw sessionError;
+  if(!session?.user?.id)throw new Error("Sign in to your Tacoma Nights account before uploading media. You can still submit a written response without a file.");
+  if(!window.tus?.Upload)throw new Error("The resumable upload service did not load. Refresh the page and try again.");
+  const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,"_").slice(-90),path=session.user.id+"/incoming/"+crypto.randomUUID()+"-"+safe;
+  const projectRef=new URL((window.TACOMA_NIGHTS_CONFIG||{}).supabaseUrl).hostname.split(".")[0];
+  const endpoint="https://"+projectRef+".storage.supabase.co/storage/v1/upload/resumable";
+  status.textContent="Uploading your private media…";
+  if(uploadStatus)uploadStatus.textContent="Starting secure resumable upload. Keep this page open; interrupted uploads can be resumed by selecting the same file again.";
+  await new Promise((resolve,reject)=>{
+   const upload=new window.tus.Upload(file,{
+    endpoint,retryDelays:[0,3000,5000,10000,20000],
+    headers:{authorization:"Bearer "+session.access_token,apikey:(window.TACOMA_NIGHTS_CONFIG||{}).supabaseAnonKey},
+    metadata:{bucketName:"tn-community-perspective-private",objectName:path,contentType:file.type,cacheControl:"3600"},
+    chunkSize:6*1024*1024,uploadDataDuringCreation:true,removeFingerprintOnSuccess:true,
+    onError:reject,
+    onProgress:(uploaded,total)=>{const pct=total?Math.min(100,uploaded/total*100):0;const mb=(uploaded/1024/1024).toFixed(1),totalMb=(total/1024/1024).toFixed(1);status.textContent="Uploading media: "+pct.toFixed(1)+"%";if(uploadStatus)uploadStatus.textContent="Private upload progress: "+pct.toFixed(1)+"% ("+mb+" / "+totalMb+" MB)."},
+    onSuccess:()=>resolve()
+   });
+   upload.findPreviousUploads().then(previous=>{if(previous.length)upload.resumeFromPreviousUpload(previous[0]);upload.start()}).catch(reject);
+  });
+  bucketPath=path;
+ }
+ const metadata={category:"peoples_perspective",question_id:questionId,media_type:type,storage_bucket:bucketPath?"tn-community-perspective-private":null,object_path:bucketPath,original_filename:file?.name||null,mime_type:file?.type||null,file_size_bytes:file?.size||null,permission_to_review_and_consider_publication:true,guardian_consent:d.get("guardian_consent")==="on",contact_permission:d.get("contact_permission")==="on",review_status:"pending",submitted_at:new Date().toISOString()};
+ status.textContent="Sending your response to the production review queue…";
+ const{error}=await db.from("tn_submissions").insert({submission_type:"community-submit",submitter_name:d.get("name")||"",submitter_email:d.get("email")||"",title:d.get("title")||"People’s Perspective response",message:d.get("message")||"Community media submission",metadata,status:"pending"});
+ if(error)throw error;
+ form.reset();if(uploadStatus)uploadStatus.textContent="Written responses do not need a file. Video files are stored privately and only production reviewers can access them.";
+ status.textContent="Thank you. Your response is now in the Tacoma Nights production team's private review queue. It will not be published unless selected and approved.";
+}catch(e){console.error(e);status.textContent=e.message||"We couldn't complete the submission. Please try again later."}
+finally{if(submitButton)submitButton.disabled=false}
+}
 function initForm(){const f=$("[data-tn2-perspective-form]");if(!f)return;f.addEventListener("submit",e=>{e.preventDefault();submitPerspective(f)});const type=f.elements.media_type,file=f.elements.media;type?.addEventListener("change",()=>{const v=type.value;file.accept=v==="video"?"video/mp4,video/webm,video/quicktime":v==="audio"?"audio/mpeg,audio/mp4,audio/wav,audio/webm,audio/ogg":v==="photo"?"image/jpeg,image/png,image/webp":"";file.disabled=v==="written";file.required=v!=="written"})}
 async function populateQuestion(){const f=$("[data-tn2-perspective-form]");if(!f||!db)return;try{const{data}=await db.from("tn_weekly_questions").select("id,question").eq("status","active").order("opens_at",{ascending:false}).limit(1).maybeSingle();if(data){f.elements.question_id.value=data.id;const q=$("#tn2-active-question");if(q)q.textContent=data.question}}catch(e){console.info(e)}}
 document.addEventListener("DOMContentLoaded",()=>{weeklyQuestion();crew();showDetail();initForm();populateQuestion()});
