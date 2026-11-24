@@ -14,30 +14,40 @@ function showDetail(){const host=$("#tn2-show-title");if(!host)return;const key=
 function addNav(){}
 async function weeklyQuestion(){const host=$("[data-tn2-question]");if(!host||!db)return;try{const{data,error}=await db.from("tn_weekly_questions").select("id,question,context,closes_at,episode_slug").eq("status","active").order("opens_at",{ascending:false}).limit(1).maybeSingle();if(error)throw error;if(data){host.innerHTML='<span class="tn2-eyebrow">THE PEOPLE’S PERSPECTIVE · QUESTION OF THE WEEK</span><h3>'+esc(data.question)+'</h3><p>'+esc(data.context||"Share your perspective with Tacoma Nights.")+'</p><a class="tn2-link" href="'+(document.body.dataset.root||"./")+'people-perspective/?question='+encodeURIComponent(data.id)+'">Share your answer ↗</a>'}}catch(e){console.info("Weekly question feed unavailable until the 2.0 migration is applied.",e)}}
 async function crew(){
-const host=$("[data-tn2-crew]");if(!host||!db)return;
+const host=$("#crew-directory-view [data-tn2-crew]");if(!host||!db)return;
 const directory=$("#crew-directory-view"),profileView=$("#crew-profile-view"),search=$("#crew-search"),count=$("#crew-count");
+const roleFilter=$("#crew-role-filter"),specialtyFilter=$("#crew-specialty-filter"),statusFilter=$("#crew-status-filter");
 const safeUrl=value=>{try{const u=new URL(value);return u.protocol==="https:"?u.href:null}catch{return null}};
 const profileId=new URLSearchParams(location.search).get("profile");
 try{
- let query=db.from("tacoma_nights_crew").select("id,display_name,role_title,bio,avatar_url,profile_url,sort_order,is_featured,specialties,volunteer_status,compensation_disclosure,portrait_approved,public_name_approved,links_approved").eq("is_published",true).eq("public_name_approved",true).order("sort_order").order("display_name");
- if(profileId)query=query.eq("id",profileId);
- const{data,error}=await query.limit(60);if(error)throw error;
- const people=data||[];
+ const{data,error}=await db.from("tacoma_nights_crew").select("id,display_name,role_title,bio,avatar_url,profile_url,sort_order,is_featured,specialties,volunteer_status,compensation_disclosure,portrait_approved,public_name_approved,links_approved,is_published").eq("is_published",true).order("sort_order").order("display_name").limit(100);
+ if(error)throw error;const people=data||[];
+ const publicName=p=>p.public_name_approved?p.display_name:"Crew member";
  const initials=name=>String(name||"TN").split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase();
  const tagsHtml=tags=>(Array.isArray(tags)&&tags.length?'<div class="crew-tags">'+tags.map(t=>'<span class="crew-tag">'+esc(t)+'</span>').join("")+'</div>':"");
- const photoInner=p=>{const url=p.portrait_approved?safeUrl(p.avatar_url):null;return url?'<img loading="lazy" src="'+esc(url)+'" alt="'+esc(p.display_name)+'">':'<div class="crew-photo-placeholder">'+esc(initials(p.display_name))+'</div>'};
+ const photoInner=p=>{const url=p.portrait_approved?safeUrl(p.avatar_url):null;return url?'<img loading="lazy" src="'+esc(url)+'" alt="'+esc(publicName(p))+'">':'<div class="crew-photo-placeholder">'+(p.public_name_approved?esc(initials(p.display_name)):"TN")+'</div>'};
  if(profileId){
   if(directory)directory.hidden=true;if(profileView)profileView.hidden=false;
-  const p=people[0];
+  const p=people.find(x=>String(x.id)===String(profileId));
   if(!p){profileView.innerHTML='<div class="crew-empty"><h2>Profile unavailable</h2><p>This profile is not currently published for public viewing.</p><a class="crew-action" href="./">← BACK TO CREW</a></div>';return}
   const external=p.links_approved?safeUrl(p.profile_url):null;
-  profileView.innerHTML='<article class="crew-profile"><div class="crew-profile-head"><div class="crew-photo">'+photoInner(p)+'</div><div class="crew-profile-copy"><p class="crew-kicker">TACOMA NIGHTS CREW PROFILE</p><h2>'+esc(p.display_name)+'</h2><p class="crew-role">'+esc(p.role_title||"Tacoma Nights Contributor")+'</p><p>'+(p.volunteer_status==="volunteer"?"Currently contributing as a volunteer.":"Part of the Tacoma Nights creative team.")+'</p><a class="crew-action" href="./">← ALL CREW PROFILES</a>'+(external?' <a class="crew-action secondary" href="'+esc(external)+'" target="_blank" rel="noopener noreferrer">PUBLIC LINK ↗</a>':"")+'</div></div><div class="crew-profile-content"><h3>About</h3><p class="crew-bio">'+esc(p.bio||"More about this contributor will be shared as their profile is completed.")+'</p>'+(Array.isArray(p.specialties)&&p.specialties.length?'<h3>Specialties &amp; interests</h3>'+tagsHtml(p.specialties):"")+'<div class="crew-disclosure">'+esc(p.compensation_disclosure||"Tacoma Nights is built through volunteer and community collaboration.")+'</div></div></article>';
-  document.title=p.display_name+" | Tacoma Nights Crew";return;
+  profileView.innerHTML='<article class="crew-profile"><div class="crew-profile-head"><div class="crew-photo">'+photoInner(p)+'</div><div class="crew-profile-copy"><p class="crew-kicker">TACOMA NIGHTS CREW PROFILE</p><h2>'+esc(publicName(p))+'</h2><p class="crew-role">'+esc(p.role_title||"Tacoma Nights Contributor")+'</p><p>'+(p.volunteer_status==="volunteer"?"Currently contributing as a volunteer.":"Part of the Tacoma Nights creative team.")+'</p><a class="crew-action" href="./">← ALL CREW PROFILES</a>'+(external?' <a class="crew-action secondary" href="'+esc(external)+'" target="_blank" rel="noopener noreferrer">PUBLIC LINK ↗</a>':"")+'</div></div><div class="crew-profile-content"><h3>About</h3><p class="crew-bio">'+esc(p.bio||"A member of the Tacoma Nights team, bringing their perspective and creativity to the show.")+'</p>'+(Array.isArray(p.specialties)&&p.specialties.length?'<h3>Specialties &amp; interests</h3>'+tagsHtml(p.specialties):"")+'<div class="crew-disclosure">'+esc(p.compensation_disclosure||"Tacoma Nights is built through volunteer and community collaboration.")+'</div></div></article>';
+  document.title=publicName(p)+" | Tacoma Nights Crew";return;
  }
  if(directory)directory.hidden=false;if(profileView)profileView.hidden=true;
- if(!people.length){host.innerHTML='<div class="crew-empty"><h3>Profiles are being prepared.</h3><p>Public crew profiles will appear here as contributors complete their profile and publication permissions.</p></div>';if(count)count.textContent="No approved public profiles are available right now.";return}
- const render=()=>{const term=(search?.value||"").trim().toLowerCase(),shown=people.filter(p=>!term||[p.display_name,p.role_title,p.bio,...(p.specialties||[])].join(" ").toLowerCase().includes(term));host.innerHTML=shown.map(p=>'<article class="crew-card"><div class="crew-photo">'+photoInner(p)+'</div><div class="crew-card-body"><h3>'+esc(p.display_name)+'</h3><p class="crew-role">'+esc(p.role_title||"Tacoma Nights Contributor")+'</p><p class="crew-bio">'+esc(p.bio||"A member of the Tacoma Nights team, bringing their perspective and creativity to the show.")+'</p>'+tagsHtml(p.specialties)+'<div class="crew-actions"><a class="crew-action" href="?profile='+encodeURIComponent(p.id)+'">VIEW PROFILE ↗</a>'+(p.links_approved&&safeUrl(p.profile_url)?'<a class="crew-action secondary" href="'+esc(safeUrl(p.profile_url))+'" target="_blank" rel="noopener noreferrer">PUBLIC LINK ↗</a>':"")+'</div></div></article>').join("")||'<div class="crew-empty">No crew profiles match that search. Try another name or specialty.</div>';if(count)count.textContent=shown.length+" approved public profile"+(shown.length===1?"":"s")+" · Tacoma Nights production team";};
- render();if(search)search.addEventListener("input",render);
+ if(!people.length){host.innerHTML='<div class="crew-empty"><h3>Profiles are being prepared.</h3><p>Published crew profiles will appear here as the team completes them.</p></div>';if(count)count.textContent="No published crew profiles are available right now.";return}
+ const unique=values=>[...new Set(values.filter(Boolean).map(v=>String(v).trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+ const fillSelect=(select,values,label)=>{if(select)select.innerHTML='<option value="">'+label+'</option>'+values.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join("")};
+ fillSelect(roleFilter,unique(people.map(p=>p.role_title)),"All roles");
+ fillSelect(specialtyFilter,unique(people.flatMap(p=>Array.isArray(p.specialties)?p.specialties:[])),"All specialties");
+ fillSelect(statusFilter,unique(people.map(p=>p.volunteer_status)),"All participation types");
+ const render=()=>{
+  const term=(search?.value||"").trim().toLowerCase(),role=roleFilter?.value||"",specialty=specialtyFilter?.value||"",status=statusFilter?.value||"";
+  const shown=people.filter(p=>[publicName(p),p.role_title,p.bio,...(p.specialties||[])].join(" ").toLowerCase().includes(term)&&(!role||p.role_title===role)&&(!specialty||(p.specialties||[]).includes(specialty))&&(!status||p.volunteer_status===status));
+  host.innerHTML=shown.map(p=>'<article class="crew-card"><div class="crew-photo">'+photoInner(p)+'</div><div class="crew-card-body"><h3>'+esc(publicName(p))+'</h3><p class="crew-role">'+esc(p.role_title||"Tacoma Nights Contributor")+'</p><p class="crew-bio">'+esc(p.bio||"A member of the Tacoma Nights team, bringing their perspective and creativity to the show.")+'</p>'+tagsHtml(p.specialties)+'<div class="crew-actions"><a class="crew-action" href="?profile='+encodeURIComponent(p.id)+'">VIEW PROFILE ↗</a>'+(p.links_approved&&safeUrl(p.profile_url)?'<a class="crew-action secondary" href="'+esc(safeUrl(p.profile_url))+'" target="_blank" rel="noopener noreferrer">PUBLIC LINK ↗</a>':"")+'</div></div></article>').join("")||'<div class="crew-empty">No crew profiles match those filters. Try clearing one or more filters.</div>';
+  if(count)count.textContent=shown.length+" of "+people.length+" published crew profiles shown · Tacoma Nights production team";
+ };
+ [search,roleFilter,specialtyFilter,statusFilter].filter(Boolean).forEach(el=>{el.addEventListener("input",render);el.addEventListener("change",render)});render();
 }catch(e){console.warn("Crew directory could not be loaded.",e);host.innerHTML='<div class="crew-empty">The crew directory is temporarily unavailable. Please refresh the page later.</div>';if(count)count.textContent="Crew profiles could not be loaded."}
 }
 async function submitPerspective(form){
