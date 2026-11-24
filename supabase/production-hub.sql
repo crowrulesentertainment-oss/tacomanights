@@ -153,7 +153,9 @@ drop policy if exists "production ideas admin manage" on public.tn_production_id
 create policy "production ideas admin manage" on public.tn_production_ideas for all to authenticated using (private.tn_production_is_admin()) with check (private.tn_production_is_admin());
 
 drop policy if exists "production updates public read" on public.tn_production_updates;
-create policy "production updates public read" on public.tn_production_updates for select to anon,authenticated using (visibility='public' or (visibility='team' and private.tn_production_is_member()));
+create policy "production updates public read" on public.tn_production_updates for select to anon,authenticated using (visibility='public');
+drop policy if exists "production updates team read" on public.tn_production_updates;
+create policy "production updates team read" on public.tn_production_updates for select to authenticated using (visibility='team' and private.tn_production_is_member());
 drop policy if exists "production updates admin write" on public.tn_production_updates;
 create policy "production updates admin write" on public.tn_production_updates for all to authenticated using (private.tn_production_is_admin()) with check (private.tn_production_is_admin());
 
