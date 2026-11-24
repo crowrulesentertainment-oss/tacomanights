@@ -4,9 +4,18 @@ let bridgeToken=sessionStorage.getItem("tn_bridge_token")||"",lastHealth=null,re
 const logKey=()=> "tn-master-control-events-v2:"+((window.TNStudioReady?.getSession?.()?.user?.id)||"guest");
 const checklistKey=()=> "tn-master-control-checklist-v2:"+((window.TNStudioReady?.getSession?.()?.user?.id)||"guest");
 const headers=()=>({"Content-Type":"application/json",...(bridgeToken?{Authorization:"Bearer "+bridgeToken}:{})});
+async function fetchLocal(path,options={}){
+ const controller=new AbortController(),timer=window.setTimeout(()=>controller.abort(),5000);
+ try{return await fetch(base+path,{...options,signal:controller.signal,cache:"no-store"})}
+ catch(error){
+  if(error?.name==="AbortError"){const e=new Error("The local bridge did not respond within 5 seconds. Check that it is running on this broadcast computer at 127.0.0.1:8787.");e.name="BridgeTimeoutError";throw e}
+  if(error instanceof TypeError){const e=new Error("The browser could not reach the local bridge. Open Studio on the broadcast computer, allow local-network access for this site if prompted, and confirm the bridge is running at 127.0.0.1:8787.");e.name="LocalAccessError";throw e}
+  throw error;
+ }finally{window.clearTimeout(timer)}
+}
 const setText=(id,value)=>{const el=$(id);if(el)el.textContent=value};
 async function api(path,body){
- const r=await fetch(base+path,{method:body?"POST":"GET",headers:headers(),cache:"no-store",...(body?{body:JSON.stringify(body)}:{})});
+ const r=await fetchLocal(path,{method:body?"POST":"GET",headers:headers(),...(body?{body:JSON.stringify(body)}:{})});
  const d=await r.json().catch(()=>({}));
  if(!r.ok)throw Error(d.error||"Bridge request failed ("+r.status+")");
  return d;
@@ -38,7 +47,7 @@ async function getYouTubeStatus(){
  }catch(e){setText("youtube-output-status","UNAVAILABLE");setText("youtube-output-detail",e.message);return null}
 }
 async function getHealth(){
- const r=await fetch(base+"/health",{headers:headers(),cache:"no-store"});
+ const r=await fetchLocal("/health",{headers:headers()});
  const h=await r.json().catch(()=>({}));
  if(!r.ok||!h.ok)throw Error(h.error||"Local bridge is not responding.");
  lastHealth=h;
@@ -90,8 +99,8 @@ async function refresh(){
   }else{
    setText("scheduler-health","SIGN IN REQUIRED");const toggle=$("publish-toggle");if(toggle)toggle.hidden=true;
   }
-  let h;try{h=await getHealth()}catch(e){lastHealth=null;h={ok:false,connected:false,sessionPaired:false};setText("bridge-health","OFFLINE");setText("engine-status","ENGINE: NOT CONNECTED");setText("active-engine","—");setText("monitor-message","AWAITING BRIDGE");}
-  renderNetwork(h,queued);
+  let h;try{h=await getHealth()}catch(e){lastHealth=null;h={ok:false,connected:false,sessionPaired:false};setText("bridge-health","OFFLINE");setText("engine-status","ENGINE: NOT CONNECTED");setText("active-engine","—");setText("monitor-message","AWAITING BRIDGE");setText("bridge-message",e.message);setText("network-status",e.name==="LocalAccessError"?"LOCAL ACCESS BLOCKED":e.name==="BridgeTimeoutError"?"BRIDGE TIMEOUT":"OFFLINE");}
+  renderNetwork(h,queued);setText("last-checked","Last checked "+new Date().toLocaleTimeString());
  const statusSignature=(h?.ok?"online":"offline")+"|"+(h?.connected?"connected":"disconnected")+"|"+queued;if(statusSignature!==lastLoggedStatus){lastLoggedStatus=statusSignature;recordEvent("Status changed · bridge "+(h?.ok?"online":"offline")+", encoder "+(h?.connected?"connected":"disconnected")+", queue "+queued+".","status");}
   await refreshMasterPreview(h);
   await getYouTubeStatus();
@@ -182,6 +191,7 @@ async function start(){
   finally{button.disabled=false}
  });
  $("connect-bridge")?.addEventListener("click",connectBridge);
+ $("refresh-dashboard")?.addEventListener("click",()=>{refresh().catch(e=>setText("bridge-message",e.message));loadRundown();loadQueueSnapshot()});
  initChecklist();renderEventLog();
  $("reset-checklist")?.addEventListener("click",()=>{if(!confirm("Reset all pre-show checklist items?"))return;document.querySelectorAll("[data-check]").forEach(x=>x.checked=false);localStorage.removeItem(checklistKey());updateChecklist();recordEvent("Pre-show checklist reset.","checklist")});
  $("clear-event-log")?.addEventListener("click",()=>{if(!confirm("Clear this browser’s local event log?"))return;localStorage.removeItem(logKey());renderEventLog()});
