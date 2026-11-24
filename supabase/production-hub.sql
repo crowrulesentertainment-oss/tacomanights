@@ -138,7 +138,7 @@ drop policy if exists "production episodes admin write" on public.tn_production_
 create policy "production episodes admin write" on public.tn_production_episodes for all to authenticated using (private.tn_production_is_admin()) with check (private.tn_production_is_admin());
 
 drop policy if exists "production assignments member read" on public.tn_production_assignments;
-create policy "production assignments member read" on public.tn_production_assignments for select to authenticated using (assignee_id=auth.uid() or private.tn_production_is_admin());
+create policy "production assignments member read" on public.tn_production_assignments for select to authenticated using (private.tn_production_is_member() and (assignee_id=auth.uid() or private.tn_production_is_admin()));
 drop policy if exists "production assignments admin write" on public.tn_production_assignments;
 create policy "production assignments admin write" on public.tn_production_assignments for all to authenticated using (private.tn_production_is_admin()) with check (private.tn_production_is_admin());
 
@@ -176,7 +176,7 @@ on conflict(id) do update set public=false,file_size_limit=53687091200;
 drop policy if exists "production storage upload own" on storage.objects;
 create policy "production storage upload own" on storage.objects for insert to authenticated with check (bucket_id='tn-production-private' and (storage.foldername(name))[1]=auth.uid()::text and private.tn_production_is_member());
 drop policy if exists "production storage read own or admin" on storage.objects;
-create policy "production storage read own or admin" on storage.objects for select to authenticated using (bucket_id='tn-production-private' and ((storage.foldername(name))[1]=auth.uid()::text or private.tn_production_is_admin()));
+create policy "production storage read own or admin" on storage.objects for select to authenticated using (bucket_id='tn-production-private' and private.tn_production_is_member() and ((storage.foldername(name))[1]=auth.uid()::text or private.tn_production_is_admin()));
 drop policy if exists "production storage admin delete" on storage.objects;
 create policy "production storage admin delete" on storage.objects for delete to authenticated using (bucket_id='tn-production-private' and private.tn_production_is_admin());
 
