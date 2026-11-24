@@ -136,6 +136,8 @@ drop policy if exists "production assignments member read" on public.tn_producti
 create policy "production assignments member read" on public.tn_production_assignments for select to authenticated using (assignee_id=auth.uid() or private.tn_production_is_admin());
 drop policy if exists "production assignments admin write" on public.tn_production_assignments;
 create policy "production assignments admin write" on public.tn_production_assignments for all to authenticated using (private.tn_production_is_admin()) with check (private.tn_production_is_admin());
+drop policy if exists "production assignment assignee update" on public.tn_production_assignments;
+create policy "production assignment assignee update" on public.tn_production_assignments for update to authenticated using (assignee_id=auth.uid()) with check (assignee_id=auth.uid());
 
 drop policy if exists "production uploads read" on public.tn_production_uploads;
 create policy "production uploads read" on public.tn_production_uploads for select to authenticated using (uploader_id=auth.uid() or private.tn_production_is_admin());
@@ -162,8 +164,8 @@ drop policy if exists "production activity member insert" on public.tn_productio
 create policy "production activity member insert" on public.tn_production_activity for insert to authenticated with check (actor_id=auth.uid() and private.tn_production_is_member());
 
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
-values('tn-production-private','tn-production-private',false,524288000,array['video/*','audio/*','image/*','application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/plain'])
-on conflict(id) do update set public=false,file_size_limit=524288000;
+values('tn-production-private','tn-production-private',false,52428800,array['video/*','audio/*','image/*','application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/plain'])
+on conflict(id) do update set public=false,file_size_limit=52428800;
 
 drop policy if exists "production storage upload own" on storage.objects;
 create policy "production storage upload own" on storage.objects for insert to authenticated with check (bucket_id='tn-production-private' and (storage.foldername(name))[1]=auth.uid()::text and private.tn_production_is_member());
