@@ -73,7 +73,7 @@ function renderNetwork(h,queued){
  const paired=!!(h?.ok&&h.sessionPaired),connected=!!(h?.ok&&h.connected);
  const status=paired&&connected?"ONLINE":paired?"BRIDGE PAIRED · ENGINE OFFLINE":h?.ok?"BRIDGE ONLINE · NOT PAIRED":"OFFLINE";
  setText("network-status",status+" · "+queued+" QUEUED");
- const el=$("network-status");if(el){el.dataset.state=paired&&connected?"online":paired?"warning":h?.ok?"warning":"offline";el.title="Bridge: "+(h?.ok?"reachable":"unavailable")+"; Supabase session: "+(paired?"paired":"not paired")+"; encoder: "+(connected?"connected":"disconnected")+". YouTube output is verified separately in YouTube Studio.";
+ const el=$("network-status");if(el){el.dataset.state=paired&&connected?"online":paired?"warning":h?.ok?"warning":"offline";el.title="Bridge: "+(h?.ok?"reachable":"unavailable")+"; Supabase session: "+(paired?"paired":"not paired")+"; encoder: "+(connected?"connected":"disconnected")+". YouTube output is verified separately in YouTube Studio.";}
 }
 async function refresh(){
  if(refreshBusy)return;refreshBusy=true;
