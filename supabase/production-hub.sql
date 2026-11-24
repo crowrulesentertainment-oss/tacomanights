@@ -83,25 +83,36 @@ create table if not exists public.tn_production_activity (
  created_at timestamptz not null default now()
 );
 
-create or replace function public.tn_production_is_admin()
-returns boolean language sql stable security definer set search_path=public
-as $$ select exists(select 1 from public.tn_production_profiles p where p.id=auth.uid() and p.role in ('admin','producer')); $$;
+create schema if not exists private;
+revoke all on schema private from public, anon;
+grant usage on schema private to authenticated;
 
-create or replace function public.tn_production_is_member()
-returns boolean language sql stable security definer set search_path=public
-as $$ select exists(select 1 from public.tn_production_profiles p where p.id=auth.uid() and p.role in ('contributor','producer','admin')); $$;
+-- These narrowly scoped SECURITY DEFINER helpers live outside the exposed API schema.
+create or replace function private.tn_production_is_admin()
+returns boolean language sql stable security definer set search_path=public,pg_temp
+as $ select auth.uid() is not null and exists(select 1 from public.tn_production_profiles p where p.id=auth.uid() and p.role in ('admin','producer')); $;
 
-create or replace function public.tn_production_new_profile()
-returns trigger language plpgsql security definer set search_path=public
-as $$ begin
+create or replace function private.tn_production_is_member()
+returns boolean language sql stable security definer set search_path=public,pg_temp
+as $ select auth.uid() is not null and exists(select 1 from public.tn_production_profiles p where p.id=auth.uid() and p.role in ('contributor','producer','admin')); $;
+
+create or replace function private.tn_production_new_profile()
+returns trigger language plpgsql security definer set search_path=public,pg_temp
+as $ begin
  insert into public.tn_production_profiles(id,email,display_name,role)
  values(new.id,new.email,coalesce(new.raw_user_meta_data->>'display_name',split_part(new.email,'@',1)),'pending')
  on conflict(id) do update set email=excluded.email;
  return new;
-end; $$;
+end; $;
+
+revoke all on function private.tn_production_is_admin() from public, anon;
+revoke all on function private.tn_production_is_member() from public, anon;
+revoke all on function private.tn_production_new_profile() from public, anon, authenticated;
+grant execute on function private.tn_production_is_admin() to authenticated;
+grant execute on function private.tn_production_is_member() to authenticated;
 
 drop trigger if exists tn_production_auth_profile on auth.users;
-create trigger tn_production_auth_profile after insert on auth.users for each row execute function public.tn_production_new_profile();
+create trigger tn_production_auth_profile after insert on auth.users for each row execute function private.tn_production_new_profile();
 
 alter table public.tn_production_profiles enable row level security;
 alter table public.tn_production_episodes enable row level security;
@@ -112,54 +123,64 @@ alter table public.tn_production_updates enable row level security;
 alter table public.tn_production_activity enable row level security;
 
 drop policy if exists "production profile read" on public.tn_production_profiles;
-create policy "production profile read" on public.tn_production_profiles for select to authenticated using (id=auth.uid() or public.tn_production_is_admin());
+create policy "production profile read" on public.tn_production_profiles for select to authenticated using (id=auth.uid() or private.tn_production_is_admin());
 drop policy if exists "production profile admin update" on public.tn_production_profiles;
-create policy "production profile admin update" on public.tn_production_profiles for update to authenticated using (public.tn_production_is_admin()) with check (public.tn_production_is_admin());
+create policy "production profile admin update" on public.tn_production_profiles for update to authenticated using (private.tn_production_is_admin()) with check (private.tn_production_is_admin());
 
 drop policy if exists "production episodes member read" on public.tn_production_episodes;
-create policy "production episodes member read" on public.tn_production_episodes for select to authenticated using (public.tn_production_is_member());
+create policy "production episodes member read" on public.tn_production_episodes for select to authenticated using (private.tn_production_is_member());
 drop policy if exists "production episodes admin write" on public.tn_production_episodes;
-create policy "production episodes admin write" on public.tn_production_episodes for all to authenticated using (public.tn_production_is_admin()) with check (public.tn_production_is_admin());
+create policy "production episodes admin write" on public.tn_production_episodes for all to authenticated using (private.tn_production_is_admin()) with check (private.tn_production_is_admin());
 
 drop policy if exists "production assignments member read" on public.tn_production_assignments;
-create policy "production assignments member read" on public.tn_production_assignments for select to authenticated using (assignee_id=auth.uid() or public.tn_production_is_admin());
+create policy "production assignments member read" on public.tn_production_assignments for select to authenticated using (assignee_id=auth.uid() or private.tn_production_is_admin());
 drop policy if exists "production assignments admin write" on public.tn_production_assignments;
-create policy "production assignments admin write" on public.tn_production_assignments for all to authenticated using (public.tn_production_is_admin()) with check (public.tn_production_is_admin());
+create policy "production assignments admin write" on public.tn_production_assignments for all to authenticated using (private.tn_production_is_admin()) with check (private.tn_production_is_admin());
 
 drop policy if exists "production uploads read" on public.tn_production_uploads;
-create policy "production uploads read" on public.tn_production_uploads for select to authenticated using (uploader_id=auth.uid() or public.tn_production_is_admin());
+create policy "production uploads read" on public.tn_production_uploads for select to authenticated using (uploader_id=auth.uid() or private.tn_production_is_admin());
 drop policy if exists "production uploads submit" on public.tn_production_uploads;
-create policy "production uploads submit" on public.tn_production_uploads for insert to authenticated with check (uploader_id=auth.uid() and public.tn_production_is_member());
+create policy "production uploads submit" on public.tn_production_uploads for insert to authenticated with check (uploader_id=auth.uid() and private.tn_production_is_member());
 drop policy if exists "production uploads admin review" on public.tn_production_uploads;
-create policy "production uploads admin review" on public.tn_production_uploads for update to authenticated using (public.tn_production_is_admin()) with check (public.tn_production_is_admin());
+create policy "production uploads admin review" on public.tn_production_uploads for update to authenticated using (private.tn_production_is_admin()) with check (private.tn_production_is_admin());
 
 drop policy if exists "production ideas member read" on public.tn_production_ideas;
-create policy "production ideas member read" on public.tn_production_ideas for select to authenticated using (public.tn_production_is_member());
+create policy "production ideas member read" on public.tn_production_ideas for select to authenticated using (private.tn_production_is_member());
 drop policy if exists "production ideas member submit" on public.tn_production_ideas;
-create policy "production ideas member submit" on public.tn_production_ideas for insert to authenticated with check (submitter_id=auth.uid() and public.tn_production_is_member());
+create policy "production ideas member submit" on public.tn_production_ideas for insert to authenticated with check (submitter_id=auth.uid() and private.tn_production_is_member());
 drop policy if exists "production ideas admin manage" on public.tn_production_ideas;
-create policy "production ideas admin manage" on public.tn_production_ideas for all to authenticated using (public.tn_production_is_admin()) with check (public.tn_production_is_admin());
+create policy "production ideas admin manage" on public.tn_production_ideas for all to authenticated using (private.tn_production_is_admin()) with check (private.tn_production_is_admin());
 
 drop policy if exists "production updates public read" on public.tn_production_updates;
-create policy "production updates public read" on public.tn_production_updates for select to anon,authenticated using (visibility='public' or (visibility='team' and public.tn_production_is_member()));
+create policy "production updates public read" on public.tn_production_updates for select to anon,authenticated using (visibility='public' or (visibility='team' and private.tn_production_is_member()));
 drop policy if exists "production updates admin write" on public.tn_production_updates;
-create policy "production updates admin write" on public.tn_production_updates for all to authenticated using (public.tn_production_is_admin()) with check (public.tn_production_is_admin());
+create policy "production updates admin write" on public.tn_production_updates for all to authenticated using (private.tn_production_is_admin()) with check (private.tn_production_is_admin());
 
 drop policy if exists "production activity admin read" on public.tn_production_activity;
-create policy "production activity admin read" on public.tn_production_activity for select to authenticated using (public.tn_production_is_admin());
+create policy "production activity admin read" on public.tn_production_activity for select to authenticated using (private.tn_production_is_admin());
 drop policy if exists "production activity member insert" on public.tn_production_activity;
-create policy "production activity member insert" on public.tn_production_activity for insert to authenticated with check (actor_id=auth.uid() and public.tn_production_is_member());
+create policy "production activity member insert" on public.tn_production_activity for insert to authenticated with check (actor_id=auth.uid() and private.tn_production_is_member());
 
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
 values('tn-production-private','tn-production-private',false,524288000,array['video/*','audio/*','image/*','application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/plain'])
 on conflict(id) do update set public=false,file_size_limit=524288000;
 
 drop policy if exists "production storage upload own" on storage.objects;
-create policy "production storage upload own" on storage.objects for insert to authenticated with check (bucket_id='tn-production-private' and (storage.foldername(name))[1]=auth.uid()::text and public.tn_production_is_member());
+create policy "production storage upload own" on storage.objects for insert to authenticated with check (bucket_id='tn-production-private' and (storage.foldername(name))[1]=auth.uid()::text and private.tn_production_is_member());
 drop policy if exists "production storage read own or admin" on storage.objects;
-create policy "production storage read own or admin" on storage.objects for select to authenticated using (bucket_id='tn-production-private' and ((storage.foldername(name))[1]=auth.uid()::text or public.tn_production_is_admin()));
+create policy "production storage read own or admin" on storage.objects for select to authenticated using (bucket_id='tn-production-private' and ((storage.foldername(name))[1]=auth.uid()::text or private.tn_production_is_admin()));
 drop policy if exists "production storage admin delete" on storage.objects;
-create policy "production storage admin delete" on storage.objects for delete to authenticated using (bucket_id='tn-production-private' and public.tn_production_is_admin());
+create policy "production storage admin delete" on storage.objects for delete to authenticated using (bucket_id='tn-production-private' and private.tn_production_is_admin());
+
+-- Explicit Data API privileges; RLS above remains the row-level security boundary.
+grant select, insert, update, delete on public.tn_production_profiles to authenticated;
+grant select, insert, update, delete on public.tn_production_episodes to authenticated;
+grant select, insert, update, delete on public.tn_production_assignments to authenticated;
+grant select, insert, update, delete on public.tn_production_uploads to authenticated;
+grant select, insert, update, delete on public.tn_production_ideas to authenticated;
+grant select, insert, update, delete on public.tn_production_updates to authenticated;
+grant select, insert, update, delete on public.tn_production_activity to authenticated;
+grant select on public.tn_production_updates to anon;
 
 -- BOOTSTRAP THE EXECUTIVE PRODUCER:
 -- 1. Create/sign in to your team account once through /production/.
