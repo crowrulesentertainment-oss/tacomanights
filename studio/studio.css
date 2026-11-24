@@ -34,3 +34,23 @@ body{background:#080b12}.studio-shell{display:grid;grid-template-columns:245px m
 .status-row article strong{overflow-wrap:anywhere}
 .status-row article span{display:block;line-height:1.5}
 @media(max-width:700px){.studio-header-actions{width:100%;justify-content:flex-start}.status-row{grid-template-columns:1fr}.studio-main{padding:18px 12px}.studio-panel{padding:15px}.auth-bar form{width:100%}.auth-bar input{max-width:none;flex:1 1 150px;min-width:0}.rundown-row{gap:8px}.monitor-actions button{flex:1 1 42%}}
+
+
+/* Studio 4.0 release layer */
+.release-chip{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:7px 10px;border:1px solid #9e3948;border-radius:999px;background:#28131a;color:#ffabb3;font-size:9px;font-weight:800;letter-spacing:.12em}
+.release-chip i{width:7px;height:7px;border-radius:50%;background:#ed4656;box-shadow:0 0 10px #ed4656}
+.studio-release-link{color:#b9c5d4;text-decoration:none;font-size:10px;padding:9px 11px;border:1px solid #ffffff22;border-radius:5px}
+.studio-release-link:hover{color:#fff;border-color:#ed4655}
+.v4-panel-kicker{font-size:9px;letter-spacing:.16em;color:#ff8792;font-weight:800;margin-bottom:7px}
+.studio-launchpad{background:linear-gradient(135deg,#121c29,#0b111a 70%);border-color:#ffffff24}
+.launchpad-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:17px}
+.launchpad-grid a{min-width:0;display:flex;flex-direction:column;gap:8px;padding:16px;background:#080d15;border:1px solid #ffffff18;border-radius:7px;text-decoration:none;transition:border-color .18s ease,transform .18s ease}
+.launchpad-grid a:hover{border-color:#ed4655;transform:translateY(-2px)}
+.launchpad-grid a span{font-size:8px;letter-spacing:.13em;color:#ff8792}
+.launchpad-grid a strong{font:800 14px Manrope;color:#fff}
+.launchpad-grid a small{font-size:10px;line-height:1.5;color:#91a0b4}
+#network-status[data-state="online"],#bridge-health[data-state="online"],#youtube-output-status[data-state="online"]{color:#7ee0a5}
+#network-status[data-state="warning"],#bridge-health[data-state="warning"],#youtube-output-status[data-state="warning"]{color:#f0c985}
+#network-status[data-state="offline"],#bridge-health[data-state="offline"],#youtube-output-status[data-state="offline"]{color:#ff929b}
+@media(max-width:1000px){.launchpad-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.launchpad-grid{grid-template-columns:1fr}.studio-header-actions{align-items:stretch}.studio-release-link,.refresh-dashboard{text-align:center}.release-chip{font-size:8px}}
