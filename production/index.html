@@ -1,141 +1,136 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#070a10">
-<meta name="description" content="Tacoma Nights production update: our 2026 finale, January 15, 2027 return, weekly production workflow, remote host opportunities and Back Deck Live updates.">
-<title>Production & 2027 Update | Tacoma Nights</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#08090d">
+<meta name="description" content="The Tacoma Nights production headquarters for episode planning, assignments, segment uploads, ideas and production updates.">
+<title>Production Hub | Tacoma Nights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/v3.css">
-<link rel="stylesheet" href="../assets/css/v2.css">
-<script src="../assets/js/config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="../assets/js/v3.js"></script>
-<script defer src="../assets/js/v2.js"></script>
+<link rel="stylesheet" href="../assets/css/v3.css"><link rel="stylesheet" href="../assets/css/v2.css">
+<script src="../assets/js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="../assets/js/v3.js"></script>
 <style>
-.production-hero{min-height:590px;position:relative;display:flex;align-items:center;overflow:hidden;background:#080c12 url("https://commons.wikimedia.org/wiki/Special:FilePath/Tacoma%20downtown%20at%20night.jpg") center 48%/cover no-repeat}
-.production-hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#05080ef5 0%,#070a10dc 48%,#070a1070 100%),linear-gradient(0deg,#070a10 0%,transparent 45%)}
-.production-hero .wrap{position:relative;padding:86px 0}
-.production-hero h1{font:800 clamp(48px,8vw,92px)/.94 Manrope;letter-spacing:-.07em;max-width:850px;margin:0}
-.production-hero h1 em{font-style:normal;color:#e45a66}
-.production-hero .lede{max-width:670px;font-size:16px;color:#d0d5dc}
-.production-kicker{font:800 10px Manrope;letter-spacing:.22em;color:#e6a0a5;margin:0 0 20px}
-.production-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:38px;max-width:850px}
-.production-stat{padding:17px 19px;background:#0b111bd9;border:1px solid #ffffff2b;backdrop-filter:blur(8px)}
-.production-stat strong{display:block;font:800 24px Manrope;color:#fff}
-.production-stat span{font-size:9px;letter-spacing:.13em;color:#c0c7d0;text-transform:uppercase}
-.production-section{padding:76px 0}
-.production-section.dark{background:#0b1119}
-.production-heading{max-width:760px;margin-bottom:30px}
-.production-heading h2{font:800 clamp(30px,4.5vw,48px)/1.05 Manrope;letter-spacing:-.05em;margin:0 0 12px}
-.production-heading h2 em{font-style:normal;color:#e45a66}
-.production-heading p{color:#aeb8c4}
-.production-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.production-card{padding:24px;background:linear-gradient(145deg,#192635,#101720);border:1px solid #ffffff20}
-.production-card .num{font:800 10px Manrope;letter-spacing:.16em;color:#e58b91}
-.production-card h3{font:800 21px Manrope;margin:12px 0 8px}
-.production-card p,.production-card li{font-size:12px;color:#b7c0ca}
-.production-card ul{padding-left:18px}
-.production-timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.production-step{display:grid;grid-template-columns:100px 1fr;gap:16px;padding:18px;background:#121b26;border:1px solid #ffffff1d}
-.production-step time{font:800 11px Manrope;color:#e7a0a5;letter-spacing:.08em}
-.production-step h3{font:800 16px Manrope;margin:0 0 5px}
-.production-step p{font-size:11px;color:#aeb8c4;margin:0}
-.production-rule{padding:28px;border:1px solid #c7354577;background:linear-gradient(120deg,#30151d,#121923 65%);margin:28px 0}
-.production-rule strong{display:block;font:800 clamp(22px,3vw,32px)/1.1 Manrope}
-.production-rule p{color:#c4cbd3;margin-bottom:0}
-.production-note{padding:22px;border:1px solid #ffffff22;background:#111923;color:#b8c1cb;font-size:12px}
-.production-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
-@media(max-width:800px){.production-grid{grid-template-columns:1fr 1fr}.production-timeline{grid-template-columns:1fr}.production-stats{grid-template-columns:1fr}.production-hero{min-height:650px}}
-@media(max-width:540px){.production-grid{grid-template-columns:1fr}.production-step{grid-template-columns:1fr;gap:5px}.production-section{padding:58px 0}.production-hero .wrap{padding:70px 0}}
+:root{--pbg:#08090d;--panel:#11151d;--line:#29313d;--muted:#aab3c0;--red:#d94c59;--gold:#d4ad70}
+body{background:var(--pbg);color:#f5f6f8}.ph-wrap{width:min(1200px,calc(100% - 36px));margin:auto}.ph-hero{min-height:470px;display:flex;align-items:end;position:relative;background:linear-gradient(90deg,#08090df2,#08090d75),linear-gradient(0deg,#08090d 0%,transparent 75%),url('https://commons.wikimedia.org/wiki/Special:FilePath/Tacoma%20downtown%20at%20night.jpg') center 48%/cover;padding:100px 0 65px}.ph-hero h1{font:800 clamp(46px,7vw,82px)/.96 Manrope;letter-spacing:-.06em;margin:12px 0}.ph-hero h1 span{color:#e35c68}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.2em;color:#e56a74}.muted{color:var(--muted)}.ph-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.ph-btn{border:1px solid #46505e;color:white;background:#171d27;padding:12px 17px;border-radius:8px;text-decoration:none;font-weight:700;cursor:pointer}.ph-btn.primary{background:#c83e4d;border-color:#c83e4d}.ph-btn:disabled{opacity:.5;cursor:not-allowed}.ph-section{padding:38px 0}.ph-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.ph-card{background:linear-gradient(145deg,#151b25,#0f1219);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}.span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-6{grid-column:span 6}.span-8{grid-column:span 8}.span-12{grid-column:span 12}.stat{font:800 32px Manrope;margin:8px 0}.ph-card h2,.ph-card h3{font-family:Manrope;margin:0 0 12px}.ph-card p{color:var(--muted);line-height:1.6}.ph-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}.ph-tab{border:1px solid var(--line);border-radius:999px;padding:9px 14px;color:#cdd3dc;background:#11151d;cursor:pointer}.ph-tab.active{background:#c83e4d;border-color:#c83e4d;color:white}.ph-view{display:none}.ph-view.active{display:block}.ph-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.ph-form .full{grid-column:1/-1}.ph-form label{display:block;color:#c8d0da;font-size:12px;font-weight:700;margin-bottom:6px}.ph-form input,.ph-form select,.ph-form textarea{width:100%;background:#090d13;border:1px solid #35404d;color:white;border-radius:8px;padding:11px;font:inherit}.ph-form textarea{min-height:95px;resize:vertical}.ph-list{display:grid;gap:10px}.ph-item{border:1px solid var(--line);background:#0c1118;border-radius:10px;padding:14px}.ph-item strong{display:block;margin-bottom:5px}.pill{display:inline-block;border:1px solid #46505e;color:#d8dce3;border-radius:999px;padding:4px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.08em}.pill.red{border-color:#9f3d49;color:#ff9da5}.ph-note{border-left:3px solid var(--gold);padding:12px 15px;background:#171710;color:#e5d7bd;border-radius:0 8px 8px 0}.ph-auth{max-width:540px;margin:24px auto}.ph-auth .ph-form{grid-template-columns:1fr}.hidden{display:none!important}.ph-table{width:100%;border-collapse:collapse;font-size:13px}.ph-table td,.ph-table th{padding:11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.ph-table th{color:#b6c0cd}.ph-small{font-size:12px;color:var(--muted)}.ph-footer{padding:40px 0;color:#8e98a6;border-top:1px solid var(--line);margin-top:40px}
+@media(max-width:850px){.span-3,.span-4,.span-6,.span-8{grid-column:span 6}}@media(max-width:580px){.span-3,.span-4,.span-6,.span-8,.span-12{grid-column:span 12}.ph-form{grid-template-columns:1fr}.ph-hero{min-height:390px}.ph-table{display:block;overflow:auto}}
 </style>
 </head>
 <body data-root="../">
-<a class="skip-link" href="#main">Skip to content</a>
 <div id="site-header"></div>
-<main id="main">
-<section class="production-hero">
-<div class="wrap">
-<p class="production-kicker">CROW RULES ENTERTAINMENT · OFFICIAL PRODUCTION UPDATE</p>
-<h1>2027: THE YEAR OF <em>TACOMA NIGHTS.</em></h1>
-<p class="lede">A new chapter. A better plan. A consistent, professional weekly production. We're taking time to reorganize the show and build a process that gives every episode the preparation it deserves.</p>
-<div class="production-stats">
-<div class="production-stat"><strong>Nov 27, 2026</strong><span>Final episode of 2026</span></div>
-<div class="production-stat"><strong>Jan 15, 2027</strong><span>Planned return premiere</span></div>
-<div class="production-stat"><strong>7 days</strong><span>Minimum episode buffer</span></div>
+<main>
+<section class="ph-hero"><div class="ph-wrap"><p class="eyebrow">CROWRULES ENTERTAINMENT · TACOMA, WASHINGTON</p><h1>THE PRODUCTION<br><span>HEADQUARTERS.</span></h1><p class="muted" style="max-width:650px;font-size:17px">One place to plan every episode, coordinate every contributor, collect every segment and keep Tacoma Nights moving forward.</p><div class="ph-actions"><a class="ph-btn primary" href="#workspace">Open production workspace</a><a class="ph-btn" href="../production-updates/">Read production updates ↗</a></div></div></section>
+<section class="ph-section ph-wrap" id="workspace">
+<div id="connectionNotice" class="ph-note">Connecting to the Tacoma Nights production system…</div>
+<div id="authPanel" class="ph-card ph-auth hidden">
+<p class="eyebrow">TEAM ACCESS</p><h2 id="authTitle">Sign in to Production</h2><p class="muted">Sign in to view assignments, submit segments, and work with the production team. New team accounts require administrator approval.</p>
+<form id="authForm" class="ph-form"><div><label>Email address</label><input id="authEmail" type="email" autocomplete="email" required></div><div><label>Password</label><input id="authPassword" type="password" autocomplete="current-password" required minlength="8"></div><button class="ph-btn primary" type="submit" id="authSubmit">Sign in</button><button class="ph-btn" type="button" id="signupToggle">Request a team account</button><p id="authMessage" class="ph-small full" aria-live="polite"></p></form></div>
+<div id="appPanel" class="hidden">
+<div class="ph-grid">
+<div class="ph-card span-3"><div class="ph-small">SIGNED-IN TEAM MEMBER</div><div class="stat" style="font-size:20px" id="memberName">Team member</div><span class="pill" id="memberRole">Contributor</span></div>
+<div class="ph-card span-3"><div class="ph-small">OPEN EPISODES</div><div class="stat" id="statEpisodes">—</div><div class="ph-small">Planning and in production</div></div>
+<div class="ph-card span-3"><div class="ph-small">PENDING ASSIGNMENTS</div><div class="stat" id="statAssignments">—</div><div class="ph-small">Work still in progress</div></div>
+<div class="ph-card span-3"><div class="ph-small">SUBMISSIONS TO REVIEW</div><div class="stat" id="statUploads">—</div><div class="ph-small">Awaiting producer review</div></div>
 </div>
+<div class="ph-tabs" role="tablist">
+<button class="ph-tab active" data-tab="overview">Overview</button><button class="ph-tab" data-tab="episodes">Episodes</button><button class="ph-tab" data-tab="assignments">My assignments</button><button class="ph-tab" data-tab="uploads">Segment uploads</button><button class="ph-tab" data-tab="ideas">Episode ideas</button><button class="ph-tab" data-tab="updates">Production updates</button><button class="ph-tab admin-only hidden" data-tab="admin">Admin headquarters</button>
 </div>
+<section class="ph-view active" id="view-overview"><div class="ph-grid">
+<div class="ph-card span-8"><h2>Production at a glance</h2><p>Keep the next episode moving and finish every Friday premiere at least seven days before it goes live.</p><div id="nextEpisode" class="ph-item">Loading episode schedule…</div></div>
+<div class="ph-card span-4"><h3>Production standard</h3><p><strong>Seven-day finish line.</strong> Final edit, review, approval, upload and premiere scheduling should all be completed one full week before release.</p><a class="ph-btn" href="../production-updates/">Read the latest update</a></div>
+<div class="ph-card span-6"><h3>Recent assignments</h3><div id="overviewAssignments" class="ph-list ph-small">Loading…</div></div>
+<div class="ph-card span-6"><h3>Recent uploads</h3><div id="overviewUploads" class="ph-list ph-small">Loading…</div></div>
+</div></section>
+<section class="ph-view" id="view-episodes"><div class="ph-card"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h2>Episode board</h2><p>Episode topics, premiere dates, production status and episode workspaces.</p></div><button class="ph-btn primary admin-only hidden" id="newEpisodeBtn">+ Create episode</button></div><div id="episodeList" class="ph-list">Loading episodes…</div></div><div id="episodeFormCard" class="ph-card hidden" style="margin-top:14px"><h3>Create an episode</h3><form id="episodeForm" class="ph-form"><div><label>Episode number / code</label><input name="episode_number" required placeholder="2027-01"></div><div><label>Episode title</label><input name="title" required></div><div><label>Premiere date and time</label><input name="premiere_at" type="datetime-local"></div><div><label>Status</label><select name="status"><option>idea</option><option>planning</option><option>assigned</option><option>recording</option><option>editing</option><option>review</option><option>scheduled</option><option>published</option></select></div><div class="full"><label>Main topic / description</label><textarea name="topic"></textarea></div><button class="ph-btn primary" type="submit">Save episode</button></form></div></section>
+<section class="ph-view" id="view-assignments"><div class="ph-card"><h2>My assignments</h2><p>Your assigned episode work and due dates.</p><div id="assignmentList" class="ph-list">Loading…</div></div><div class="ph-card admin-only hidden" style="margin-top:14px"><h3>Create an assignment</h3><form id="assignmentForm" class="ph-form"><div><label>Episode</label><select name="episode_id" id="assignmentEpisode" required></select></div><div><label>Assign to team member (email)</label><input name="assignee_email" type="email" required></div><div><label>Segment / task title</label><input name="title" required></div><div><label>Due date</label><input name="due_at" type="datetime-local"></div><div class="full"><label>Instructions</label><textarea name="instructions"></textarea></div><button class="ph-btn primary" type="submit">Create assignment</button></form></div></section>
+<section class="ph-view" id="view-uploads"><div class="ph-grid"><div class="ph-card span-5"><h2>Submit a segment</h2><p>Upload your assigned recording and include the episode and segment details.</p><form id="uploadForm" class="ph-form"><div class="full"><label>Episode</label><select name="episode_id" id="uploadEpisode" required></select></div><div class="full"><label>Segment title</label><input name="title" required></div><div class="full"><label>Recording / file</label><input name="asset" type="file" accept="video/*,audio/*,image/*,.pdf,.doc,.docx,.txt" required></div><div class="full"><label>Notes for the producer</label><textarea name="notes" placeholder="Take, context, edits needed, or anything the producer should know."></textarea></div><button class="ph-btn primary" type="submit">Upload segment</button><p id="uploadMessage" class="ph-small full"></p></form></div><div class="ph-card span-7"><h2>Submission tracker</h2><p>Track the review status of your submitted material.</p><div id="uploadList" class="ph-list">Loading…</div></div></div></section>
+<section class="ph-view" id="view-ideas"><div class="ph-grid"><div class="ph-card span-5"><h2>Pitch an episode idea</h2><p>Bring forward stories, questions and conversations worth exploring.</p><form id="ideaForm" class="ph-form"><div class="full"><label>Idea title</label><input name="title" required></div><div><label>Category</label><select name="category"><option>Tacoma & Pierce County</option><option>Pacific Northwest</option><option>Community conversations</option><option>Mental health & everyday life</option><option>Business & entrepreneurship</option><option>Sports</option><option>National topics</option><option>Special episode</option><option>Other</option></select></div><div><label>Suggested format</label><select name="format"><option>Panel conversation</option><option>Interview</option><option>Field story</option><option>Commentary</option><option>Special</option><option>Open to producer</option></select></div><div class="full"><label>Why should Tacoma Nights cover it?</label><textarea name="description" required></textarea></div><button class="ph-btn primary" type="submit">Submit idea</button></form></div><div class="ph-card span-7"><h2>Team idea board</h2><p>Ideas are visible to approved production team members.</p><div id="ideaList" class="ph-list">Loading…</div></div></div></section>
+<section class="ph-view" id="view-updates"><div class="ph-card"><h2>Production updates</h2><p>Team-facing notes and announcements from production.</p><div id="teamUpdates" class="ph-list">Loading…</div></div></section>
+<section class="ph-view" id="view-admin"><div class="ph-grid">
+<div class="ph-card span-12"><p class="eyebrow">EXECUTIVE PRODUCER · PRIVATE</p><h2>Administrator headquarters</h2><p>Manage episodes, contributors, assignments, submitted segments and public production announcements from one place.</p></div>
+<div class="ph-card span-6"><h3>Review submissions</h3><div id="adminUploads" class="ph-list">Loading…</div></div>
+<div class="ph-card span-6"><h3>Manage team access</h3><p>New accounts begin as pending. Promote trusted accounts to producer or contributor after verifying their identity.</p><div id="adminMembers" class="ph-list">Loading…</div></div>
+<div class="ph-card span-6"><h3>Publish a public update</h3><form id="updateForm" class="ph-form"><div class="full"><label>Update headline</label><input name="title" required></div><div><label>Category</label><select name="category"><option>Production announcement</option><option>Episode announcement</option><option>Team update</option><option>Contributor recruitment</option><option>Behind the scenes</option><option>Milestone</option></select></div><div><label>Visibility</label><select name="visibility"><option value="public">Public update page</option><option value="team">Team only</option></select></div><div class="full"><label>Update details</label><textarea name="body" required style="min-height:150px"></textarea></div><button class="ph-btn primary" type="submit">Publish update</button></form></div>
+<div class="ph-card span-6"><h3>Recent activity</h3><div id="adminActivity" class="ph-list">Loading…</div></div>
+</div></section>
+</div>
+<div id="signedOutPanel" class="ph-card hidden"><h2>Production workspace</h2><p class="muted">Please sign in to access the private production tools.</p><button class="ph-btn primary" id="showLogin">Team sign in</button></div>
 </section>
-<div class="tn2-ticker">ONE TEAM <span>✳</span> ONE PLAN <span>✳</span> ONE CONSISTENT SHOW <span>✳</span> BUILT IN TACOMA · OPEN TO EVERY VOICE</div>
-<section class="production-section">
-<div class="wrap">
-<div class="production-heading"><p class="tn2-eyebrow">THE NEXT CHAPTER</p><h2>We're pausing production. <em>Not the vision.</em></h2><p>Our final Tacoma Nights episode of 2026 is scheduled for Friday, November 27, the day after Thanksgiving. After that episode, regular Tacoma Nights production will pause through the holiday season while we reorganize, plan and prepare for the next chapter.</p></div>
-<div class="production-note"><strong>This is not the end of Tacoma Nights.</strong> The break is a chance to plan ahead, improve the production process, coordinate contributors, refresh the website and return with a schedule we can maintain. The planned official return is Friday, January 15, 2027.</div>
-</div>
-</section>
-<section class="production-section dark">
-<div class="wrap">
-<div class="production-heading"><p class="tn2-eyebrow">THE NON-NEGOTIABLE PRODUCTION STANDARD</p><h2>Finish every episode <em>seven days early.</em></h2><p>We want to stop producing against the premiere-day deadline. Each Friday episode should be finished and waiting in the schedule while the team is already preparing the next one.</p></div>
-<div class="production-rule"><strong>Every episode must be fully recorded, edited, reviewed, approved, uploaded and scheduled at least seven days before its Friday premiere.</strong><p>The previous Friday is the deadline—not the day to begin final editing.</p></div>
-<div class="production-timeline">
-<div class="production-step"><time>14 DAYS OUT</time><div><h3>Plan the episode</h3><p>Choose the topic, identify guests and remote hosts, assign segments, and begin research.</p></div></div>
-<div class="production-step"><time>10–9 DAYS OUT</time><div><h3>Prepare the content</h3><p>Finish outlines, discussion questions, story research and recording plans. Confirm each contributor.</p></div></div>
-<div class="production-step"><time>8–7 DAYS OUT</time><div><h3>Record and collect</h3><p>Record main host portions and receive all remote-host recordings, graphics and segment materials.</p></div></div>
-<div class="production-step"><time>7 DAYS OUT</time><div><h3>Final delivery deadline</h3><p>Complete the edit, review the full episode, make corrections, approve the master, upload it and schedule the premiere.</p></div></div>
-<div class="production-step"><time>6–3 DAYS OUT</time><div><h3>Promote and prepare</h3><p>Prepare the thumbnail, title, description, Discord and social announcements. Check the scheduled premiere.</p></div></div>
-<div class="production-step"><time>2–1 DAYS OUT</time><div><h3>Protect the buffer</h3><p>Handle only final checks and promotion. Keep the completed episode ready; focus production time on the following week.</p></div></div>
-<div class="production-step"><time>FRIDAY</time><div><h3>Premiere day</h3><p>Publish the already-scheduled episode, join the premiere chat and connect with the audience—without last-minute editing.</p></div></div>
-<div class="production-step"><time>IN PARALLEL</time><div><h3>Next episode begins</h3><p>While this week's episode is ready to publish, research and planning are already underway for the next Friday.</p></div></div>
-</div>
-</div>
-</section>
-<section class="production-section">
-<div class="wrap">
-<div class="production-heading"><p class="tn2-eyebrow">THE RETURN PLAN</p><h2>December to January. <em>Built with intention.</em></h2><p>January 1, 2027 is New Year's Day. Rather than make a holiday the first hard production deadline, we're targeting January 15 for the return and January 8 as the first episode's completion and scheduling milestone.</p></div>
-<div class="production-grid">
-<article class="production-card"><span class="num">01 / NOVEMBER 27</span><h3>2026 finale</h3><p>The final Tacoma Nights episode of the year premieres.</p></article>
-<article class="production-card"><span class="num">02 / DECEMBER</span><h3>Planning and rebuilding</h3><p>Brainstorm the format, update the website, recruit contributors, define roles and organize the weekly calendar.</p></article>
-<article class="production-card"><span class="num">03 / JANUARY 1</span><h3>New Year's Day</h3><p>No major production deadline. Use the holiday period for final coordination as needed.</p></article>
-<article class="production-card"><span class="num">04 / JANUARY 2–7</span><h3>Finish the return episode</h3><p>Confirm contributors, complete recordings, edit, review and approve the first episode.</p></article>
-<article class="production-card"><span class="num">05 / JANUARY 8</span><h3>Seven-day milestone</h3><p>The January 15 episode is complete, approved, uploaded and scheduled.</p></article>
-<article class="production-card"><span class="num">06 / JANUARY 15</span><h3>Official return</h3><p>Tacoma Nights returns with a prepared episode and a weekly production system ready to move forward.</p></article>
-</div>
-</div>
-</section>
-<section class="production-section dark">
-<div class="wrap">
-<div class="production-heading"><p class="tn2-eyebrow">THE PEOPLE AND THE PROCESS</p><h2>A stronger team. <em>Clearer roles.</em></h2><p>During the break, we want to brainstorm with Triton, Kenneth, JonCool and Jennifer, listen to everyone's ideas, and establish responsibilities that are clear and manageable.</p></div>
-<div class="production-grid">
-<article class="production-card"><span class="num">REMOTE HOSTS</span><h3>More voices, more perspectives</h3><p>Continue recruiting remote hosts and contributors. Define their subjects, segments, participation frequency, recording expectations and deadlines.</p></article>
-<article class="production-card"><span class="num">SCHEDULING</span><h3>Know what's due—and when</h3><p>Build a shared episode calendar showing assignments, recording dates, submission deadlines, received materials and review status.</p></article>
-<article class="production-card"><span class="num">RESEARCH & PRODUCTION</span><h3>Jennifer's role</h3><p>Further organize Jennifer's researcher/producer role: topic research, Tacoma and regional stories, outlines, questions, segment coordination, contributor follow-up and deadline tracking.</p></article>
-<article class="production-card"><span class="num">TEAM BRAINSTORMING</span><h3>Build it together</h3><p>Work with Triton, Kenneth, JonCool and Jennifer to review the show format, segments, episode flow, responsibilities and ideas for improvement.</p></article>
-<article class="production-card"><span class="num">WEBSITE</span><h3>One production home</h3><p>Improve host and contributor profiles, remote-host information, episode archive, segment details, submissions and production resources.</p></article>
-<article class="production-card"><span class="num">SHOW FORMAT</span><h3>Consistent, not repetitive</h3><p>Review segment order, timing, recurring features and contributor perspectives so each episode feels cohesive while leaving room for fresh ideas.</p></article>
-</div>
-<div class="production-cta"><a class="tn2-btn tn2-btn-red" href="../contributors/">Explore contributor opportunities ↗</a><a class="tn2-btn tn2-btn-outline" href="../crew/">Meet the crew ↗</a></div>
-</div>
-</section>
-<section class="production-section">
-<div class="wrap">
-<div class="production-heading"><p class="tn2-eyebrow">KEEPING CROW RULES MOVING</p><h2>Back Deck Live <em>continues.</em></h2><p>While Tacoma Nights takes its production break, Back Deck Live will continue broadcasting. The goal is to keep CrowRules active on YouTube, stay connected with viewers, attract new subscribers and continue growing the audience.</p></div>
-<div class="production-note"><strong>Tacoma Nights:</strong> a production break for planning, reorganization and preparation for the January 15 return.<br><br><strong>Back Deck Live:</strong> continuing live broadcasts and community conversations during the break. Broadcast dates and topics will be announced separately.</div>
-<div class="production-cta"><a class="tn2-btn tn2-btn-red" href="../shows/detail.html?show=back-deck-live">Explore Back Deck Live ↗</a><a class="tn2-btn tn2-btn-outline" href="../live/">Visit the live network ↗</a></div>
-</div>
-</section>
-<section class="production-section dark">
-<div class="wrap">
-<div class="production-heading"><p class="tn2-eyebrow">OUR 2027 COMMITMENT</p><h2>Consistency is the goal. <em>Preparation is how we get there.</em></h2><p>We want a dependable Friday premiere schedule, finished episodes seven days ahead, a coordinated contributor network, clear team responsibilities, organized research and production, and a website that supports the work.</p></div>
-<div class="production-note">Thank you to everyone who has supported Tacoma Nights, contributed time and ideas, and helped build this show. We're taking the time to do it right—and we're looking forward to the next chapter.</div>
-<p class="tn2-eyebrow" style="margin-top:30px">2027: THE YEAR OF TACOMA NIGHTS.</p>
-<h2 style="font:800 clamp(28px,4vw,46px) Manrope;margin:0">One team. One plan. One consistent show.</h2>
-<p style="color:#aeb8c4">Until Next Friday. — CrowRules Entertainment</p>
-</div>
-</section>
-</main>
-<div id="site-footer"></div>
-</body>
-</html>
+</main><footer class="ph-footer"><div class="ph-wrap"><strong>TACOMA NIGHTS · PRODUCTION HEADQUARTERS</strong><p class="ph-small">A CrowRules Entertainment production. One company. One universe.</p><a class="ph-small" href="../production-updates/">Public production updates</a></div></footer>
+<script>
+(()=>{'use strict';
+const cfg=window.TACOMA_NIGHTS_CONFIG||{},$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const notice=$('#connectionNotice');let db=null,user=null,profile=null,isAdmin=false,episodes=[],assignments=[];
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const date=v=>v?new Date(v).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}):'Not scheduled';
+const status=v=>'<span class="pill '+(['approved','published','scheduled'].includes(v)?'': 'red')+'">'+esc(v||'pending')+'</span>';
+const msg=(el,s)=>{if(el)el.textContent=s};
+function formObj(form){return Object.fromEntries(new FormData(form).entries())}
+function showTab(tab){$$('.ph-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));$$('.ph-view').forEach(v=>v.classList.toggle('active',v.id==='view-'+tab));}
+$$('.ph-tab').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+function fail(label,error){console.error(label,error);notice.textContent=label+': '+(error?.message||'Please try again.');notice.classList.remove('hidden')}
+async function rows(table,query){const {data,error}=await query;if(error)throw error;return data||[]}
+async function log(action,detail){try{await db.from('tn_production_activity').insert({actor_id:user.id,action,detail})}catch(e){console.warn('Activity log',e)}}
+async function refresh(){
+const [ep,as,up,ideas,updates]=await Promise.all([
+rows('episodes',db.from('tn_production_episodes').select('*').order('premiere_at',{ascending:true,nullsFirst:false})),
+rows('assignments',db.from('tn_production_assignments').select('*,tn_production_episodes(title,episode_number)').order('created_at',{ascending:false})),
+rows('uploads',db.from('tn_production_uploads').select('*,tn_production_episodes(title,episode_number)').order('created_at',{ascending:false})),
+rows('ideas',db.from('tn_production_ideas').select('*').order('created_at',{ascending:false})),
+rows('updates',db.from('tn_production_updates').select('*').eq('visibility','team').order('published_at',{ascending:false}))
+]);episodes=ep;assignments=as;
+const mine=as.filter(a=>a.assignee_id===user.id),myUploads=up.filter(x=>x.uploader_id===user.id),pending=up.filter(x=>x.status==='submitted');
+$('#statEpisodes').textContent=ep.filter(x=>!['published','archived'].includes(x.status)).length;
+$('#statAssignments').textContent=mine.filter(x=>!['complete','cancelled'].includes(x.status)).length;
+$('#statUploads').textContent=isAdmin?pending.length:myUploads.length;
+$('#nextEpisode').innerHTML=ep.length?'<strong>'+esc(ep[0].episode_number)+' · '+esc(ep[0].title)+'</strong><p>'+esc(ep[0].topic||'Topic not added yet')+'</p><div>'+status(ep[0].status)+' <span class="ph-small">Premiere: '+date(ep[0].premiere_at)+'</span></div>':'No episodes have been created yet.';
+const assignmentHtml=a=>'<div class="ph-item"><strong>'+esc(a.title)+'</strong><div class="ph-small">'+esc(a.tn_production_episodes?.episode_number||'Episode')+' · Due '+date(a.due_at)+'</div>'+status(a.status)+'</div>';
+$('#overviewAssignments').innerHTML=mine.slice(0,4).map(assignmentHtml).join('')||'<p>No assignments yet.</p>';
+$('#assignmentList').innerHTML=mine.map(assignmentHtml).join('')||'<p>No assignments have been assigned to you yet.</p>';
+const uploadHtml=u=>'<div class="ph-item"><strong>'+esc(u.title)+'</strong><div class="ph-small">'+esc(u.tn_production_episodes?.episode_number||'Episode')+' · '+date(u.created_at)+'</div>'+status(u.status)+(u.producer_note?'<p>'+esc(u.producer_note)+'</p>':'')+'</div>';
+$('#overviewUploads').innerHTML=myUploads.slice(0,4).map(uploadHtml).join('')||'<p>No uploads yet.</p>';
+$('#uploadList').innerHTML=myUploads.map(uploadHtml).join('')||'<p>Your submissions will appear here.</p>';
+$('#episodeList').innerHTML=ep.map(e=>'<div class="ph-item"><strong>'+esc(e.episode_number)+' · '+esc(e.title)+'</strong><p>'+esc(e.topic||'No episode description yet')+'</p><div class="ph-small">Premiere: '+date(e.premiere_at)+' · '+status(e.status)+'</div></div>').join('')||'<p>Admin can create the first episode.</p>';
+const options='<option value="">Choose episode…</option>'+ep.map(e=>'<option value="'+e.id+'">'+esc(e.episode_number+' · '+e.title)+'</option>').join('');
+$('#uploadEpisode').innerHTML=options;$('#assignmentEpisode').innerHTML=options;
+$('#ideaList').innerHTML=ideas.map(i=>'<div class="ph-item"><strong>'+esc(i.title)+'</strong><span class="pill">'+esc(i.category)+'</span><p>'+esc(i.description)+'</p><div class="ph-small">Suggested by '+esc(i.submitter_name||'Team member')+' · '+date(i.created_at)+' · '+status(i.status)+'</div></div>').join('')||'<p>No ideas submitted yet. Start the brainstorm!</p>';
+$('#teamUpdates').innerHTML=updates.map(u=>'<div class="ph-item"><strong>'+esc(u.title)+'</strong><p>'+esc(u.body).replace(/\n/g,'<br>')+'</p><div class="ph-small">'+esc(u.category)+' · '+date(u.published_at)+'</div></div>').join('')||'<p>No team-only updates yet.</p>';
+if(isAdmin){$('#adminUploads').innerHTML=pending.map(u=>'<div class="ph-item"><strong>'+esc(u.title)+'</strong><div class="ph-small">'+esc(u.tn_production_episodes?.episode_number||'Episode')+' · '+date(u.created_at)+'</div><button class="ph-btn" data-file="'+esc(u.storage_path)+'">Download</button> <button class="ph-btn primary" data-review="'+u.id+'" data-status="approved">Approve</button> <button class="ph-btn" data-review="'+u.id+'" data-status="revision">Request revision</button></div>').join('')||'<p>No submissions awaiting review.</p>';
+const [members,activity]=await Promise.all([rows('members',db.from('tn_production_profiles').select('*').order('created_at',{ascending:false})),rows('activity',db.from('tn_production_activity').select('*').order('created_at',{ascending:false}).limit(12))]);
+$('#adminMembers').innerHTML=members.map(m=>'<div class="ph-item"><strong>'+esc(m.display_name||m.email||m.id)+'</strong><div class="ph-small">'+esc(m.email||'')+' · '+status(m.role)+'</div><select data-role="'+m.id+'"><option value="pending" '+(m.role==='pending'?'selected':'')+'>Pending</option><option value="contributor" '+(m.role==='contributor'?'selected':'')+'>Contributor</option><option value="producer" '+(m.role==='producer'?'selected':'')+'>Producer</option><option value="admin" '+(m.role==='admin'?'selected':'')+'>Admin</option></select> <button class="ph-btn" data-save-role="'+m.id+'">Save role</button></div>').join('')||'<p>No team profiles.</p>';
+$('#adminActivity').innerHTML=activity.map(a=>'<div class="ph-item"><strong>'+esc(a.action)+'</strong><div class="ph-small">'+esc(a.detail||'')+' · '+date(a.created_at)+'</div></div>').join('')||'<p>No activity yet.</p>';
+}
+}
+async function start(session){
+user=session.user;
+const {data:p,error}=await db.from('tn_production_profiles').select('*').eq('id',user.id).maybeSingle();
+if(error)throw error;profile=p;
+if(!p||p.role==='pending'){ $('#authPanel').classList.add('hidden');$('#signedOutPanel').classList.remove('hidden');notice.textContent='Your account is awaiting production team approval. Contact the executive producer for access.';return}
+isAdmin=['admin','producer'].includes(p.role);
+$('#authPanel').classList.add('hidden');$('#signedOutPanel').classList.add('hidden');$('#appPanel').classList.remove('hidden');
+$('#memberName').textContent=p.display_name||user.email;$('#memberRole').textContent=p.role;
+$$('.admin-only').forEach(el=>el.classList.toggle('hidden',!isAdmin));
+notice.textContent='Connected securely. Welcome to the production workspace.';await refresh();
+}
+async function init(){
+if(!window.supabase?.createClient||!cfg.supabaseUrl||!cfg.supabaseAnonKey){notice.textContent='Supabase browser configuration is missing. Production tools cannot connect yet.';return}
+db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const {data:{session},error}=await db.auth.getSession();if(error)throw error;
+if(session){await start(session)}else{$('#authPanel').classList.remove('hidden');notice.textContent='Sign in with your approved production team account.'}
+db.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>{if(session)start(session).catch(e=>fail('Could not load your profile',e));else location.reload()},0)});
+}
+let signup=false;$('#signupToggle').addEventListener('click',()=>{signup=!signup;$('#authTitle').textContent=signup?'Request a team account':'Sign in to Production';$('#authSubmit').textContent=signup?'Send account request':'Sign in';$('#signupToggle').textContent=signup?'Back to sign in':'Request a team account'});
+$('#authForm').addEventListener('submit',async e=>{e.preventDefault();const email=$('#authEmail').value.trim(),password=$('#authPassword').value;try{const r=signup?await db.auth.signUp({email,password,options:{data:{display_name:email.split('@')[0]}}}):await db.auth.signInWithPassword({email,password});if(r.error)throw r.error;msg($('#authMessage'),signup?'Account request created. Check your email if confirmation is enabled; access remains pending until approved.':'Signed in. Loading your workspace…');if(r.data.session)await start(r.data.session)}catch(err){msg($('#authMessage'),err.message)}});
+$('#showLogin').addEventListener('click',()=>{$('#signedOutPanel').classList.add('hidden');$('#authPanel').classList.remove('hidden')});
+$('#episodeForm').addEventListener('submit',async e=>{e.preventDefault();try{const v=formObj(e.target);v.created_by=user.id;if(v.premiere_at)v.premiere_at=new Date(v.premiere_at).toISOString();else delete v.premiere_at;const {error}=await db.from('tn_production_episodes').insert(v);if(error)throw error;await log('Created episode',v.episode_number+' · '+v.title);e.target.reset();$('#episodeFormCard').classList.add('hidden');await refresh()}catch(err){alert(err.message)}});
+$('#newEpisodeBtn').addEventListener('click',()=>$('#episodeFormCard').classList.toggle('hidden'));
+$('#assignmentForm').addEventListener('submit',async e=>{e.preventDefault();try{const v=formObj(e.target),email=v.assignee_email;delete v.assignee_email;if(v.due_at)v.due_at=new Date(v.due_at).toISOString();else delete v.due_at;const {data:person,error:pe}=await db.from('tn_production_profiles').select('id').eq('email',email).single();if(pe)throw new Error('No approved team profile found for '+email);v.assignee_id=person.id;v.assigned_by=user.id;const {error}=await db.from('tn_production_assignments').insert(v);if(error)throw error;await log('Created assignment',v.title+' assigned to '+email);e.target.reset();await refresh()}catch(err){alert(err.message)}});
+$('#uploadForm').addEventListener('submit',async e=>{e.preventDefault();const f=e.target.asset.files[0],v=formObj(e.target);if(!f)return;const out=$('#uploadMessage');try{if(f.size>1024*1024*500)throw new Error('Please keep uploads under 500 MB.');const safe=f.name.replace(/[^a-zA-Z0-9._-]/g,'_'),path=user.id+'/'+Date.now()+'_'+safe;msg(out,'Uploading file…');const {error:se}=await db.storage.from('tn-production-private').upload(path,f,{upsert:false,contentType:f.type||'application/octet-stream'});if(se)throw se;const {error}=await db.from('tn_production_uploads').insert({episode_id:v.episode_id,title:v.title,notes:v.notes,storage_path:path,original_filename:f.name,mime_type:f.type,file_size:f.size,uploader_id:user.id,status:'submitted'});if(error){await db.storage.from('tn-production-private').remove([path]);throw error}await log('Uploaded segment',v.title);e.target.reset();msg(out,'Upload received. The production team can now review it.');await refresh()}catch(err){msg(out,err.message)}});
+$('#ideaForm').addEventListener('submit',async e=>{e.preventDefault();try{const v=formObj(e.target);v.submitter_id=user.id;v.submitter_name=profile.display_name||user.email;const {error}=await db.from('tn_production_ideas').insert(v);if(error)throw error;await log('Submitted episode idea',v.title);e.target.reset();await refresh();alert('Your episode idea has been submitted.')}catch(err){alert(err.message)}});
+$('#updateForm').addEventListener('submit',async e=>{e.preventDefault();try{const v=formObj(e.target);v.author_id=user.id;v.published_at=new Date().toISOString();const {error}=await db.from('tn_production_updates').insert(v);if(error)throw error;await log('Published production update',v.title);e.target.reset();await refresh();alert('Update published. Public updates appear on the Production Updates page.')}catch(err){alert(err.message)}});
+document.addEventListener('click',async e=>{const dl=e.target.closest('[data-file]');if(dl){const {data,error}=await db.storage.from('tn-production-private').createSignedUrl(dl.dataset.file,300);if(error)alert(error.message);else window.open(data.signedUrl,'_blank','noopener');}
+const rev=e.target.closest('[data-review]');if(rev){const note=rev.dataset.status==='revision'?prompt('What needs to be corrected?')||'Please review and resubmit.':null;const {error}=await db.from('tn_production_uploads').update({status:rev.dataset.status,producer_note:note,reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq('id',rev.dataset.review);if(error)alert(error.message);else{await log('Reviewed upload',rev.dataset.status);await refresh()}}
+const save=e.target.closest('[data-save-role]');if(save){const role=document.querySelector('[data-role="'+save.dataset.saveRole+'"]').value;const {error}=await db.from('tn_production_profiles').update({role}).eq('id',save.dataset.saveRole);if(error)alert(error.message);else{await log('Changed team role',role);await refresh()}}
+});
+init().catch(e=>fail('Production database setup required',e));
+})();
+</script>
+</body></html>
