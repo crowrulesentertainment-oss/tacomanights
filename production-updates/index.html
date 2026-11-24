@@ -48,6 +48,35 @@
 .production-rule strong{display:block;font:800 clamp(22px,3vw,32px)/1.1 Manrope}
 .production-rule p{color:#c4cbd3;margin-bottom:0}
 .production-note{padding:22px;border:1px solid #ffffff22;background:#111923;color:#b8c1cb;font-size:12px}
+
+.idea-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.7fr);gap:20px;align-items:start}
+.idea-panel{padding:clamp(20px,3vw,34px);background:linear-gradient(145deg,#192431,#0e141c);border:1px solid #ffffff25;box-shadow:0 24px 60px #0005}
+.idea-panel h3{font:800 24px Manrope;margin:0 0 8px}
+.idea-panel>p{font-size:12px;color:#aeb8c4}
+.idea-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+.idea-field{display:grid;gap:7px}
+.idea-field.full{grid-column:1/-1}
+.idea-field label{font:700 11px Manrope;color:#e4e6e9}
+.idea-field input,.idea-field select,.idea-field textarea{width:100%;padding:12px 13px;border:1px solid #ffffff30;background:#080d13;color:#f4f2ee;border-radius:3px;outline:none}
+.idea-field textarea{min-height:135px;resize:vertical}
+.idea-field input:focus,.idea-field select:focus,.idea-field textarea:focus{border-color:#d45b67;box-shadow:0 0 0 3px #d45b6720}
+.idea-field small{font-size:10px;color:#8f9aa7}
+.idea-consent{display:flex;gap:10px;align-items:flex-start;color:#aeb8c4;font-size:11px;line-height:1.5}
+.idea-consent input{margin-top:3px;accent-color:#c63b49}
+.idea-submit{grid-column:1/-1;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.idea-submit button{border:1px solid #bd3544;background:#bd3544;color:#fff;padding:13px 18px;font:800 11px Manrope;letter-spacing:.08em;cursor:pointer}
+.idea-submit button:disabled{opacity:.55;cursor:wait}
+.idea-status{min-height:24px;font-size:12px;color:#e5b2b6}
+.idea-side{display:grid;gap:12px}
+.idea-side article{padding:21px;background:#101720;border:1px solid #ffffff20}
+.idea-side h3{font:800 17px Manrope;margin:0 0 7px}
+.idea-side p,.idea-side li{font-size:11px;color:#aeb8c4}
+.idea-side ul{padding-left:18px;margin-bottom:0}
+.idea-private{font-size:10px;color:#9ba4ae;margin:12px 0 0}
+.idea-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+@media(max-width:800px){.idea-layout{grid-template-columns:1fr}}
+@media(max-width:540px){.idea-form{grid-template-columns:1fr}.idea-field.full,.idea-submit{grid-column:auto}}
+
 .production-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
 @media(max-width:800px){.production-grid{grid-template-columns:1fr 1fr}.production-timeline{grid-template-columns:1fr}.production-stats{grid-template-columns:1fr}.production-hero{min-height:650px}}
 @media(max-width:540px){.production-grid{grid-template-columns:1fr}.production-step{grid-template-columns:1fr;gap:5px}.production-section{padding:58px 0}.production-hero .wrap{padding:70px 0}}
@@ -61,8 +90,8 @@
 <div class="wrap">
 <p class="production-kicker">CROW RULES ENTERTAINMENT · OFFICIAL PRODUCTION UPDATE</p>
 <h1>2027: THE YEAR OF <em>TACOMA NIGHTS.</em></h1>
-<p class="lede">A new chapter. A better plan. A consistent, professional weekly production. We're taking time to reorganize the show and build a process that gives every episode the preparation it deserves.</p>
-<div class="production-stats">
+<p class="lede">A new chapter. A better plan. A consistent, professional weekly production. Follow the work, see what the team is building, and send your ideas directly to the Tacoma Nights production team.</p>
+<div class="production-cta"><a class="tn2-btn tn2-btn-red" href="#share-production-idea">Share an idea with the team ↓</a><a class="tn2-btn tn2-btn-outline" href="#live-production-updates">Read the latest updates ↓</a></div><div class="production-stats">
 <div class="production-stat"><strong>Nov 27, 2026</strong><span>Final episode of 2026</span></div>
 <div class="production-stat"><strong>Jan 15, 2027</strong><span>Planned return premiere</span></div>
 <div class="production-stat"><strong>7 days</strong><span>Minimum episode buffer</span></div>
@@ -135,9 +164,40 @@
 <p style="color:#aeb8c4">Until Next Friday. — CrowRules Entertainment</p>
 </div>
 </section>
+<section class="production-section" id="share-production-idea">
+<div class="wrap">
+<div class="production-heading"><p class="tn2-eyebrow">YOUR VOICE IS PART OF THE BUILD</p><h2>Have an idea? <em>Put it on the production table.</em></h2><p>Have a segment idea, a guest suggestion, a format improvement, a technical fix or a way to make Tacoma Nights more useful to the community? Send it straight to the production team. You do not need to be a crew member to contribute an idea.</p></div>
+<div class="idea-layout">
+<div class="idea-panel">
+<h3>Submit a production idea</h3>
+<p>Share enough detail for the team to understand what you are suggesting and why it could make the show stronger.</p>
+<form class="idea-form" id="productionIdeaForm">
+<div class="idea-field"><label for="ideaName">Your name <span>(optional)</span></label><input id="ideaName" name="name" maxlength="100" autocomplete="name" placeholder="How should we address you?"></div>
+<div class="idea-field"><label for="ideaEmail">Email address <span>(optional)</span></label><input id="ideaEmail" name="email" type="email" maxlength="254" autocomplete="email" placeholder="Only if you want a reply"></div>
+<div class="idea-field"><label for="ideaCategory">Idea category</label><select id="ideaCategory" name="category" required><option value="">Choose a category</option><option>Show format or segments</option><option>Episode topics or community stories</option><option>Guests or contributors</option><option>Production workflow or scheduling</option><option>Website or digital experience</option><option>Audio, video or streaming</option><option>Audience and community engagement</option><option>Other</option></select></div>
+<div class="idea-field"><label for="ideaTitle">Give your idea a title</label><input id="ideaTitle" name="title" required minlength="5" maxlength="140" placeholder="A clear, short headline"></div>
+<div class="idea-field full"><label for="ideaMessage">Describe your idea</label><textarea id="ideaMessage" name="message" required minlength="20" maxlength="4000" placeholder="What should we try, change, add or improve? Include any details that would help us evaluate it."></textarea><small>20–4,000 characters. Please do not include private or sensitive information.</small></div>
+<div class="idea-field full"><label for="ideaImpact">What would this improve? <span>(optional)</span></label><textarea id="ideaImpact" name="impact" maxlength="1200" placeholder="Who would benefit, and what difference could it make?"></textarea></div>
+<div class="idea-field full idea-honeypot" aria-hidden="true"><label for="ideaWebsite">Leave this field empty</label><input id="ideaWebsite" name="website" tabindex="-1" autocomplete="off"></div>
+<div class="idea-field full"><label class="idea-consent"><input type="checkbox" name="contact_ok" value="yes"><span>You may contact me by email about this idea. (Only applies if you provide an email address.)</span></label></div>
+<div class="idea-submit"><button id="ideaSubmit" type="submit">SEND TO THE PRODUCTION TEAM ↗</button><span class="idea-status" id="ideaStatus" role="status" aria-live="polite"></span></div>
+</form>
+<p class="idea-private">Every idea is submitted as private, pending review. It will not automatically appear on the public website or become part of an episode. Submission does not guarantee acceptance, a response or production.</p>
+</div>
+<aside class="idea-side">
+<article><p class="tn2-eyebrow">WHAT HAPPENS NEXT</p><h3>1. The team receives it</h3><p>Your idea enters the Tacoma Nights submission queue for production-team review.</p></article>
+<article><h3>2. We evaluate the fit</h3><p>We consider relevance to the show, community value, feasibility, timing and available production capacity.</p></article>
+<article><h3>3. We follow up when possible</h3><p>If you leave an email and give permission, a team member may contact you for clarification. Some ideas may be combined, adapted or saved for a future episode.</p></article>
+<article><h3>Ideas that help us most</h3><ul><li>A clear suggestion and its purpose</li><li>Who it would serve or bring into the conversation</li><li>What it might take to make it happen</li><li>Links or references that are safe to share</li></ul></article>
+</aside>
+</div>
+</div>
+</section>
 <section class="production-section dark" id="live-production-updates"><div class="wrap"><div class="production-heading"><p class="tn2-eyebrow">FROM THE PRODUCTION TEAM</p><h2>Latest <em>production updates.</em></h2><p>Announcements, behind-the-scenes progress, episode news, contributor opportunities and milestones—straight from the Tacoma Nights team.</p></div><div id="publicProductionUpdates" class="production-grid"><div class="production-card"><p>Loading the latest updates…</p></div></div></div></section>
 <script>
 (()=>{const c=window.TACOMA_NIGHTS_CONFIG||{},root=document.getElementById('publicProductionUpdates');if(!root||!window.supabase?.createClient||!c.supabaseUrl||!c.supabaseAnonKey){if(root)root.textContent='Production updates are temporarily unavailable.';return}const db=window.supabase.createClient(c.supabaseUrl,c.supabaseAnonKey);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));db.from('tn_production_updates').select('title,category,body,published_at').eq('visibility','public').order('published_at',{ascending:false}).limit(30).then(({data,error})=>{if(error){root.innerHTML='<div class="production-card"><p>New updates will appear here as the production team publishes them.</p></div>';return}if(!data?.length){root.innerHTML='<div class="production-card"><p>We are preparing the next chapter of Tacoma Nights. Check back for production announcements.</p></div>';return}root.innerHTML=data.map(x=>'<article class="production-card"><p class="tn2-eyebrow">'+esc(x.category||'Production update')+' · '+new Date(x.published_at).toLocaleDateString()+'</p><h3>'+esc(x.title)+'</h3><p>'+esc(x.body).replace(/\n/g,'<br>')+'</p></article>').join('')})})();
+</script><script>
+(()=>{const form=document.getElementById('productionIdeaForm');if(!form)return;const status=document.getElementById('ideaStatus'),button=document.getElementById('ideaSubmit');const config=window.TACOMA_NIGHTS_CONFIG||{};const client=window.supabase?.createClient&&config.supabaseUrl&&config.supabaseAnonKey?window.supabase.createClient(config.supabaseUrl,config.supabaseAnonKey):null;form.addEventListener('submit',async event=>{event.preventDefault();if(!form.reportValidity())return;const d=new FormData(form);if(String(d.get('website')||'').trim())return;if(!client){status.textContent='The submission service is temporarily unavailable. Please try again later.';return}const name=String(d.get('name')||'').trim().slice(0,100),email=String(d.get('email')||'').trim().slice(0,254),category=String(d.get('category')||''),title=String(d.get('title')||'').trim(),message=String(d.get('message')||'').trim(),impact=String(d.get('impact')||'').trim();if(message.length<20){status.textContent='Please add a little more detail (at least 20 characters).';return}button.disabled=true;status.textContent='Sending your idea securely for review…';try{const{error}=await client.from('tn_submissions').insert({submission_type:'production-idea',submitter_name:name,submitter_email:email,title,message,metadata:{source:'production-updates-page',category,expected_impact:impact,contact_permission:d.get('contact_ok')==='yes',review_status:'pending',submitted_at:new Date().toISOString()},status:'pending'});if(error)throw error;form.reset();status.textContent='Thank you. Your idea has been sent to the production team for private review.'}catch(error){console.error('Production idea submission failed:',error);status.textContent='We could not submit your idea right now. Please try again in a moment.'}finally{button.disabled=false}})})();
 </script></main>
 <div id="site-footer"></div>
 </body>
