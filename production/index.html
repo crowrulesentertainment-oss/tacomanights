@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070a10">
+<meta name="description" content="Tacoma Nights production update: our 2026 finale, January 15, 2027 return, weekly production workflow, remote host opportunities and Back Deck Live updates.">
+<title>Production & 2027 Update | Tacoma Nights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/v3.css">
+<link rel="stylesheet" href="../assets/css/v2.css">
+<script src="../assets/js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="../assets/js/v3.js"></script>
+<script defer src="../assets/js/v2.js"></script>
+<style>
+.production-hero{min-height:590px;position:relative;display:flex;align-items:center;overflow:hidden;background:#080c12 url("https://commons.wikimedia.org/wiki/Special:FilePath/Tacoma%20downtown%20at%20night.jpg") center 48%/cover no-repeat}
+.production-hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#05080ef5 0%,#070a10dc 48%,#070a1070 100%),linear-gradient(0deg,#070a10 0%,transparent 45%)}
+.production-hero .wrap{position:relative;padding:86px 0}
+.production-hero h1{font:800 clamp(48px,8vw,92px)/.94 Manrope;letter-spacing:-.07em;max-width:850px;margin:0}
+.production-hero h1 em{font-style:normal;color:#e45a66}
+.production-hero .lede{max-width:670px;font-size:16px;color:#d0d5dc}
+.production-kicker{font:800 10px Manrope;letter-spacing:.22em;color:#e6a0a5;margin:0 0 20px}
+.production-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:38px;max-width:850px}
+.production-stat{padding:17px 19px;background:#0b111bd9;border:1px solid #ffffff2b;backdrop-filter:blur(8px)}
+.production-stat strong{display:block;font:800 24px Manrope;color:#fff}
+.production-stat span{font-size:9px;letter-spacing:.13em;color:#c0c7d0;text-transform:uppercase}
+.production-section{padding:76px 0}
+.production-section.dark{background:#0b1119}
+.production-heading{max-width:760px;margin-bottom:30px}
+.production-heading h2{font:800 clamp(30px,4.5vw,48px)/1.05 Manrope;letter-spacing:-.05em;margin:0 0 12px}
+.production-heading h2 em{font-style:normal;color:#e45a66}
+.production-heading p{color:#aeb8c4}
+.production-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.production-card{padding:24px;background:linear-gradient(145deg,#192635,#101720);border:1px solid #ffffff20}
+.production-card .num{font:800 10px Manrope;letter-spacing:.16em;color:#e58b91}
+.production-card h3{font:800 21px Manrope;margin:12px 0 8px}
+.production-card p,.production-card li{font-size:12px;color:#b7c0ca}
+.production-card ul{padding-left:18px}
+.production-timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.production-step{display:grid;grid-template-columns:100px 1fr;gap:16px;padding:18px;background:#121b26;border:1px solid #ffffff1d}
+.production-step time{font:800 11px Manrope;color:#e7a0a5;letter-spacing:.08em}
+.production-step h3{font:800 16px Manrope;margin:0 0 5px}
+.production-step p{font-size:11px;color:#aeb8c4;margin:0}
+.production-rule{padding:28px;border:1px solid #c7354577;background:linear-gradient(120deg,#30151d,#121923 65%);margin:28px 0}
+.production-rule strong{display:block;font:800 clamp(22px,3vw,32px)/1.1 Manrope}
+.production-rule p{color:#c4cbd3;margin-bottom:0}
+.production-note{padding:22px;border:1px solid #ffffff22;background:#111923;color:#b8c1cb;font-size:12px}
+.production-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+@media(max-width:800px){.production-grid{grid-template-columns:1fr 1fr}.production-timeline{grid-template-columns:1fr}.production-stats{grid-template-columns:1fr}.production-hero{min-height:650px}}
+@media(max-width:540px){.production-grid{grid-template-columns:1fr}.production-step{grid-template-columns:1fr;gap:5px}.production-section{padding:58px 0}.production-hero .wrap{padding:70px 0}}
+</style>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#main">Skip to content</a>
+<div id="site-header"></div>
+<main id="main">
+<section class="production-hero">
+<div class="wrap">
+<p class="production-kicker">CROW RULES ENTERTAINMENT · OFFICIAL PRODUCTION UPDATE</p>
+<h1>2027: THE YEAR OF <em>TACOMA NIGHTS.</em></h1>
+<p class="lede">A new chapter. A better plan. A consistent, professional weekly production. We're taking time to reorganize the show and build a process that gives every episode the preparation it deserves.</p>
+<div class="production-stats">
+<div class="production-stat"><strong>Nov 27, 2026</strong><span>Final episode of 2026</span></div>
+<div class="production-stat"><strong>Jan 15, 2027</strong><span>Planned return premiere</span></div>
+<div class="production-stat"><strong>7 days</strong><span>Minimum episode buffer</span></div>
+</div>
+</div>
+</section>
+<div class="tn2-ticker">ONE TEAM <span>✳</span> ONE PLAN <span>✳</span> ONE CONSISTENT SHOW <span>✳</span> BUILT IN TACOMA · OPEN TO EVERY VOICE</div>
+<section class="production-section">
+<div class="wrap">
+<div class="production-heading"><p class="tn2-eyebrow">THE NEXT CHAPTER</p><h2>We're pausing production. <em>Not the vision.</em></h2><p>Our final Tacoma Nights episode of 2026 is scheduled for Friday, November 27, the day after Thanksgiving. After that episode, regular Tacoma Nights production will pause through the holiday season while we reorganize, plan and prepare for the next chapter.</p></div>
+<div class="production-note"><strong>This is not the end of Tacoma Nights.</strong> The break is a chance to plan ahead, improve the production process, coordinate contributors, refresh the website and return with a schedule we can maintain. The planned official return is Friday, January 15, 2027.</div>
+</div>
+</section>
+<section class="production-section dark">
+<div class="wrap">
+<div class="production-heading"><p class="tn2-eyebrow">THE NON-NEGOTIABLE PRODUCTION STANDARD</p><h2>Finish every episode <em>seven days early.</em></h2><p>We want to stop producing against the premiere-day deadline. Each Friday episode should be finished and waiting in the schedule while the team is already preparing the next one.</p></div>
+<div class="production-rule"><strong>Every episode must be fully recorded, edited, reviewed, approved, uploaded and scheduled at least seven days before its Friday premiere.</strong><p>The previous Friday is the deadline—not the day to begin final editing.</p></div>
+<div class="production-timeline">
+<div class="production-step"><time>14 DAYS OUT</time><div><h3>Plan the episode</h3><p>Choose the topic, identify guests and remote hosts, assign segments, and begin research.</p></div></div>
+<div class="production-step"><time>10–9 DAYS OUT</time><div><h3>Prepare the content</h3><p>Finish outlines, discussion questions, story research and recording plans. Confirm each contributor.</p></div></div>
+<div class="production-step"><time>8–7 DAYS OUT</time><div><h3>Record and collect</h3><p>Record main host portions and receive all remote-host recordings, graphics and segment materials.</p></div></div>
+<div class="production-step"><time>7 DAYS OUT</time><div><h3>Final delivery deadline</h3><p>Complete the edit, review the full episode, make corrections, approve the master, upload it and schedule the premiere.</p></div></div>
+<div class="production-step"><time>6–3 DAYS OUT</time><div><h3>Promote and prepare</h3><p>Prepare the thumbnail, title, description, Discord and social announcements. Check the scheduled premiere.</p></div></div>
+<div class="production-step"><time>2–1 DAYS OUT</time><div><h3>Protect the buffer</h3><p>Handle only final checks and promotion. Keep the completed episode ready; focus production time on the following week.</p></div></div>
+<div class="production-step"><time>FRIDAY</time><div><h3>Premiere day</h3><p>Publish the already-scheduled episode, join the premiere chat and connect with the audience—without last-minute editing.</p></div></div>
+<div class="production-step"><time>IN PARALLEL</time><div><h3>Next episode begins</h3><p>While this week's episode is ready to publish, research and planning are already underway for the next Friday.</p></div></div>
+</div>
+</div>
+</section>
+<section class="production-section">
+<div class="wrap">
+<div class="production-heading"><p class="tn2-eyebrow">THE RETURN PLAN</p><h2>December to January. <em>Built with intention.</em></h2><p>January 1, 2027 is New Year's Day. Rather than make a holiday the first hard production deadline, we're targeting January 15 for the return and January 8 as the first episode's completion and scheduling milestone.</p></div>
+<div class="production-grid">
+<article class="production-card"><span class="num">01 / NOVEMBER 27</span><h3>2026 finale</h3><p>The final Tacoma Nights episode of the year premieres.</p></article>
+<article class="production-card"><span class="num">02 / DECEMBER</span><h3>Planning and rebuilding</h3><p>Brainstorm the format, update the website, recruit contributors, define roles and organize the weekly calendar.</p></article>
+<article class="production-card"><span class="num">03 / JANUARY 1</span><h3>New Year's Day</h3><p>No major production deadline. Use the holiday period for final coordination as needed.</p></article>
+<article class="production-card"><span class="num">04 / JANUARY 2–7</span><h3>Finish the return episode</h3><p>Confirm contributors, complete recordings, edit, review and approve the first episode.</p></article>
+<article class="production-card"><span class="num">05 / JANUARY 8</span><h3>Seven-day milestone</h3><p>The January 15 episode is complete, approved, uploaded and scheduled.</p></article>
+<article class="production-card"><span class="num">06 / JANUARY 15</span><h3>Official return</h3><p>Tacoma Nights returns with a prepared episode and a weekly production system ready to move forward.</p></article>
+</div>
+</div>
+</section>
+<section class="production-section dark">
+<div class="wrap">
+<div class="production-heading"><p class="tn2-eyebrow">THE PEOPLE AND THE PROCESS</p><h2>A stronger team. <em>Clearer roles.</em></h2><p>During the break, we want to brainstorm with Triton, Kenneth, JonCool and Jennifer, listen to everyone's ideas, and establish responsibilities that are clear and manageable.</p></div>
+<div class="production-grid">
+<article class="production-card"><span class="num">REMOTE HOSTS</span><h3>More voices, more perspectives</h3><p>Continue recruiting remote hosts and contributors. Define their subjects, segments, participation frequency, recording expectations and deadlines.</p></article>
+<article class="production-card"><span class="num">SCHEDULING</span><h3>Know what's due—and when</h3><p>Build a shared episode calendar showing assignments, recording dates, submission deadlines, received materials and review status.</p></article>
+<article class="production-card"><span class="num">RESEARCH & PRODUCTION</span><h3>Jennifer's role</h3><p>Further organize Jennifer's researcher/producer role: topic research, Tacoma and regional stories, outlines, questions, segment coordination, contributor follow-up and deadline tracking.</p></article>
+<article class="production-card"><span class="num">TEAM BRAINSTORMING</span><h3>Build it together</h3><p>Work with Triton, Kenneth, JonCool and Jennifer to review the show format, segments, episode flow, responsibilities and ideas for improvement.</p></article>
+<article class="production-card"><span class="num">WEBSITE</span><h3>One production home</h3><p>Improve host and contributor profiles, remote-host information, episode archive, segment details, submissions and production resources.</p></article>
+<article class="production-card"><span class="num">SHOW FORMAT</span><h3>Consistent, not repetitive</h3><p>Review segment order, timing, recurring features and contributor perspectives so each episode feels cohesive while leaving room for fresh ideas.</p></article>
+</div>
+<div class="production-cta"><a class="tn2-btn tn2-btn-red" href="../contributors/">Explore contributor opportunities ↗</a><a class="tn2-btn tn2-btn-outline" href="../crew/">Meet the crew ↗</a></div>
+</div>
+</section>
+<section class="production-section">
+<div class="wrap">
+<div class="production-heading"><p class="tn2-eyebrow">KEEPING CROW RULES MOVING</p><h2>Back Deck Live <em>continues.</em></h2><p>While Tacoma Nights takes its production break, Back Deck Live will continue broadcasting. The goal is to keep CrowRules active on YouTube, stay connected with viewers, attract new subscribers and continue growing the audience.</p></div>
+<div class="production-note"><strong>Tacoma Nights:</strong> a production break for planning, reorganization and preparation for the January 15 return.<br><br><strong>Back Deck Live:</strong> continuing live broadcasts and community conversations during the break. Broadcast dates and topics will be announced separately.</div>
+<div class="production-cta"><a class="tn2-btn tn2-btn-red" href="../shows/detail.html?show=back-deck-live">Explore Back Deck Live ↗</a><a class="tn2-btn tn2-btn-outline" href="../live/">Visit the live network ↗</a></div>
+</div>
+</section>
+<section class="production-section dark">
+<div class="wrap">
+<div class="production-heading"><p class="tn2-eyebrow">OUR 2027 COMMITMENT</p><h2>Consistency is the goal. <em>Preparation is how we get there.</em></h2><p>We want a dependable Friday premiere schedule, finished episodes seven days ahead, a coordinated contributor network, clear team responsibilities, organized research and production, and a website that supports the work.</p></div>
+<div class="production-note">Thank you to everyone who has supported Tacoma Nights, contributed time and ideas, and helped build this show. We're taking the time to do it right—and we're looking forward to the next chapter.</div>
+<p class="tn2-eyebrow" style="margin-top:30px">2027: THE YEAR OF TACOMA NIGHTS.</p>
+<h2 style="font:800 clamp(28px,4vw,46px) Manrope;margin:0">One team. One plan. One consistent show.</h2>
+<p style="color:#aeb8c4">Until Next Friday. — CrowRules Entertainment</p>
+</div>
+</section>
+</main>
+<div id="site-footer"></div>
+</body>
+</html>
