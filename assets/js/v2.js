@@ -23,15 +23,15 @@ try{
  if(profileId)query=query.eq("id",profileId);
  const{data,error}=await query.limit(60);if(error)throw error;
  const people=data||[];
- const initials=name=>String(name||"TN").split(/\\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase();
+ const initials=name=>String(name||"TN").split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase();
  const tagsHtml=tags=>(Array.isArray(tags)&&tags.length?'<div class="crew-tags">'+tags.map(t=>'<span class="crew-tag">'+esc(t)+'</span>').join("")+'</div>':"");
- const photoInner=(p)=>{const url=p.portrait_approved?safeUrl(p.avatar_url):null;return url?'<img loading="lazy" src="'+esc(url)+'" alt="'+esc(p.display_name)+'">':'<div class="crew-photo-placeholder">'+esc(initials(p.display_name))+'</div>'};
+ const photoInner=p=>{const url=p.portrait_approved?safeUrl(p.avatar_url):null;return url?'<img loading="lazy" src="'+esc(url)+'" alt="'+esc(p.display_name)+'">':'<div class="crew-photo-placeholder">'+esc(initials(p.display_name))+'</div>'};
  if(profileId){
   if(directory)directory.hidden=true;if(profileView)profileView.hidden=false;
   const p=people[0];
   if(!p){profileView.innerHTML='<div class="crew-empty"><h2>Profile unavailable</h2><p>This profile is not currently published for public viewing.</p><a class="crew-action" href="./">← BACK TO CREW</a></div>';return}
   const external=p.links_approved?safeUrl(p.profile_url):null;
-  profileView.innerHTML='<article class="crew-profile"><div class="crew-profile-head">'<div class="crew-photo">'+photoInner(p)+'</div>'<div class="crew-profile-copy"><p class="crew-kicker">TACOMA NIGHTS CREW PROFILE</p><h2>'+esc(p.display_name)+'</h2><p class="crew-role">'+esc(p.role_title||"Tacoma Nights Contributor")+'</p><p>'+(p.volunteer_status==="volunteer"?"Currently contributing as a volunteer.":"Part of the Tacoma Nights creative team.")+'</p><a class="crew-action" href="./">← ALL CREW PROFILES</a>'+(external?' <a class="crew-action secondary" href="'+esc(external)+'" target="_blank" rel="noopener noreferrer">PUBLIC LINK ↗</a>':"")+'</div></div><div class="crew-profile-content"><h3>About</h3><p class="crew-bio">'+esc(p.bio||"More about this contributor will be shared as their profile is completed.")+'</p>'+(Array.isArray(p.specialties)&&p.specialties.length?'<h3>Specialties &amp; interests</h3>'+tagsHtml(p.specialties):"")+'<div class="crew-disclosure">'+esc(p.compensation_disclosure||"Tacoma Nights is built through volunteer and community collaboration.")+'</div></div></article>';
+  profileView.innerHTML='<article class="crew-profile"><div class="crew-profile-head"><div class="crew-photo">'+photoInner(p)+'</div><div class="crew-profile-copy"><p class="crew-kicker">TACOMA NIGHTS CREW PROFILE</p><h2>'+esc(p.display_name)+'</h2><p class="crew-role">'+esc(p.role_title||"Tacoma Nights Contributor")+'</p><p>'+(p.volunteer_status==="volunteer"?"Currently contributing as a volunteer.":"Part of the Tacoma Nights creative team.")+'</p><a class="crew-action" href="./">← ALL CREW PROFILES</a>'+(external?' <a class="crew-action secondary" href="'+esc(external)+'" target="_blank" rel="noopener noreferrer">PUBLIC LINK ↗</a>':"")+'</div></div><div class="crew-profile-content"><h3>About</h3><p class="crew-bio">'+esc(p.bio||"More about this contributor will be shared as their profile is completed.")+'</p>'+(Array.isArray(p.specialties)&&p.specialties.length?'<h3>Specialties &amp; interests</h3>'+tagsHtml(p.specialties):"")+'<div class="crew-disclosure">'+esc(p.compensation_disclosure||"Tacoma Nights is built through volunteer and community collaboration.")+'</div></div></article>';
   document.title=p.display_name+" | Tacoma Nights Crew";return;
  }
  if(directory)directory.hidden=false;if(profileView)profileView.hidden=true;
