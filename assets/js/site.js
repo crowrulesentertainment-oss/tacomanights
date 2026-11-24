@@ -12,7 +12,7 @@
     ["About", [["About Tacoma Nights","about/"],["Meet the Crew","crew/"],["Contact","contact/"],["CrowRules TV","https://www.youtube.com/@CrowRules_TV"]]]
   ];
   const pathFor = path => path.startsWith("http") ? path : root + path;
-  const currentPath = href => { try { return new URL(href, location.href).pathname.replace(/index\\.html$/, "").replace(/\\/$/, "") || "/"; } catch { return ""; } };
+  const currentPath = href => { try { return new URL(href, location.href).pathname.replace(/index\.html$/, "").replace(/\/$/, "") || "/"; } catch { return ""; } };
   const nav = document.querySelector("#primary-nav");
   const menuButton = document.querySelector(".menu-toggle");
   if (nav) {
