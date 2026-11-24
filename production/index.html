@@ -70,6 +70,23 @@ button:focus-visible,a:focus-visible{outline:2px solid #e36b77;outline-offset:3p
 #view-uploads #uploadForm button[type=submit]{width:100%;margin-top:4px}
 @media(max-width:850px){#view-uploads>.ph-grid>.ph-card{grid-column:span 6}}
 @media(max-width:580px){#view-uploads>.ph-grid>.ph-card{grid-column:1/-1}#view-uploads .ph-card{height:auto}}
+/* Private production team live chat */
+.tn-chat-card{max-width:1000px;margin:0 auto}
+.tn-chat-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.tn-chat-heading h2{margin-bottom:8px}
+.tn-chat-messages{height:min(58vh,560px);min-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:11px;padding:18px;margin:18px 0;background:rgba(4,7,11,.72);border:1px solid rgba(180,194,211,.14);border-radius:12px;overscroll-behavior:contain}
+.tn-chat-message{max-width:min(82%,680px);align-self:flex-start;padding:12px 14px;border:1px solid rgba(180,194,211,.14);border-radius:12px 12px 12px 3px;background:#17202c;overflow-wrap:anywhere}
+.tn-chat-message.mine{align-self:flex-end;background:linear-gradient(135deg,rgba(139,42,54,.42),rgba(31,25,32,.95));border-color:rgba(216,74,88,.32);border-radius:12px 12px 3px 12px}
+.tn-chat-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.tn-chat-meta strong{font-size:12px;color:#f2d7d9}
+.tn-chat-meta time{font-size:10px;color:#9da9b8}
+.tn-chat-body{white-space:pre-wrap;line-height:1.55;font-size:14px;color:#edf1f6}
+.tn-chat-form{display:grid;gap:10px}
+.tn-chat-form textarea{width:100%;box-sizing:border-box;resize:vertical;min-height:74px;background:#090e15;border:1px solid rgba(175,191,211,.2);border-radius:8px;color:#fff;padding:13px;font:inherit}
+.tn-chat-form textarea:focus{outline:none;border-color:#d45160;box-shadow:0 0 0 3px rgba(212,81,96,.12)}
+.tn-chat-send{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tn-chat-send button{min-width:140px}
+@media(max-width:580px){.tn-chat-messages{height:55vh;min-height:260px;padding:10px}.tn-chat-message{max-width:94%}.tn-chat-send{align-items:stretch}.tn-chat-send button{width:100%}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.ph-view{animation:none}*,*:before,*:after{transition:none!important}}
 
 </style>
@@ -91,7 +108,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #e36b77;outline-offset:3p
 <div class="ph-card span-3"><div class="ph-small">SUBMISSIONS TO REVIEW</div><div class="stat" id="statUploads">—</div><div class="ph-small">Awaiting producer review</div></div>
 </div>
 <div class="ph-tabs" role="tablist">
-<button class="ph-tab active" data-tab="overview">Overview</button><button class="ph-tab" data-tab="episodes">Episodes</button><button class="ph-tab" data-tab="assignments">My assignments</button><button class="ph-tab" data-tab="uploads">Segment uploads</button><button class="ph-tab" data-tab="ideas">Episode ideas</button><button class="ph-tab" data-tab="updates">Production updates</button><button class="ph-tab admin-only hidden" data-tab="clips">Clip downloads</button><button class="ph-tab admin-only hidden" data-tab="admin">Admin headquarters</button>
+<button class="ph-tab active" data-tab="overview">Overview</button><button class="ph-tab" data-tab="episodes">Episodes</button><button class="ph-tab" data-tab="assignments">My assignments</button><button class="ph-tab" data-tab="uploads">Segment uploads</button><button class="ph-tab" data-tab="ideas">Episode ideas</button><button class="ph-tab" data-tab="updates">Production updates</button><button class="ph-tab" data-tab="chat">Team chat</button><button class="ph-tab admin-only hidden" data-tab="clips">Clip downloads</button><button class="ph-tab admin-only hidden" data-tab="admin">Admin headquarters</button>
 </div>
 <section class="ph-view active" id="view-overview"><div class="ph-grid">
 <div class="ph-card span-8"><h2>Production at a glance</h2><p>Keep the next episode moving and finish every Friday premiere at least seven days before it goes live.</p><div id="nextEpisode" class="ph-item">Loading episode schedule…</div></div>
@@ -104,6 +121,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #e36b77;outline-offset:3p
 <section class="ph-view" id="view-uploads"><div class="ph-grid"><div class="ph-card span-5"><h2>Submit a segment</h2><p>Upload your assigned recording and include the episode and segment details.</p><form id="uploadForm" class="ph-form"><div class="full"><label>Episode</label><select name="episode_id" id="uploadEpisode" required></select></div><div class="full"><label>Segment title</label><input name="title" required></div><div class="full"><label>Recording / file</label><input name="asset" type="file" accept="video/*,audio/*,image/*,.pdf,.doc,.docx,.txt" multiple required><p class="ph-small">Select several files at once. Large video files use resumable uploads with progress and retry support. Configured maximum: 50 GB per file, subject to your Supabase plan limits.</p><div id="uploadProgress" class="full ph-list" aria-live="polite"></div></div><div class="full"><label>Notes for the producer</label><textarea name="notes" placeholder="Take, context, edits needed, or anything the producer should know."></textarea></div><button class="ph-btn primary" type="submit">Upload selected files</button><p id="uploadMessage" class="ph-small full"></p></form></div><div class="ph-card span-7"><h2>Submission tracker</h2><p>Track the review status of your submitted material.</p><div id="uploadList" class="ph-list">Loading…</div></div></div></section>
 <section class="ph-view" id="view-ideas"><div class="ph-grid"><div class="ph-card span-5"><h2>Pitch an episode idea</h2><p>Bring forward stories, questions and conversations worth exploring.</p><form id="ideaForm" class="ph-form"><div class="full"><label>Idea title</label><input name="title" required></div><div><label>Category</label><select name="category"><option>Tacoma & Pierce County</option><option>Pacific Northwest</option><option>Community conversations</option><option>Mental health & everyday life</option><option>Business & entrepreneurship</option><option>Sports</option><option>National topics</option><option>Special episode</option><option>Other</option></select></div><div><label>Suggested format</label><select name="format"><option>Panel conversation</option><option>Interview</option><option>Field story</option><option>Commentary</option><option>Special</option><option>Open to producer</option></select></div><div class="full"><label>Why should Tacoma Nights cover it?</label><textarea name="description" required></textarea></div><button class="ph-btn primary" type="submit">Submit idea</button></form></div><div class="ph-card span-7"><h2>Team idea board</h2><p>Ideas are visible to approved production team members.</p><div id="ideaList" class="ph-list">Loading…</div></div></div></section>
 <section class="ph-view" id="view-updates"><div class="ph-card"><h2>Production updates</h2><p>Team-facing notes and announcements from production.</p><div id="teamUpdates" class="ph-list">Loading…</div></div></section>
+<section class="ph-view" id="view-chat"><div class="ph-card tn-chat-card"><div class="tn-chat-heading"><div><p class="eyebrow">PRIVATE PRODUCTION ROOM</p><h2>Team live chat</h2><p>Talk through episode ideas, assignments, recordings and production questions with approved Tacoma Nights team members.</p></div><span id="chatConnection" class="pill red">Connecting…</span></div><div id="chatMessages" class="tn-chat-messages" role="log" aria-live="polite" aria-relevant="additions text"><p class="ph-small">Loading team conversation…</p></div><form id="chatForm" class="tn-chat-form"><label class="full" for="chatMessage">Message the team</label><textarea id="chatMessage" maxlength="1200" rows="2" required placeholder="Share an update, ask a question, or start a production discussion…"></textarea><div class="tn-chat-send"><span class="ph-small">Keep it constructive. Messages are visible to approved production members.</span><button class="ph-btn primary" type="submit" id="chatSend">Send message</button></div><p id="chatNotice" class="ph-small" aria-live="polite"></p></form></div></section>
 <section class="ph-view admin-only hidden" id="view-clips"><div class="ph-card"><p class="eyebrow">EXECUTIVE PRODUCER · MEDIA LIBRARY</p><h2>Segment clip downloads</h2><p>Browse submitted segment files and download the original recordings to your computer. Downloads are available to approved producers and administrators.</p><div id="clipLibrary" class="ph-list"><p>Loading submitted clips…</p></div></div></section>
 <section class="ph-view" id="view-admin"><div class="ph-grid">
 <div class="ph-card span-12"><p class="eyebrow">EXECUTIVE PRODUCER · PRIVATE</p><h2>Administrator headquarters</h2><p>Manage episodes, contributors, assignments, submitted segments and public production announcements from one place.</p></div>
@@ -119,7 +137,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #e36b77;outline-offset:3p
 <script>
 (()=>{'use strict';
 const cfg=window.TACOMA_NIGHTS_CONFIG||{},$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const notice=$('#connectionNotice');let db=null,user=null,profile=null,isAdmin=false,episodes=[],assignments=[];
+const notice=$('#connectionNotice');let db=null,user=null,profile=null,isAdmin=false,episodes=[],assignments=[],chatChannel=null;
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const date=v=>v?new Date(v).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}):'Not scheduled';
 const status=v=>'<span class="pill '+(['approved','published','scheduled'].includes(v)?'': 'red')+'">'+esc(v||'pending')+'</span>';
@@ -170,7 +188,7 @@ isAdmin=['admin','producer'].includes(p.role);
 $('#authPanel').classList.add('hidden');$('#signedOutPanel').classList.add('hidden');$('#appPanel').classList.remove('hidden');
 $('#memberName').textContent=p.display_name||user.email;$('#memberRole').textContent=p.role;
 $$('.admin-only').forEach(el=>el.classList.toggle('hidden',!isAdmin));
-notice.textContent='Connected securely. Welcome to the production workspace.';await refresh();
+notice.textContent='Connected securely. Welcome to the production workspace.';await refresh();await loadChat();subscribeChat();
 }
 async function init(){
 if(!window.supabase?.createClient||!cfg.supabaseUrl||!cfg.supabaseAnonKey){notice.textContent='Supabase browser configuration is missing. Production tools cannot connect yet.';return}
@@ -182,7 +200,29 @@ db.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>{if(session)start(se
 let signup=false;$('#signupToggle').addEventListener('click',()=>{signup=!signup;$('#authTitle').textContent=signup?'Apply for Tacoma Nights membership':'Sign in to Production';$('#authSubmit').textContent=signup?'Submit membership application':'Sign in';$('#signupToggle').textContent=signup?'Back to sign in':'Apply for membership';$('#signupFields').classList.toggle('hidden',!signup);$('#signupName').required=signup;$('#signupRole').required=signup;$('#signupNote').required=signup;$('#authPassword').autocomplete=signup?'new-password':'current-password'});
 $('#authForm').addEventListener('submit',async e=>{e.preventDefault();const email=$('#authEmail').value.trim(),password=$('#authPassword').value;try{const metadata=signup?{display_name:$('#signupName').value.trim(),requested_role:$('#signupRole').value,application_note:$('#signupNote').value.trim()}:undefined;const r=signup?await db.auth.signUp({email,password,options:{data:metadata}}):await db.auth.signInWithPassword({email,password});if(r.error)throw r.error;if(signup){msg($('#authMessage'),r.data.session?'Application submitted. Your account remains locked until an administrator approves it.':'Application submitted. Check your email to confirm the account if requested. Your access remains pending until approved.');$('#authForm').reset();signup=false;$('#signupFields').classList.add('hidden');$('#signupName').required=false;$('#signupRole').required=false;$('#signupNote').required=false;$('#authTitle').textContent='Sign in to Production';$('#authSubmit').textContent='Sign in';$('#signupToggle').textContent='Apply for membership';if(r.data.session)await start(r.data.session)}else{msg($('#authMessage'),'Signed in. Checking membership approval…');if(r.data.session)await start(r.data.session)}}catch(err){msg($('#authMessage'),err.message)}});
 $('#showLogin').addEventListener('click',()=>{$('#signedOutPanel').classList.add('hidden');$('#authPanel').classList.remove('hidden')});$('#pendingSignOut').addEventListener('click',async()=>{await db.auth.signOut();location.reload()});
-$('#signOut').addEventListener('click',async()=>{await db.auth.signOut();location.reload()});
+$('#signOut').addEventListener('click',async()=>{if(chatChannel)await db.removeChannel(chatChannel);await db.auth.signOut();location.reload()});
+async function loadChat(){
+const box=$('#chatMessages');
+const {data,error}=await db.from('tn_production_chat_messages').select('id,user_id,display_name,message,created_at').order('created_at',{ascending:false}).limit(100);
+if(error){box.innerHTML='<p class="ph-small">Chat could not load: '+esc(error.message)+'</p>';throw error}
+const messages=(data||[]).reverse();
+box.innerHTML=messages.map(m=>'<article class="tn-chat-message '+(m.user_id===user.id?'mine':'')+'"><div class="tn-chat-meta"><strong>'+esc(m.display_name)+'</strong><time>'+date(m.created_at)+'</time></div><div class="tn-chat-body">'+esc(m.message)+'</div></article>').join('')||'<p class="ph-small">No messages yet. Start the conversation with your production team.</p>';
+box.scrollTop=box.scrollHeight;
+}
+function subscribeChat(){
+if(chatChannel)db.removeChannel(chatChannel);
+const badge=$('#chatConnection');
+chatChannel=db.channel('tn-production-team-chat')
+.on('postgres_changes',{event:'INSERT',schema:'public',table:'tn_production_chat_messages'},()=>loadChat().catch(e=>msg($('#chatNotice'),'Live refresh issue: '+e.message)))
+.subscribe(state=>{badge.textContent=state==='SUBSCRIBED'?'Live · connected':state==='CHANNEL_ERROR'?'Connection issue':state==='CLOSED'?'Disconnected':'Connecting…';badge.classList.toggle('red',state!=='SUBSCRIBED')});
+}
+$('#chatForm').addEventListener('submit',async e=>{
+e.preventDefault();const field=$('#chatMessage'),button=$('#chatSend'),message=field.value.trim();if(!message)return;
+button.disabled=true;msg($('#chatNotice'),'Sending…');
+try{const {error}=await db.from('tn_production_chat_messages').insert({user_id:user.id,display_name:profile.display_name||user.email,message});if(error)throw error;field.value='';msg($('#chatNotice'),'Message sent.');await loadChat()}
+catch(err){msg($('#chatNotice'),'Message could not be sent: '+err.message)}
+finally{button.disabled=false;field.focus()}
+});
 $('#episodeForm').addEventListener('submit',async e=>{e.preventDefault();try{const v=formObj(e.target);v.created_by=user.id;if(v.premiere_at)v.premiere_at=new Date(v.premiere_at).toISOString();else delete v.premiere_at;const {error}=await db.from('tn_production_episodes').insert(v);if(error)throw error;await log('Created episode',v.episode_number+' · '+v.title);e.target.reset();$('#episodeFormCard').classList.add('hidden');await refresh()}catch(err){alert(err.message)}});
 $('#newEpisodeBtn').addEventListener('click',()=>$('#episodeFormCard').classList.toggle('hidden'));
 $('#assignmentForm').addEventListener('submit',async e=>{e.preventDefault();try{const v=formObj(e.target),email=v.assignee_email;delete v.assignee_email;if(v.due_at)v.due_at=new Date(v.due_at).toISOString();else delete v.due_at;const {data:person,error:pe}=await db.from('tn_production_profiles').select('id').eq('email',email).single();if(pe)throw new Error('No approved team profile found for '+email);v.assignee_id=person.id;v.assigned_by=user.id;const {error}=await db.from('tn_production_assignments').insert(v);if(error)throw error;await log('Created assignment',v.title+' assigned to '+email);e.target.reset();await refresh()}catch(err){alert(err.message)}});
