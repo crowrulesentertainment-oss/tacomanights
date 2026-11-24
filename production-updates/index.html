@@ -135,7 +135,10 @@
 <p style="color:#aeb8c4">Until Next Friday. — CrowRules Entertainment</p>
 </div>
 </section>
-</main>
+<section class="production-section dark" id="live-production-updates"><div class="wrap"><div class="production-heading"><p class="tn2-eyebrow">FROM THE PRODUCTION TEAM</p><h2>Latest <em>production updates.</em></h2><p>Announcements, behind-the-scenes progress, episode news, contributor opportunities and milestones—straight from the Tacoma Nights team.</p></div><div id="publicProductionUpdates" class="production-grid"><div class="production-card"><p>Loading the latest updates…</p></div></div></div></section>
+<script>
+(()=>{const c=window.TACOMA_NIGHTS_CONFIG||{},root=document.getElementById('publicProductionUpdates');if(!root||!window.supabase?.createClient||!c.supabaseUrl||!c.supabaseAnonKey){if(root)root.textContent='Production updates are temporarily unavailable.';return}const db=window.supabase.createClient(c.supabaseUrl,c.supabaseAnonKey);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));db.from('tn_production_updates').select('title,category,body,published_at').eq('visibility','public').order('published_at',{ascending:false}).limit(30).then(({data,error})=>{if(error){root.innerHTML='<div class="production-card"><p>New updates will appear here as the production team publishes them.</p></div>';return}if(!data?.length){root.innerHTML='<div class="production-card"><p>We are preparing the next chapter of Tacoma Nights. Check back for production announcements.</p></div>';return}root.innerHTML=data.map(x=>'<article class="production-card"><p class="tn2-eyebrow">'+esc(x.category||'Production update')+' · '+new Date(x.published_at).toLocaleDateString()+'</p><h3>'+esc(x.title)+'</h3><p>'+esc(x.body).replace(/\n/g,'<br>')+'</p></article>').join('')})})();
+</script></main>
 <div id="site-footer"></div>
 </body>
 </html>
