@@ -144,7 +144,7 @@ create policy "production assignments admin write" on public.tn_production_assig
 
 
 drop policy if exists "production uploads read" on public.tn_production_uploads;
-create policy "production uploads read" on public.tn_production_uploads for select to authenticated using (uploader_id=auth.uid() or private.tn_production_is_admin());
+create policy "production uploads read" on public.tn_production_uploads for select to authenticated using (private.tn_production_is_member() and (uploader_id=auth.uid() or private.tn_production_is_admin()));
 drop policy if exists "production uploads submit" on public.tn_production_uploads;
 create policy "production uploads submit" on public.tn_production_uploads for insert to authenticated with check (uploader_id=auth.uid() and private.tn_production_is_member());
 drop policy if exists "production uploads admin review" on public.tn_production_uploads;
