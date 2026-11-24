@@ -17,7 +17,7 @@
   const menuButton = document.querySelector(".menu-toggle");
   if (nav) {
     nav.innerHTML = menus.map(([label, target]) => Array.isArray(target)
-      ? '<details class="nav-menu"><summary>' + label + '</summary><div class="nav-dropdown">' + target.map(([name,path]) => '<a href="' + pathFor(path) + '">' + name + '</a>').join("") + '</div></details>'
+      ? '<details class="nav-menu"><summary>' + label + '</summary><div class="nav-dropdown">' + target.map(([name,path]) => '<a href="' + pathFor(path) + '"' + (path.startsWith("http") ? ' target="_blank" rel="noopener noreferrer"' : "") + '>' + name + '</a>').join("") + '</div></details>'
       : '<a class="nav-link" href="' + pathFor(target) + '">' + label + '</a>').join("")
       + '<a class="nav-join" href="' + pathFor("membership/") + '">JOIN FREE ↗</a>';
     const here = currentPath(location.href);
