@@ -90,20 +90,20 @@ grant usage on schema private to authenticated;
 -- These narrowly scoped SECURITY DEFINER helpers live outside the exposed API schema.
 create or replace function private.tn_production_is_admin()
 returns boolean language sql stable security definer set search_path=public,pg_temp
-as $ select auth.uid() is not null and exists(select 1 from public.tn_production_profiles p where p.id=auth.uid() and p.role in ('admin','producer')); $;
+as $function$ select auth.uid() is not null and exists(select 1 from public.tn_production_profiles p where p.id=auth.uid() and p.role in ('admin','producer') ); $function$;
 
 create or replace function private.tn_production_is_member()
 returns boolean language sql stable security definer set search_path=public,pg_temp
-as $ select auth.uid() is not null and exists(select 1 from public.tn_production_profiles p where p.id=auth.uid() and p.role in ('contributor','producer','admin')); $;
+as $function$ select auth.uid() is not null and exists(select 1 from public.tn_production_profiles p where p.id=auth.uid() and p.role in ('contributor','producer','admin') ); $function$;
 
 create or replace function private.tn_production_new_profile()
 returns trigger language plpgsql security definer set search_path=public,pg_temp
-as $ begin
+as $function$ begin
  insert into public.tn_production_profiles(id,email,display_name,role)
  values(new.id,new.email,coalesce(new.raw_user_meta_data->>'display_name',split_part(new.email,'@',1)),'pending')
  on conflict(id) do update set email=excluded.email;
  return new;
-end; $;
+end; $function$;
 
 revoke all on function private.tn_production_is_admin() from public, anon;
 revoke all on function private.tn_production_is_member() from public, anon;
