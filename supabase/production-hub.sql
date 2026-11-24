@@ -8,6 +8,8 @@ create table if not exists public.tn_production_profiles (
  id uuid primary key references auth.users(id) on delete cascade,
  email text,
  display_name text,
+ requested_role text,
+ application_note text,
  role text not null default 'pending' check (role in ('pending','contributor','producer','admin')),
  created_at timestamptz not null default now()
 );
@@ -96,11 +98,14 @@ create or replace function private.tn_production_is_member()
 returns boolean language sql stable security definer set search_path=public,pg_temp
 as $function$ select auth.uid() is not null and exists(select 1 from public.tn_production_profiles p where p.id=auth.uid() and p.role in ('contributor','producer','admin') ); $function$;
 
+alter table public.tn_production_profiles add column if not exists requested_role text;
+alter table public.tn_production_profiles add column if not exists application_note text;
+
 create or replace function private.tn_production_new_profile()
 returns trigger language plpgsql security definer set search_path=public,pg_temp
 as $function$ begin
- insert into public.tn_production_profiles(id,email,display_name,role)
- values(new.id,new.email,coalesce(new.raw_user_meta_data->>'display_name',split_part(new.email,'@',1)),'pending')
+ insert into public.tn_production_profiles(id,email,display_name,requested_role,application_note,role)
+ values(new.id,new.email,coalesce(new.raw_user_meta_data->>'display_name',split_part(new.email,'@',1)),new.raw_user_meta_data->>'requested_role',new.raw_user_meta_data->>'application_note','pending')
  on conflict(id) do update set email=excluded.email;
  return new;
 end; $function$;
@@ -165,8 +170,8 @@ drop policy if exists "production activity member insert" on public.tn_productio
 create policy "production activity member insert" on public.tn_production_activity for insert to authenticated with check (actor_id=auth.uid() and private.tn_production_is_member());
 
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
-values('tn-production-private','tn-production-private',false,52428800,array['video/*','audio/*','image/*','application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/plain'])
-on conflict(id) do update set public=false,file_size_limit=52428800;
+values('tn-production-private','tn-production-private',false,53687091200,array['video/*','audio/*','image/*','application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/plain'])
+on conflict(id) do update set public=false,file_size_limit=53687091200;
 
 drop policy if exists "production storage upload own" on storage.objects;
 create policy "production storage upload own" on storage.objects for insert to authenticated with check (bucket_id='tn-production-private' and (storage.foldername(name))[1]=auth.uid()::text and private.tn_production_is_member());
