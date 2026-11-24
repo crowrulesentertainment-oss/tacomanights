@@ -136,8 +136,7 @@ drop policy if exists "production assignments member read" on public.tn_producti
 create policy "production assignments member read" on public.tn_production_assignments for select to authenticated using (assignee_id=auth.uid() or private.tn_production_is_admin());
 drop policy if exists "production assignments admin write" on public.tn_production_assignments;
 create policy "production assignments admin write" on public.tn_production_assignments for all to authenticated using (private.tn_production_is_admin()) with check (private.tn_production_is_admin());
-drop policy if exists "production assignment assignee update" on public.tn_production_assignments;
-create policy "production assignment assignee update" on public.tn_production_assignments for update to authenticated using (assignee_id=auth.uid()) with check (assignee_id=auth.uid());
+
 
 drop policy if exists "production uploads read" on public.tn_production_uploads;
 create policy "production uploads read" on public.tn_production_uploads for select to authenticated using (uploader_id=auth.uid() or private.tn_production_is_admin());
