@@ -23,7 +23,7 @@ const limits={video:50*1024*1024*1024,audio:30*1024*1024,photo:15*1024*1024},mim
 if(type!=="written"){
  if(!file){status.textContent="Choose a file for your "+type+" response.";return}
  if(!mimes[type]?.includes(file.type)){status.textContent="That file format is not supported for this response type.";return}
- if(file.size>limits[type]){status.textContent="This file is larger than the "+(limits[type]/1024/1024/1024).toFixed(type==="video"?0:2)+" GB limit for this format.";return}
+ if(file.size>limits[type]){const limitLabel=type==="video"?"50 GB":(limits[type]/1024/1024)+" MB";status.textContent="This file is larger than the "+limitLabel+" limit for this format.";return}
 }
 const submitButton=form.querySelector('button[type="submit"]');if(submitButton)submitButton.disabled=true;
 status.textContent="Preparing your submission…";
