@@ -4,7 +4,7 @@ create table if not exists public.teen_perspective_submissions (
  display_name text not null default 'Community Voice' check(char_length(display_name) between 1 and 60),
  title text not null check(char_length(title) between 3 and 140), topic text not null default 'Open perspective' check(char_length(topic)<=80),
  body text not null default '' check(char_length(body)<=3000),
- media_bucket text check(media_bucket is null or media_bucket in ('tacoma-nights-clips','teenager-perspective-media')), media_path text,
+ media_bucket text check(media_bucket is null or media_bucket in ('teenager-perspective-inbox','teenager-perspective-media')), media_path text,
  status text not null default 'pending' check(status in ('pending','approved','rejected')),
  reviewed_by uuid references auth.users(id) on delete set null, reviewed_at timestamptz, created_at timestamptz not null default now(),
  constraint teen_perspective_media_pair check((media_bucket is null and media_path is null) or (media_bucket is not null and media_path is not null and char_length(media_path) between 1 and 500))
@@ -53,7 +53,7 @@ create table if not exists public.teen_perspective_answers (
  reviewed_by uuid references auth.users(id) on delete set null, reviewed_at timestamptz, created_at timestamptz not null default now()
 );
 create index if not exists teen_perspective_answers_question_idx on public.teen_perspective_answers(question_id,status,created_at desc);
-alter table public.teen_perspective_submissions enable row level security;
+alter table public.teen_perspective_submissions drop constraint if exists teen_perspective_submissions_media_bucket_check;\nalter table public.teen_perspective_submissions add constraint teen_perspective_submissions_media_bucket_check check(media_bucket is null or media_bucket in ('teenager-perspective-inbox','teenager-perspective-media'));\nalter table public.teen_perspective_submissions enable row level security;
 alter table public.teen_perspective_consents enable row level security;
 alter table public.teen_perspective_comments enable row level security;
 alter table public.teen_perspective_ratings enable row level security;
@@ -63,7 +63,7 @@ alter table public.teen_perspective_answers enable row level security;
 drop policy if exists "Teen perspective public approved read" on public.teen_perspective_submissions;
 create policy "Teen perspective public approved read" on public.teen_perspective_submissions for select to anon,authenticated using(status='approved' or public.tn_is_staff());
 drop policy if exists "Teen perspective public pending insert" on public.teen_perspective_submissions;
-create policy "Teen perspective public pending insert" on public.teen_perspective_submissions for insert to anon,authenticated with check(status='pending' and reviewed_by is null and reviewed_at is null and (media_bucket is null or media_bucket='tacoma-nights-clips') and (media_path is null or media_path like 'teenager-inbox/%'));
+create policy "Teen perspective public pending insert" on public.teen_perspective_submissions for insert to anon,authenticated with check(status='pending' and reviewed_by is null and reviewed_at is null and (media_bucket is null or media_bucket='teenager-perspective-inbox') and (media_path is null or media_path like 'teenager-inbox/%'));
 drop policy if exists "Teen perspective staff update" on public.teen_perspective_submissions;
 create policy "Teen perspective staff update" on public.teen_perspective_submissions for update to authenticated using(public.tn_is_staff()) with check(public.tn_is_staff());
 drop policy if exists "Teen perspective consent insert" on public.teen_perspective_consents;
@@ -117,10 +117,10 @@ grant select on public.teen_perspective_rating_summary to anon,authenticated;
 create or replace view public.teen_perspective_reaction_summary with(security_invoker=true) as select comment_id,reaction_type,count(*)::bigint reaction_count from public.teen_perspective_reactions group by comment_id,reaction_type;
 grant select on public.teen_perspective_reaction_summary to anon,authenticated;
 drop policy if exists "Teen perspective public private-inbox upload" on storage.objects;
-create policy "Teen perspective public private-inbox upload" on storage.objects for insert to anon,authenticated with check(bucket_id='tacoma-nights-clips' and (storage.foldername(name))[1]='teenager-inbox');
+create policy "Teen perspective public private-inbox upload" on storage.objects for insert to anon,authenticated with check(bucket_id='teenager-perspective-inbox' and (storage.foldername(name))[1]='teenager-inbox');
 drop policy if exists "Teen perspective staff private-inbox read" on storage.objects;
-create policy "Teen perspective staff private-inbox read" on storage.objects for select to authenticated using(bucket_id='tacoma-nights-clips' and (storage.foldername(name))[1]='teenager-inbox' and public.tn_is_staff());
-insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types) values('teenager-perspective-media','teenager-perspective-media',true,104857600,array['audio/webm','audio/ogg','audio/mpeg','audio/mp4','audio/wav','audio/x-m4a','video/mp4','video/webm','video/quicktime']) on conflict(id) do nothing;
+create policy "Teen perspective staff private-inbox read" on storage.objects for select to authenticated using(bucket_id='teenager-perspective-inbox' and (storage.foldername(name))[1]='teenager-inbox' and public.tn_is_staff());
+insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types) values('teenager-perspective-inbox','teenager-perspective-inbox',false,104857600,array['audio/webm','audio/ogg','audio/mpeg','audio/mp4','audio/wav','audio/x-m4a','audio/aac','video/mp4','video/webm','video/quicktime']) on conflict(id) do nothing;\ninsert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types) values('teenager-perspective-media','teenager-perspective-media',true,104857600,array['audio/webm','audio/ogg','audio/mpeg','audio/mp4','audio/wav','audio/x-m4a','video/mp4','video/webm','video/quicktime']) on conflict(id) do nothing;
 drop policy if exists "Teen perspective staff publish media" on storage.objects;
 create policy "Teen perspective staff publish media" on storage.objects for insert to authenticated with check(bucket_id='teenager-perspective-media' and (storage.foldername(name))[1]='teenager-approved' and public.tn_is_staff());
 insert into public.teen_perspective_questions(prompt,category,is_featured,status)
