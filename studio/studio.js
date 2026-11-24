@@ -35,7 +35,7 @@ async function getYouTubeStatus(){
   const y=await api("/youtube/status");
   setText("youtube-output-status",y.status||"NOT VERIFIED");
   setText("youtube-output-detail",y.title?y.title+" · "+(y.message||""):y.message||"No YouTube status returned.");
-  const el=$("youtube-output-status");if(el)el.dataset.status=String(y.status||"").toLowerCase();
+  const el=$("youtube-output-status");if(el){el.dataset.status=String(y.status||"").toLowerCase();el.dataset.state=y.status==="LIVE"?"online":y.status==="STARTING"||y.status==="TESTING"?"warning":"neutral";}
   const auth=await window.TNStudioReady,session=auth.getSession();
   if(session?.user){
    const publicVideoId=y.status==="LIVE"&&y.privacyStatus==="public"?y.videoId:null;
@@ -51,7 +51,7 @@ async function getHealth(){
  const h=await r.json().catch(()=>({}));
  if(!r.ok||!h.ok)throw Error(h.error||"Local bridge is not responding.");
  lastHealth=h;
- setText("bridge-health",h.sessionPaired?"PAIRED":h.ok?"ONLINE":"OFFLINE");
+ setText("bridge-health",h.sessionPaired?"PAIRED":h.ok?"ONLINE":"OFFLINE");const bridgeCard=$("bridge-health");if(bridgeCard)bridgeCard.dataset.state=h.sessionPaired&&h.connected?"online":h.ok?"warning":"offline";
  const standby=$("emergency-standby");if(standby)standby.disabled=!(h.ok&&h.connected&&h.sessionPaired);
  setText("engine-status","ENGINE: "+String(h.engine||"UNKNOWN").toUpperCase()+(h.connected?" CONNECTED":" OFFLINE"));
  setText("active-engine",h.engine||"—");
@@ -73,7 +73,7 @@ function renderNetwork(h,queued){
  const paired=!!(h?.ok&&h.sessionPaired),connected=!!(h?.ok&&h.connected);
  const status=paired&&connected?"ONLINE":paired?"BRIDGE PAIRED · ENGINE OFFLINE":h?.ok?"BRIDGE ONLINE · NOT PAIRED":"OFFLINE";
  setText("network-status",status+" · "+queued+" QUEUED");
- const el=$("network-status");if(el)el.title="Bridge: "+(h?.ok?"reachable":"unavailable")+"; Supabase session: "+(paired?"paired":"not paired")+"; encoder: "+(connected?"connected":"disconnected")+". YouTube output is verified separately in YouTube Studio.";
+ const el=$("network-status");if(el){el.dataset.state=paired&&connected?"online":paired?"warning":h?.ok?"warning":"offline";el.title="Bridge: "+(h?.ok?"reachable":"unavailable")+"; Supabase session: "+(paired?"paired":"not paired")+"; encoder: "+(connected?"connected":"disconnected")+". YouTube output is verified separately in YouTube Studio.";
 }
 async function refresh(){
  if(refreshBusy)return;refreshBusy=true;
@@ -82,7 +82,7 @@ async function refresh(){
   if(session?.user){
    try{
     const[q,stateResult]=await Promise.all([
-     auth.client.from("live_network_playout_queue").select("id",{count:"exact",head:true}).eq("status","queued"),
+     auth.client.from("live_network_playout_queue").select("id",{count:"exact",head:true}).eq("owner_id",session.user.id).eq("status","queued"),
      auth.client.from("live_network_public_state").select("*").maybeSingle()
     ]);
     if(q.error)throw q.error;queued=q.count||0;if(stateResult.error)throw stateResult.error;
