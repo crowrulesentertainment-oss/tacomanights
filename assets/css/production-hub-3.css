@@ -200,3 +200,35 @@
 .hub3-recognition-leader b{font-size:12px;overflow-wrap:anywhere}
 .hub3-recognition-leader>span:last-child{font-size:10px;color:#9ba8b8;text-align:right}
 @media(max-width:720px){.hub3-recognition-wall{grid-template-columns:1fr}.hub3-recognition-toolbar{grid-template-columns:1fr}.hub3-recognition-toolbar label{min-width:0}}
+
+/* Production training center */
+.hub3-training-progress{padding:15px;border:1px solid rgba(217,183,125,.2);border-radius:10px;background:rgba(217,183,125,.045);margin:14px 0}
+.hub3-training-progress-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:11px;color:#e9d4ad;margin-bottom:10px}
+.hub3-training-progress-head span{color:#aeb8c6}
+.hub3-training-progress-track{height:7px;border-radius:10px;background:rgba(255,255,255,.09);overflow:hidden}
+.hub3-training-progress-track span{display:block;height:100%;border-radius:10px;background:linear-gradient(90deg,#b88a4c,#e8d1a2);transition:width .25s ease}
+.hub3-training-team-summary{padding:12px 14px;border-left:3px solid #b88a4c;background:rgba(255,255,255,.025);margin:12px 0;display:flex;gap:10px;flex-wrap:wrap;font-size:11px}
+.hub3-training-team-summary b{color:#e9d4ad;letter-spacing:.07em}.hub3-training-team-summary span{color:#aeb8c6}
+.hub3-training-toolbar{display:grid;grid-template-columns:minmax(0,2fr) minmax(180px,1fr);gap:12px;align-items:end;margin:18px 0 8px}
+.hub3-training-toolbar label{display:grid;gap:6px;color:#bfc9d6;font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.hub3-training-toolbar input,.hub3-training-toolbar select{width:100%;min-width:0;box-sizing:border-box;background:#080d14;color:#f4f6f8;border:1px solid rgba(180,194,211,.2);border-radius:7px;padding:11px;font:inherit;text-transform:none;letter-spacing:normal}
+.hub3-training-list{display:grid;gap:12px;margin-top:12px}
+.hub3-training-card{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:14px;align-items:start;padding:17px;border:1px solid rgba(180,194,211,.13);border-radius:11px;background:rgba(255,255,255,.025);min-width:0}
+.hub3-training-card.is-complete{border-color:rgba(104,174,132,.3);background:rgba(104,174,132,.045)}
+.hub3-training-card-index{display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:rgba(217,183,125,.1);color:#e9d4ad;font:800 13px Manrope,sans-serif}
+.hub3-training-card-body{min-width:0}
+.hub3-training-card-meta{display:flex;gap:10px;flex-wrap:wrap;color:#9ba8b8;font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:800}
+.hub3-training-complete-label{color:#8bc99d}
+.hub3-training-card h4{font:800 16px Manrope,sans-serif;color:#f4f6f8;margin:8px 0 5px;overflow-wrap:anywhere}
+.hub3-training-card-body>p{font-size:12px;color:#c4ced9;line-height:1.6;margin:0;white-space:pre-wrap}
+.hub3-training-details{margin-top:11px;color:#d9bd8b;font-size:11px}
+.hub3-training-details summary{cursor:pointer;font-weight:800}
+.hub3-training-details div{white-space:pre-wrap;color:#c4ced9;line-height:1.65;margin-top:8px}
+.hub3-training-resource{display:inline-block;margin-top:11px;color:#e4c58e;font-size:11px;font-weight:800;text-decoration:none}
+.hub3-training-card-action{align-self:center}
+.hub3-training-done{font-size:10px;color:#8bc99d;font-weight:800;white-space:nowrap}
+.hub3-onboarding-steps{padding-left:20px;display:grid;gap:15px;margin:20px 0}
+.hub3-onboarding-steps li{padding-left:3px;color:#e6d1a8;font-size:12px}
+.hub3-onboarding-steps b,.hub3-onboarding-steps span{display:block}
+.hub3-onboarding-steps span{color:#aeb8c6;font-size:11px;line-height:1.55;margin-top:4px}
+@media(max-width:720px){.hub3-training-toolbar{grid-template-columns:1fr}.hub3-training-card{grid-template-columns:32px minmax(0,1fr);gap:10px;padding:13px}.hub3-training-card-index{width:30px;height:30px;font-size:11px}.hub3-training-card-action{grid-column:2;justify-self:start}.hub3-training-card h4{font-size:14px}}
