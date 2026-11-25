@@ -1,0 +1,21 @@
+/* Visitor live dashboard */
+.tn-visitor-bar{position:relative;z-index:1;padding:26px 0 30px;background:linear-gradient(115deg,#101721,#171c25 55%,#10141b);border-bottom:1px solid #c8a56a55;border-top:1px solid #ffffff12}
+.tn-visitor-wrap{width:min(1240px,calc(100% - 44px));margin:auto}
+.tn-visitor-heading{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:16px}
+.tn-visitor-heading h2{font:800 clamp(19px,2.6vw,27px)/1.15 Manrope,sans-serif;margin:0;color:#f4f2ee}
+.tn-visitor-heading p{margin:0;color:#9da6b1;font-size:10px;letter-spacing:.14em}
+.tn-visitor-grid{display:grid;grid-template-columns:1.2fr 1.2fr .8fr;gap:12px}
+.tn-visitor-card{min-width:0;padding:18px 20px;background:#090e15;border:1px solid #ffffff1c;border-radius:4px}
+.tn-visitor-label{display:block;margin-bottom:9px;color:#c8a56a;font:800 9px Manrope,sans-serif;letter-spacing:.18em}
+.tn-visitor-time{display:block;color:#fff;font:800 clamp(27px,4vw,40px)/1.1 Manrope,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+.tn-visitor-date{display:block;margin-top:7px;color:#b7bdc5;font-size:11px}
+.tn-visitor-zone{display:block;margin-top:4px;color:#818b97;font-size:10px}
+.tn-visitor-weather{display:block;color:#fff;font:800 clamp(26px,3.5vw,36px)/1.1 Manrope,sans-serif}
+.tn-visitor-place{display:block;margin-top:7px;color:#d4d7dc;font-size:11px}
+.tn-visitor-note{display:block;margin-top:5px;color:#89939f;font-size:10px;line-height:1.5}
+.tn-visitor-button{margin-top:10px;padding:7px 10px;border:1px solid #c8a56a66;background:#c8a56a12;color:#e3c996;border-radius:3px;font-size:10px;font-weight:700;cursor:pointer}
+.tn-visitor-button:disabled{opacity:.6;cursor:wait}
+.tn-visitor-count{display:block;color:#fff;font:800 clamp(32px,4vw,42px)/1.1 Manrope,sans-serif;font-variant-numeric:tabular-nums}
+.tn-visitor-foot{margin:14px 0 0;color:#7e8792;font-size:9px;line-height:1.5}
+@media(max-width:760px){.tn-visitor-grid{grid-template-columns:1fr 1fr}.tn-visitor-card:last-child{grid-column:1/-1}.tn-visitor-heading{align-items:flex-start;flex-direction:column;gap:5px}}
+@media(max-width:480px){.tn-visitor-wrap{width:calc(100% - 32px)}.tn-visitor-grid{grid-template-columns:1fr}.tn-visitor-card:last-child{grid-column:auto}.tn-visitor-card{padding:16px}.tn-visitor-time{font-size:32px}}
