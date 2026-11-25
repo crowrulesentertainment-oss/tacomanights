@@ -1,0 +1,17 @@
+drop policy if exists "tn editing admin manage" on public.tn_production_editing;
+create policy "tn editing admin insert" on public.tn_production_editing for insert to authenticated with check ((select private.tn_production_is_admin()));
+create policy "tn editing admin update" on public.tn_production_editing for update to authenticated using ((select private.tn_production_is_admin())) with check ((select private.tn_production_is_admin()));
+create policy "tn editing admin delete" on public.tn_production_editing for delete to authenticated using ((select private.tn_production_is_admin()));
+drop policy if exists "tn calendar admin manage" on public.tn_production_calendar;
+create policy "tn calendar admin insert" on public.tn_production_calendar for insert to authenticated with check ((select private.tn_production_is_admin()));
+create policy "tn calendar admin update" on public.tn_production_calendar for update to authenticated using ((select private.tn_production_is_admin())) with check ((select private.tn_production_is_admin()));
+create policy "tn calendar admin delete" on public.tn_production_calendar for delete to authenticated using ((select private.tn_production_is_admin()));
+drop policy if exists "tn training admin manage" on public.tn_production_training;
+create policy "tn training admin insert" on public.tn_production_training for insert to authenticated with check ((select private.tn_production_is_admin()));
+create policy "tn training admin update" on public.tn_production_training for update to authenticated using ((select private.tn_production_is_admin())) with check ((select private.tn_production_is_admin()));
+create policy "tn training admin delete" on public.tn_production_training for delete to authenticated using ((select private.tn_production_is_admin()));
+drop policy if exists "tn recognition admin manage" on public.tn_production_recognition;
+create policy "tn recognition admin insert" on public.tn_production_recognition for insert to authenticated with check ((select private.tn_production_is_admin()));
+create policy "tn recognition admin update" on public.tn_production_recognition for update to authenticated using ((select private.tn_production_is_admin())) with check ((select private.tn_production_is_admin()));
+create policy "tn recognition admin delete" on public.tn_production_recognition for delete to authenticated using ((select private.tn_production_is_admin()));
+drop policy if exists "tn training progress admin read" on public.tn_production_training_progress;
