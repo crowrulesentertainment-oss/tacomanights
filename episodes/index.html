@@ -145,7 +145,7 @@ function render(){
  episode.replaceChildren();const loading=document.createElement("option");loading.value="";loading.textContent="Loading episode list…";episode.append(loading);episode.disabled=true;
  loadEpisodes(item);
 }
-episode.addEventListener("change",()=>{const selected=episodeItems.find(x=>x.id===episode.value);if(!selected)return;frame.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(selected.id)+"?rel=0&playsinline=1";frame.title=selected.title;episodeStatus.textContent="Now playing: "+selected.title;error.classList.remove("show")});
+episode.addEventListener("change",()=>{const selected=episodeItems.find(x=>x.videoId===episode.value);if(!selected||!selected.videoId)return;const videoUrl=new URL("https://www.youtube-nocookie.com/embed/"+encodeURIComponent(selected.videoId));videoUrl.searchParams.set("autoplay","1");videoUrl.searchParams.set("playsinline","1");videoUrl.searchParams.set("rel","0");frame.title=selected.title+" — Tacoma Nights";frame.src=videoUrl.toString();episodeStatus.textContent="Playing: "+selected.title;error.classList.remove("show")});
 show.addEventListener("change",()=>{populateSeasons();render()});
 season.addEventListener("change",render);
 frame.addEventListener("error",()=>error.classList.add("show"));
