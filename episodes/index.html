@@ -89,22 +89,43 @@ function populateSeasons(selected){
  for(const [value,label] of options){const opt=document.createElement("option");opt.value=value;opt.textContent=label;season.append(opt)}
  season.value=selected||options[0][0];
 }
+let episodeLoadToken=0;
+function videoIdFrom(value){
+ const match=String(value||"").match(/(?:v=|youtu\\.be\\/|youtube\\.com\\/embed\\/)([A-Za-z0-9_-]{11})/);
+ return match?match[1]:(/^[A-Za-z0-9_-]{11}$/.test(String(value||""))?String(value):"");
+}
+function entriesFromXml(xmlText){
+ const xml=new DOMParser().parseFromString(xmlText,"text/xml");
+ if(xml.querySelector("parsererror"))throw new Error("Invalid playlist feed");
+ return Array.from(xml.getElementsByTagName("entry")).map(entry=>{
+  const id=entry.getElementsByTagNameNS("http://www.youtube.com/xml/schemas/2015","videoId")[0]?.textContent||videoIdFrom(entry.getElementsByTagName("link")[0]?.getAttribute("href"));
+  return {id,title:entry.getElementsByTagName("title")[0]?.textContent||"Untitled episode"};
+ }).filter(x=>x.id);
+}
 async function loadEpisodes(item){
- episodeItems=[];episode.replaceChildren();const loading=document.createElement("option");loading.value="";loading.textContent="Loading episode list…";episode.append(loading);episode.disabled=true;episodeStatus.textContent="Retrieving episode titles from YouTube…";
- try{
-  const feed="https://www.youtube.com/feeds/videos.xml?playlist_id="+encodeURIComponent(item.playlist);
-  const response=await fetch("https://api.allorigins.win/raw?url="+encodeURIComponent(feed),{cache:"no-store"});
-  if(!response.ok)throw new Error("Playlist feed unavailable");
-  const xml=new DOMParser().parseFromString(await response.text(),"text/xml");
-  if(xml.querySelector("parsererror"))throw new Error("Could not read playlist feed");
-  episodeItems=Array.from(xml.getElementsByTagName("entry")).map(entry=>({id:entry.getElementsByTagName("yt:videoId")[0]?.textContent||entry.getElementsByTagNameNS("http://www.youtube.com/xml/schemas/2015","videoId")[0]?.textContent,title:entry.getElementsByTagName("title")[0]?.textContent||"Untitled episode"})).filter(x=>x.id);
-  if(!episodeItems.length)throw new Error("No public episodes returned");
-  episode.replaceChildren();const prompt=document.createElement("option");prompt.value="";prompt.textContent="Select an episode…";episode.append(prompt);
-  episodeItems.forEach((ep,i)=>{const opt=document.createElement("option");opt.value=ep.id;opt.textContent=(i+1)+". "+ep.title;episode.append(opt)});
-  episode.disabled=false;episodeStatus.textContent=episodeItems.length+" episode(s) found. Choose one to play it directly."; 
- }catch(e){
-  episode.replaceChildren();const opt=document.createElement("option");opt.value="";opt.textContent="Episode list unavailable";episode.append(opt);episodeStatus.textContent="YouTube did not provide a readable public episode list for this playlist. Use “Open selected playlist on YouTube” to choose an episode there.";episode.disabled=true;
+ const token=++episodeLoadToken;
+ episodeItems=[];episode.replaceChildren();const loading=document.createElement("option");loading.value="";loading.textContent="Loading episodes from playlist…";episode.append(loading);episode.disabled=true;episodeStatus.textContent="Pulling the episode list from the selected YouTube playlist…";
+ const feed="https://www.youtube.com/feeds/videos.xml?playlist_id="+encodeURIComponent(item.playlist);
+ const attempts=[
+  async()=>entriesFromXml(await (await fetch("https://api.allorigins.win/raw?url="+encodeURIComponent(feed),{cache:"no-store"})).text()),
+  async()=>entriesFromXml(await (await fetch("https://corsproxy.io/?url="+encodeURIComponent(feed),{cache:"no-store"})).text()),
+  async()=>{const response=await fetch("https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(feed),{cache:"no-store"});const data=await response.json();if(data.status!=="ok")throw new Error("RSS conversion failed");return (data.items||[]).map(x=>({id:videoIdFrom(x.guid)||videoIdFrom(x.link),title:x.title||"Untitled episode"})).filter(x=>x.id)}
+ ];
+ let lastError;
+ for(const attempt of attempts){
+  try{
+   const entries=await attempt();
+   if(!entries.length)throw new Error("Playlist returned no public videos");
+   if(token!==episodeLoadToken)return;
+   const seen=new Set();episodeItems=entries.filter(x=>!seen.has(x.id)&&seen.add(x.id));
+   episode.replaceChildren();const prompt=document.createElement("option");prompt.value="";prompt.textContent="Select an episode to play…";episode.append(prompt);
+   episodeItems.forEach((ep,i)=>{const opt=document.createElement("option");opt.value=ep.id;opt.textContent=(i+1)+". "+ep.title;episode.append(opt)});
+   episode.disabled=false;episodeStatus.textContent=episodeItems.length+" episodes pulled from this playlist. Select any title to play it below.";return;
+  }catch(e){lastError=e}
  }
+ if(token!==episodeLoadToken)return;
+ episode.replaceChildren();const opt=document.createElement("option");opt.value="";opt.textContent="Could not retrieve playlist episodes";episode.append(opt);episode.disabled=true;
+ episodeStatus.textContent="The playlist is selected, but YouTube's public feed could not be reached from this browser. Open the playlist on YouTube to see its full episode list.";
 }
 function render(){
  const key=show.value==="talk-radio"?"talk"+season.value:"tacoma";
