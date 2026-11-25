@@ -1,1 +1,122 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080a0e"><meta name="description" content="Sports coverage with Kenneth WarnerShook — national headlines, Washington teams and the Pacific Northwest sports conversation."><title>THE WEEKLY LINEUP | Tacoma Nights</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../assets/css/v3.css"><script src="../assets/js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="../assets/js/v3.js"></script></head><body data-root="../"><a class="skip-link" href="#main">Skip to content</a><div id="site-header"></div><main id="main"><section class="page-hero"><div class="wrap"><div class="breadcrumbs"><a href="../">HOME</a> / THE WEEKLY LINEUP</div><p class="eyebrow">SPORTS & ANALYSIS</p><h1>The games. The stories. The opinions.</h1><p class="lede">Sports coverage with Kenneth WarnerShook — national headlines, Washington teams and the Pacific Northwest sports conversation.</p></div></section><section class="page-body"><div class="wrap"><div class="notice">Seattle and Washington sports, national sports, analysis and fan reactions.</div><div class="grid three"><article class="editorial"><small>SEATTLE & WASHINGTON</small><h3>Our regional teams</h3><p>Seahawks, Mariners, Kraken, Sounders, Huskies and the teams fans follow.</p></article><article class="editorial"><small>NATIONAL SPORTS</small><h3>The bigger picture</h3><p>Major sports stories, league conversations and national headlines.</p></article><article class="editorial"><small>FAN VOICES</small><h3>Predictions & opinions</h3><p>Submit a question and join The Weekly Lineup conversation.</p></article></div></div></section></main><div id="site-footer"></div></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080a0e">
+<meta name="description" content="Make your weekly sports predictions with Tacoma Nights. Free to play. No membership or account required.">
+<title>Weekly Pick'em Challenge | The Weekly Lineup | Tacoma Nights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/v3.css">
+<script src="../assets/js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="../assets/js/v3.js"></script>
+<style>
+.pickem{--pe-red:#e3343f;--pe-gold:#e8bd70;background:#090c12;color:#f5f5f5;padding:44px 0 84px}.pickem .wrap{width:min(1120px,calc(100% - 36px));margin:auto}
+.pe-kicker{color:var(--pe-gold);font-size:.72rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase}.pe-hero{position:relative;overflow:hidden;padding:clamp(36px,7vw,76px);border:1px solid #ffffff18;border-radius:22px;background:radial-gradient(ellipse at 85% 15%,#9d1d2c55,transparent 42%),linear-gradient(120deg,#171c26,#090c12 68%);box-shadow:0 22px 70px #0008}.pe-hero:after{content:"PICK'em";position:absolute;right:-12px;bottom:-50px;font:900 clamp(5rem,16vw,12rem)/1 Manrope,sans-serif;color:#ffffff08;pointer-events:none}.pe-hero h1{position:relative;z-index:1;font:800 clamp(2.5rem,7vw,5.2rem)/.98 Manrope,sans-serif;letter-spacing:-.06em;margin:14px 0}.pe-hero h1 span{color:var(--pe-red)}.pe-hero p{position:relative;z-index:1;max-width:650px;color:#c5cbd4;line-height:1.7}.pe-pills{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}.pe-pill{border:1px solid #ffffff24;border-radius:999px;padding:8px 13px;color:#e5e8ed;font-size:.78rem;font-weight:700}
+.pe-section{margin-top:30px;border:1px solid #ffffff18;border-radius:18px;background:linear-gradient(145deg,#151a23,#0e1219);padding:clamp(20px,4vw,34px)}.pe-section h2{font:800 clamp(1.45rem,4vw,2.1rem)/1.1 Manrope;margin:0 0 10px}.pe-muted{color:#aab2bf;line-height:1.65}.pe-status{display:inline-flex;align-items:center;gap:8px;border-radius:999px;background:#ffffff0d;padding:7px 11px;color:#d8dde5;font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.pe-status:before{content:"";width:7px;height:7px;border-radius:50%;background:#8b929e}.pe-status.live:before{background:#55d69a;box-shadow:0 0 12px #55d69a}
+.pe-game-list{display:grid;gap:14px;margin-top:24px}.pe-game{border:1px solid #ffffff18;border-radius:14px;padding:18px;background:#090d14}.pe-game-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#9da7b5;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.pe-matchup{font:800 1.1rem Manrope;margin:12px 0 16px}.pe-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pe-choice{display:flex;align-items:center;justify-content:center;gap:9px;min-height:48px;border:1px solid #ffffff24;border-radius:10px;padding:10px;background:#151b25;color:#f6f7f9;font-weight:700;cursor:pointer;transition:.18s}.pe-choice input{accent-color:var(--pe-red)}.pe-choice:has(input:checked){border-color:var(--pe-red);background:#6e1822;color:#fff}.pe-form{display:grid;gap:14px;margin-top:24px}.pe-label{display:block;font-size:.78rem;color:#c5cbd4;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}.pe-input{width:100%;max-width:420px;border:1px solid #ffffff28;border-radius:10px;padding:13px 14px;background:#080c12;color:#fff;font:inherit}.pe-submit{border:0;border-radius:10px;background:var(--pe-red);color:#fff;font-weight:900;letter-spacing:.06em;padding:15px 22px;cursor:pointer;min-height:50px}.pe-submit:disabled{opacity:.55;cursor:not-allowed}.pe-note{font-size:.85rem;color:#9ea8b6;line-height:1.6}.pe-message{min-height:24px;color:#f2c979;font-size:.9rem}.pe-table-wrap{overflow-x:auto;margin-top:18px}.pe-table{width:100%;border-collapse:collapse;min-width:420px}.pe-table th,.pe-table td{text-align:left;padding:13px 12px;border-bottom:1px solid #ffffff16}.pe-table th{color:#9fa8b6;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em}.pe-table td:last-child,.pe-table th:last-child{text-align:right;font-variant-numeric:tabular-nums}.pe-rank{color:var(--pe-gold);font-weight:900}.pe-rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.pe-rule{padding:16px;border-radius:12px;background:#ffffff08;border:1px solid #ffffff12}.pe-rule b{display:block;margin-bottom:6px}.pe-rule p{margin:0;color:#aab2bf;font-size:.85rem;line-height:1.55}.pe-back{display:inline-flex;margin-top:22px;color:#e8bd70;text-decoration:none;font-weight:800}.pe-empty{padding:24px;border:1px dashed #ffffff30;border-radius:12px;color:#b8c0cc;line-height:1.7}
+@media(max-width:650px){.pe-options{grid-template-columns:1fr}.pe-rules{grid-template-columns:1fr}.pe-hero{border-radius:14px}.pe-game{padding:14px}}
+</style>
+</head>
+<body data-root="../">
+<a class="skip-link" href="#main">Skip to content</a><div id="site-header"></div>
+<main id="main" class="pickem"><div class="wrap">
+<section class="pe-hero">
+<p class="pe-kicker">THE WEEKLY LINEUP · TACOMA NIGHTS SPORTS</p>
+<h1>MAKE YOUR<br><span>WEEKLY PICKS.</span></h1>
+<p>Call the games. Climb the leaderboard. Represent your sports knowledge. The Tacoma Nights Pick'em Challenge is free, open to everyone, and does not require a membership or account.</p>
+<div class="pe-pills"><span class="pe-pill">FREE TO PLAY</span><span class="pe-pill">NO LOGIN REQUIRED</span><span class="pe-pill">NEW PICKS EVERY WEEK</span></div>
+</section>
+<section class="pe-section" aria-labelledby="week-heading">
+<div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap">
+<div><p class="pe-kicker">THIS WEEK'S CHALLENGE</p><h2 id="week-heading">Your picks start here.</h2><p id="week-description" class="pe-muted">Loading the current weekly slate…</p></div>
+<span id="week-status" class="pe-status">CHECKING SLATE</span>
+</div>
+<div id="pickem-content" aria-live="polite"><div class="pe-empty">Connecting to the Tacoma Nights Pick'em board…</div></div>
+</section>
+<section class="pe-section">
+<p class="pe-kicker">HOW TO PLAY</p><h2>Everybody gets a shot.</h2>
+<div class="pe-rules">
+<div class="pe-rule"><b>01 · Make your calls</b><p>Choose the winner of each featured matchup before the weekly lock time.</p></div>
+<div class="pe-rule"><b>02 · Use a nickname</b><p>No account, membership, email address or payment is required. Your nickname appears on the standings.</p></div>
+<div class="pe-rule"><b>03 · Earn points</b><p>Correct picks earn points. Weekly results and leaderboard standings appear after picks close and scores are updated.</p></div>
+</div>
+<p class="pe-note" style="margin-top:18px">This is a free fan-prediction challenge for entertainment. No purchase necessary. No cash wagering or prizes are implied. Picks must be submitted before the deadline shown for each week.</p>
+<a class="pe-back" href="../sports/">← BACK TO THE WEEKLY LINEUP</a>
+</section>
+</div></main>
+<div id="site-footer"></div>
+<script>
+(()=> {
+"use strict";
+const config=window.TACOMA_NIGHTS_CONFIG||{};
+const host=window.supabase;
+const content=document.getElementById("pickem-content");
+const status=document.getElementById("week-status");
+const desc=document.getElementById("week-description");
+const title=document.getElementById("week-heading");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const date=s=>{if(!s)return "";const d=new Date(s);return Number.isNaN(d.getTime())?"":d.toLocaleString(undefined,{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short"});};
+const tokenKey="tn-pickem-entry-token-v1";
+function getToken(){let t=localStorage.getItem(tokenKey);if(!t){t=crypto.randomUUID();localStorage.setItem(tokenKey,t)}return t}
+function showError(message){content.innerHTML='<div class="pe-empty">'+esc(message)+'</div>'}
+function renderGames(week,db){
+ const games=Array.isArray(week.games)?week.games:[];
+ if(!games.length){showError("The next weekly slate is being prepared. Check back soon for the next set of matchups.");return}
+ const cards=games.map((g,i)=>{
+  const id=String(g.id||("game-"+i));
+  const sport=g.sport||g.league||"FEATURED MATCHUP";
+  const matchup=(g.away||"Away team")+" @ "+(g.home||"Home team");
+  const kickoff=g.starts_at?date(g.starts_at):"";
+  return '<article class="pe-game"><div class="pe-game-top"><span>'+esc(sport)+'</span><span>'+esc(kickoff)+'</span></div><h3 class="pe-matchup">'+esc(matchup)+'</h3><div class="pe-options"><label class="pe-choice"><input required type="radio" name="pick-'+esc(id)+'" value="away"> '+esc(g.away||"Away")+'</label><label class="pe-choice"><input required type="radio" name="pick-'+esc(id)+'" value="home"> '+esc(g.home||"Home")+'</label></div></article>';
+ }).join("");
+ content.innerHTML='<form class="pe-form" id="pickem-form"><div><label class="pe-label" for="pickem-name">Your nickname</label><input class="pe-input" id="pickem-name" name="nickname" minlength="2" maxlength="24" required autocomplete="nickname" placeholder="Choose a name for the leaderboard"><p class="pe-note">2–24 characters. Your nickname and score are public; your browser token and picks are not.</p></div><div class="pe-game-list">'+cards+'</div><div><button class="pe-submit" type="submit">SUBMIT MY WEEKLY PICKS ↗</button><p class="pe-note" style="margin-top:10px">Deadline: '+esc(date(week.lock_at))+'</p><p class="pe-message" id="pickem-message" role="status"></p></div></form>';
+ const form=document.getElementById("pickem-form");
+ form.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const btn=form.querySelector("button[type=submit]"),msg=document.getElementById("pickem-message");
+  const picks={};
+  for(let i=0;i<games.length;i++){
+   const id=String(games[i].id||("game-"+i));
+   const selected=form.querySelector('input[name="pick-'+CSS.escape(id)+'"]:checked');
+   if(!selected){msg.textContent="Please make a pick for every matchup.";return}
+   picks[id]=selected.value;
+  }
+  btn.disabled=true;msg.textContent="Submitting your picks…";
+  try{
+   const {error}=await db.rpc("tn_pickem_submit",{p_week_slug:week.slug,p_display_name:form.elements.nickname.value.trim(),p_picks:picks,p_entry_token:getToken()});
+   if(error)throw error;
+   msg.textContent="Your picks are in! You can return on this browser to update them before the deadline.";
+   btn.textContent="PICKS SAVED ✓";
+  }catch(err){msg.textContent=err.message||"We couldn't save your picks. Please try again.";btn.disabled=false}
+ });
+}
+async function renderBoard(week,db){
+ const {data,error}=await db.from("tn_pickem_leaderboard").select("display_name,points,updated_at").eq("week_id",week.id).order("points",{ascending:false}).order("updated_at",{ascending:true}).limit(100);
+ if(error){showError("The leaderboard is temporarily unavailable.");return}
+ if(!data?.length){showError("The weekly picks are locked. Scores will appear here when the results have been entered.");return}
+ content.innerHTML='<p class="pe-muted">Final or current standings for '+esc(week.title)+'.</p><div class="pe-table-wrap"><table class="pe-table"><thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead><tbody>'+data.map((e,i)=>'<tr><td class="pe-rank">#'+(i+1)+'</td><td>'+esc(e.display_name)+'</td><td>'+Number(e.points||0)+'</td></tr>').join("")+'</tbody></table></div>';
+}
+async function init(){
+ if(!host?.createClient||!config.supabaseUrl||!config.supabaseAnonKey){showError("The Pick'em board is not connected yet. Please check back soon.");status.textContent="OFFLINE";return}
+ const db=host.createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{persistSession:false,autoRefreshToken:false}});
+ try{
+  const {data,error}=await db.from("tn_pickem_public_weeks").select("id,slug,title,description,lock_at,games,status").eq("status","open").order("lock_at",{ascending:true}).limit(1);
+  if(error)throw error;
+  let week=data?.[0];
+  if(!week){
+   const {data:closed,error:closedError}=await db.from("tn_pickem_public_weeks").select("id,slug,title,description,lock_at,games,status").in("status",["locked","completed"]).order("lock_at",{ascending:false}).limit(1);
+   if(closedError)throw closedError;
+   week=closed?.[0];
+  }
+  if(!week){status.textContent="SLATE COMING SOON";desc.textContent="A new weekly challenge will appear here when the matchups are posted.";showError("We're getting the next slate ready. No membership or login will be needed when picks open.");return}
+  title.textContent=week.title||"Your picks start here.";
+  desc.textContent=week.description||"Choose the winners before the weekly deadline. Free to play, no account required.";
+  if(week.status==="open"&&new Date(week.lock_at).getTime()>Date.now()){status.textContent="PICKS OPEN";status.classList.add("live");renderGames(week,db)}
+  else{status.textContent=week.status==="completed"?"WEEK COMPLETE":"PICKS LOCKED";await renderBoard(week,db)}
+ }catch(e){console.error("Pick'em load failed",e);status.textContent="BOARD UNAVAILABLE";showError("The weekly challenge could not load right now. Please refresh in a moment.")}
+}
+init();
+})();
+</script>
+</body></html>
