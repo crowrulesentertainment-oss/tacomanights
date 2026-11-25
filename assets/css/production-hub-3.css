@@ -134,3 +134,15 @@
 .hub3-calendar-event-main p{font-size:12px;color:#b3bfcd;margin:7px 0}
 .hub3-calendar-event-main small{font-size:10px;color:#8391a2}
 @media(max-width:620px){.hub3-calendar-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.hub3-calendar-event{grid-template-columns:1fr;gap:5px}.hub3-calendar-toolbar label{flex:1 1 100%}.hub3-calendar-toolbar button{width:100%}}
+
+/* Notification inbox and deadline reminders */
+.hub3-notification-summary{margin:18px 0}
+.hub3-notice-count{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:14px 16px;border:1px solid rgba(217,183,125,.22);border-radius:11px;background:rgba(217,183,125,.06)}
+.hub3-notice-count b{font-size:27px;color:#e4c58f}
+.hub3-notice-count span{font-weight:700;color:#eef2f6}
+.hub3-notice-count small{margin-left:auto;color:#8998aa}
+.hub3-notification-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:14px 0}
+.hub3-notification-filters{display:flex;gap:7px;flex-wrap:wrap}
+.hub3-notification-toolbar .ph-btn.active{border-color:#d8b77e;color:#f1d8aa;background:rgba(216,183,126,.1)}
+.hub3-notification-toolbar button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:560px){.hub3-notification-toolbar{align-items:stretch}.hub3-notification-filters{width:100%}.hub3-notification-filters .ph-btn{flex:1}.hub3-notification-toolbar>[data-h3-read-all]{width:100%}.hub3-notice-count small{margin-left:0;width:100%}}
