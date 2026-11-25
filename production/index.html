@@ -268,7 +268,7 @@ $('#nextEpisode').innerHTML=ep.length?'<strong>'+esc(ep[0].episode_number)+' · 
 const assignmentHtml=a=>'<div class="ph-item"><strong>'+esc(a.title)+'</strong><div class="ph-small">'+esc(a.tn_production_episodes?.episode_number||'Episode')+' · Due '+date(a.due_at)+'</div>'+status(a.status)+'</div>';
 $('#overviewAssignments').innerHTML=mine.slice(0,4).map(assignmentHtml).join('')||'<p>No assignments yet.</p>';
 $('#assignmentList').innerHTML=mine.map(assignmentHtml).join('')||'<p>No assignments have been assigned to you yet.</p>';
-const uploadHtml=u=>'<div class="ph-item"><strong>'+esc(u.title)+'</strong><div class="ph-small">'+esc(u.tn_production_episodes?.episode_number||'Episode')+' · '+date(u.created_at)+'</div>'+status(u.status)+(u.producer_note?'<p>'+esc(u.producer_note)+'</p>':'')+'</div>';
+const uploadHtml=u=>'<div class="ph-item"><strong>'+esc(u.title)+'</strong><div class="ph-small">'+esc(u.tn_production_episodes?.episode_number||'Episode')+' · '+esc(u.original_filename||'File')+' · '+(Number(u.file_size||0)/1024/1024).toFixed(1)+' MB · '+date(u.created_at)+'</div>'+status(u.status)+(u.producer_note?'<p>'+esc(u.producer_note)+'</p>':'')+' <button class="ph-btn" type="button" data-file="'+esc(u.storage_path)+'">Download original</button></div>';
 $('#clipLibrary').innerHTML=isAdmin?(up.map(u=>'<div class="ph-item"><strong>'+esc(u.title||u.original_filename||'Untitled clip')+'</strong><div class="ph-small">'+esc(u.tn_production_episodes?.episode_number||'Episode')+' · '+esc(u.original_filename||'File')+' · '+(Number(u.file_size||0)/1024/1024).toFixed(1)+' MB · '+date(u.created_at)+'</div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px">'+status(u.status)+' <button class="ph-btn primary" data-download-clip="'+esc(u.id)+'">Download original</button></div></div>').join('')||'<p>No segment clips have been uploaded yet.</p>'):'<p>Clip downloads are restricted to producers and administrators.</p>';
 $('#overviewUploads').innerHTML=myUploads.slice(0,4).map(uploadHtml).join('')||'<p>No uploads yet.</p>';
 $('#uploadList').innerHTML=myUploads.map(uploadHtml).join('')||'<p>Your submissions will appear here.</p>';
@@ -386,6 +386,6 @@ $('#crewAdminForm').addEventListener('submit',async e=>{
 init().catch(e=>fail('Production database setup required',e));
 })();
 </script>
-<link rel="stylesheet" href="../assets/css/production-hub-3.css?v=22.2-episode-studio">
+<link rel="stylesheet" href="../assets/css/production-hub-3.css?v=22.2.1-media-downloads">
 <script defer src="../assets/js/production-hub-3.js?v=22.2-episode-studio"></script>
 </body></html>
