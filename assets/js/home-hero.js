@@ -3,7 +3,7 @@
 const root=document.querySelector("[data-hero-carousel]");if(!root)return;
 const slides=[...root.querySelectorAll("[data-hero-slide]")],dots=[...root.querySelectorAll("[data-hero-dot]")],pause=root.querySelector("[data-hero-pause]");
 const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-let index=0,timer=null,paused=reduced,player=null,ytReady=false,playerReady=false,videoId="XTSDHNf2DAA",videoRequested=false;
+let index=0,timer=null,paused=reduced,player=null,ytReady=false,playerReady=false,videoId="XTSDHNf2DAA",videoRequested=false,videoActive=true;
 const stop=()=>{if(timer)clearTimeout(timer);timer=null;};
 const stopVideo=()=>{try{if(player&&player.stopVideo)player.stopVideo()}catch{}};
 const start=()=>{stop();if(!paused&&!document.hidden&&index!==2)timer=setTimeout(()=>show(index+1),8000);};
@@ -30,7 +30,7 @@ const playFeature=()=>{
  if(playerReady){try{player.mute();player.playVideo()}catch{}}
 };
 const show=next=>{
- const old=index;index=(next+slides.length)%slides.length;
+ const old=index;index=(next+slides.length)%slides.length;if(index===2&&!videoActive)index=0;
  slides.forEach((el,i)=>{const active=i===index;el.classList.toggle("is-active",active);el.classList.toggle("is-hidden",!active&&i===0);el.setAttribute("aria-hidden",String(!active))});
  root.classList.toggle("is-second-active",index===1);root.classList.toggle("is-video-active",index===2);
  dots.forEach((el,i)=>el.setAttribute("aria-current",String(i===index)));
@@ -46,7 +46,7 @@ root.addEventListener("focusin",()=>{if(index!==2)stop()});root.addEventListener
 document.addEventListener("visibilitychange",()=>{if(document.hidden){stop();if(index===2)stopVideo()}else if(index===2)playFeature();else start()});
 show(0);if(pause){pause.textContent=paused?"PLAY":"PAUSE";pause.setAttribute("aria-pressed",String(paused))}start();
 const cfg=window.TACOMA_NIGHTS_CONFIG||{},db=window.__tnSupabaseClient;
-if(db){db.from("tn_homepage_hero_video").select("youtube_video_id,title,description").eq("id",1).eq("is_active",true).maybeSingle().then(({data,error})=>{if(error){console.warn("Hero video setting unavailable",error);return}if(data){if(/^[A-Za-z0-9_-]{11}$/.test(data.youtube_video_id||""))videoId=data.youtube_video_id;if(data.title){const heading=root.querySelector('[data-hero-slide="2"] h2');if(heading)heading.setAttribute("aria-label",data.title)}if(player&&playerReady&&player.loadVideoById)player.loadVideoById(videoId)}}).catch(e=>console.warn("Hero video setting unavailable",e))}
+if(db){db.from("tn_homepage_hero_video").select("youtube_video_id,title,description").eq("id",1).eq("is_active",true).maybeSingle().then(({data,error})=>{if(error){console.warn("Hero video setting unavailable",error);return}if(data){videoActive=!!data.is_active;const feature=slides[2],dot=dots[2];if(feature)feature.hidden=!videoActive;if(dot)dot.hidden=!videoActive;if(!videoActive&&index===2)show(0);if(/^[A-Za-z0-9_-]{11}$/.test(data.youtube_video_id||""))videoId=data.youtube_video_id;if(data.title){const heading=root.querySelector('[data-hero-slide="2"] h2');if(heading){heading.textContent=data.title;heading.setAttribute("aria-label",data.title)}}if(data.description){const copy=root.querySelector('[data-hero-slide="2"] .tn2-hero-copy');if(copy)copy.textContent=data.description}if(player&&playerReady&&player.loadVideoById)player.loadVideoById(videoId)}).catch(e=>console.warn("Hero video setting unavailable",e))}
 if(cfg.youtubeStatsEndpoint){
  root.querySelectorAll("[data-subscriber-caption]").forEach(el=>el.textContent="Connecting to YouTube…");
  const loadStats=async()=>{const response=await fetch(cfg.youtubeStatsEndpoint,{cache:"no-store"});if(!response.ok)throw new Error("Subscriber stats unavailable");const data=await response.json(),entries={tv:data.channels?.crowrules_tv,entertainment:data.channels?.crowrules_entertainment};Object.entries(entries).forEach(([key,item])=>{if(!item||item.subscriberCount===null||!Number.isFinite(Number(item.subscriberCount)))return;const card=root.querySelector('[data-subscriber-card="'+key+'"]');if(!card)return;const count=Math.max(0,Number(item.subscriberCount)),goal=Number(item.goal)||1000,pct=Math.min(100,count/goal*100);card.querySelector("[data-subscriber-count]").textContent=Math.floor(count).toLocaleString();card.querySelector("[data-subscriber-caption]").textContent=count>=goal?"Goal reached · thank you!":(goal-Math.floor(count)).toLocaleString()+" subscribers to go · YouTube public count";const bar=card.querySelector(".tn2-progress");if(bar){bar.setAttribute("aria-valuenow",String(Math.min(goal,Math.floor(count))));bar.setAttribute("aria-valuetext",Math.floor(count).toLocaleString()+" of "+goal+" subscribers");const fill=bar.querySelector("span");if(fill)fill.style.width=pct+"%";bar.classList.toggle("tn2-progress-empty",count===0)}})};
