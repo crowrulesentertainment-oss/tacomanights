@@ -26,7 +26,7 @@ const obj=(v:any)=>v&&typeof v==="object"?v:{};
 const first=(...values:unknown[])=>values.find(v=>v!==undefined&&v!==null&&v!=="");
 const scoreNumber=(v:unknown):number|null=>{if(v===undefined||v===null||v==="")return null;const n=Number(v);return Number.isFinite(n)&&n>=0?Math.trunc(n):null;};
 const statusText=(v:any)=>str(first(v?.short,v?.long,v)).toUpperCase();
-const isFinalStatus=(s:string)=>["FT","AET","PEN","FINAL","FINISHED","F","GAME OVER","ENDED","COMPLETE","COMPLETED"].includes(s)||s.includes("FINISHED")||s.includes("FINAL");
+const isFinalStatus=(s:string)=>["FT","AET","PEN","AOT","AP","AW","AWD","FINAL","FINISHED","F","GAME OVER","ENDED","COMPLETE","COMPLETED"].includes(s)||s.includes("FINISHED")||s.includes("FINAL");
 const isVoidStatus=(s:string)=>["CANC","CANCELLED","CANCELED","ABD","ABANDONED","WO","WALKOVER"].includes(s);
 const allowTie=(sport:string)=>sport==="soccer"||sport==="nfl";
 function normalizeRow(row:any,cfg:SportConfig){
