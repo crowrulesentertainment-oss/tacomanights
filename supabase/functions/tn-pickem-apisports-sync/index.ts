@@ -40,7 +40,12 @@ function normalizeRow(row:any,cfg:SportConfig){
  const awayScore=scoreNumber(first(goals.away,scores.away?.total,scores.away?.points,scores.away,row.away_score));
  const leagueId=str(first(league.id,row.league_id)),leagueName=str(first(league.name,row.league,row.competition,cfg.label))||cfg.label;
  let sport=cfg.sport;
- if(cfg.key==="american-football")sport=/ncaa|college|ncaaf/i.test(leagueName)?"cfb":"nfl";
+ if(cfg.key==="american-football"){
+  const lower=leagueName.toLowerCase();
+  if(/ncaa|college|ncaaf/.test(lower))sport="cfb";
+  else if(/\\bnfl\\b/.test(lower))sport="nfl";
+  else return null;
+ }
  let result="pending";
  if(isVoidStatus(state))result="void";
  else if(isFinalStatus(state)&&homeScore!==null&&awayScore!==null)result=homeScore>awayScore?"home":awayScore>homeScore?"away":"tie";
@@ -116,15 +121,19 @@ Deno.serve(async(req:Request)=>{
  if(!API_KEY){const {data:recent}=await db.from("tn_pickem_sync_runs").select("id").eq("provider","apisports").eq("status","blocked").gte("started_at",new Date(Date.now()-20*60*60*1000).toISOString()).limit(1);if(!recent?.length)await logRun({provider:"apisports",action:"scheduled_sync",status:"blocked",error_code:"APISPORTS_API_KEY_MISSING",error_message:"Add APISPORTS_API_KEY to Supabase Edge Function secrets. No provider requests were made."});return json({ok:false,blocked:true,error:"APISPORTS_API_KEY_MISSING",message:"Add APISPORTS_API_KEY to Supabase Edge Function secrets. No provider requests were made."},503);}
  const started=Date.now(),now=new Date();let requests=0,received=0,upserted=0,slate:any=null,scored=0;
  try{
+  const sportErrors:any[]=[];
   for(const cfg of SPORTS){
-   const state=await getState(cfg.key),today=calendarDate(now),lastSchedule=state?.last_schedule_sync_at?calendarDate(new Date(state.last_schedule_sync_at)):"";
-   if(lastSchedule!==today){const rows=await fetchSchedule(cfg,now);requests+=cfg.key==="football"?1:7;received+=rows.length;upserted+=await upsertRows(rows);await setState(cfg.key,{last_schedule_sync_at:now.toISOString(),last_status:"schedule_ok",last_error:null});}
-   const midnight=pacificMidnight(today).toISOString(),tomorrow=pacificMidnight(datePlus(today,1)).toISOString();
-   const {count:activeCount}=await db.from("tn_pickem_provider_events").select("id",{count:"exact",head:true}).eq("provider","apisports").eq("provider_sport",cfg.key).gte("starts_at",midnight).lt("starts_at",tomorrow).eq("result","pending");
-   if((activeCount||0)>0){const raw=await fetchToday(cfg,now);requests++;received+=raw.length;const rows=raw.map((r:any)=>normalizeRow(r,cfg)).filter(Boolean);upserted+=await upsertRows(rows);await setState(cfg.key,{last_live_sync_at:now.toISOString(),last_status:"live_ok",last_error:null});}
+   try{
+    const state=await getState(cfg.key),today=calendarDate(now),lastSchedule=state?.last_schedule_sync_at?calendarDate(new Date(state.last_schedule_sync_at)):"";
+    if(lastSchedule!==today){const rows=await fetchSchedule(cfg,now);requests+=cfg.key==="football"?1:7;received+=rows.length;upserted+=await upsertRows(rows);await setState(cfg.key,{last_schedule_sync_at:now.toISOString(),last_status:"schedule_ok",last_error:null});}
+    const midnight=pacificMidnight(today).toISOString(),tomorrow=pacificMidnight(datePlus(today,1)).toISOString();
+    const {count:activeCount}=await db.from("tn_pickem_provider_events").select("id",{count:"exact",head:true}).eq("provider","apisports").eq("provider_sport",cfg.key).gte("starts_at",midnight).lt("starts_at",tomorrow).eq("result","pending");
+    if((activeCount||0)>0){const raw=await fetchToday(cfg,now);requests++;received+=raw.length;const rows=raw.map((r:any)=>normalizeRow(r,cfg)).filter(Boolean);upserted+=await upsertRows(rows);await setState(cfg.key,{last_live_sync_at:now.toISOString(),last_status:"live_ok",last_error:null});}
+   }catch(sportError){const message=sportError instanceof Error?sportError.message:"Provider sport sync failed";sportErrors.push({sport:cfg.key,message});await setState(cfg.key,{last_status:"error",last_error:message}).catch(()=>{});}
   }
   slate=await publishSlate(now);scored=await refreshWeekResults();
-  await logRun({provider:"apisports",action:"scheduled_sync",status:"success",requests_made:requests,events_received:received,events_upserted:upserted,games_selected:slate?.selected||0,details:{slate,scoredWeeks:scored,durationMs:Date.now()-started}});
-  return json({ok:true,requests,eventsReceived:received,eventsUpserted:upserted,slate,scoredWeeks:scored,durationMs:Date.now()-started});
+  const runStatus=sportErrors.length?"partial":"success";
+  await logRun({provider:"apisports",action:"scheduled_sync",status:runStatus,requests_made:requests,events_received:received,events_upserted:upserted,games_selected:slate?.selected||0,error_code:sportErrors.length?"APISPORTS_PARTIAL_FAILURE":null,error_message:sportErrors.length?sportErrors.map(e=>e.sport+": "+e.message).join("; ").slice(0,1500):null,details:{slate,scoredWeeks:scored,sportErrors,durationMs:Date.now()-started}});
+  return json({ok:sportErrors.length===0,requests,eventsReceived:received,eventsUpserted:upserted,slate,scoredWeeks:scored,sportErrors,durationMs:Date.now()-started});
  }catch(error){const message=error instanceof Error?error.message:"Unknown API-Sports sync failure";await logRun({provider:"apisports",action:"scheduled_sync",status:"error",requests_made:requests,events_received:received,events_upserted:upserted,games_selected:slate?.selected||0,error_code:"APISPORTS_SYNC_FAILED",error_message:message,details:{durationMs:Date.now()-started}});return json({ok:false,error:"APISPORTS_SYNC_FAILED",message,requests,eventsReceived:received,eventsUpserted:upserted},502);}
 });
