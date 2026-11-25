@@ -43,7 +43,7 @@ function normalizeRow(row:any,cfg:SportConfig){
  if(cfg.key==="american-football"){
   const lower=leagueName.toLowerCase();
   if(/ncaa|college|ncaaf/.test(lower))sport="cfb";
-  else if(/\\bnfl\\b/.test(lower))sport="nfl";
+  else if(/\bnfl\b/.test(lower))sport="nfl";
   else return null;
  }
  let result="pending";
