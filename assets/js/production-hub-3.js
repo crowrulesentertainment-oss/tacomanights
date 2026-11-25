@@ -5,7 +5,7 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const when=v=>{if(!v)return"Not scheduled";const d=new Date(v);return Number.isNaN(d.getTime())?"Date unavailable":d.toLocaleString([],{dateStyle:"medium",timeStyle:"short"})};
 const safeHttps=value=>{if(!value)return"";try{const u=new URL(String(value));return u.protocol==="https:"?u.href:""}catch{return""}};
 const root=document.body.dataset.root||"../";
-let db,user,profile,isAdmin=false,episodes=[],members=[],notificationRows=[],notificationFilter='all';
+let db,user,profile,isAdmin=false,episodes=[],members=[],notificationRows=[],notificationFilter='all',recognitionRows=[],recognitionSearch="",recognitionAwardFilter="all";
 const set=(id,html)=>{const el=$("#"+id);if(el)el.innerHTML=html};
 const status=v=>'<span class="pill">'+esc(String(v||"pending").replaceAll("_"," "))+'</span>';
 const notice=(form,msg)=>{const el=form?.querySelector(".hub3-status");if(el)el.textContent=msg};
@@ -269,9 +269,34 @@ async function loadActivity(){
 async function logActivity(action,detail){
   try{const {error}=await db.from("tn_production_activity").insert({actor_id:user.id,action,detail:detail||null});if(error){console.warn("Production activity log",error.message);return}if(isAdmin)await loadActivity()}catch(error){console.warn("Production activity log",error)}
 }
+async function renderRecognition(){
+ const query=recognitionSearch;
+ const filtered=recognitionRows.filter(x=>{
+  const hay=[x.recipient_name,x.award_name,x.reason,x.tn_production_episodes?.title,x.tn_production_episodes?.episode_number].join(" ").toLowerCase();
+  return (!query||hay.includes(query))&&(recognitionAwardFilter==="all"||x.award_name===recognitionAwardFilter);
+ });
+ const people=new Set(recognitionRows.map(x=>x.recipient_id));
+ const monthStart=new Date();monthStart.setDate(1);monthStart.setHours(0,0,0,0);
+ const recent=recognitionRows.filter(x=>new Date(x.awarded_at)>=monthStart).length;
+ set("h3RecognitionStats",[
+  ["Recognition moments",recognitionRows.length],
+  ["Crew members celebrated",people.size],
+  ["Award categories",new Set(recognitionRows.map(x=>x.award_name)).size],
+  ["This month",recent]
+ ].map(([label,n])=>'<div class="hub3-stat"><b>'+n+'</b><span>'+label+'</span></div>').join(""));
+ const totals=new Map();
+ recognitionRows.forEach(x=>totals.set(x.recipient_name,(totals.get(x.recipient_name)||0)+1));
+ const leaders=Array.from(totals.entries()).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,5);
+ set("h3RecognitionLeaders",leaders.map(([name,total],i)=>'<div class="hub3-recognition-leader"><span class="hub3-recognition-rank">'+(i+1)+'</span><b>'+esc(name)+'</b><span>'+total+' '+(total===1?"recognition":"recognitions")+'</span></div>').join("")||'<p class="hub3-empty">The first team achievement will appear here.</p>');
+ set("h3RecognitionResultCount",filtered.length+" of "+recognitionRows.length+" recognition records");
+ set("h3RecognitionList",filtered.map(x=>{
+  const ep=x.tn_production_episodes;
+  return '<article class="hub3-recognition-card"><div class="hub3-recognition-card-top"><span class="hub3-award">'+esc(x.award_name)+'</span><time>'+when(x.awarded_at)+'</time></div><h4>'+esc(x.recipient_name)+'</h4><p>'+esc(x.reason)+'</p><div class="hub3-recognition-card-foot">'+(ep?'<span>'+esc(ep.episode_number?ep.episode_number+" · ":"")+esc(ep.title)+'</span>':'<span>General contribution</span>')+'<span>'+((totals.get(x.recipient_name)||1))+' total recognition'+((totals.get(x.recipient_name)||1)===1?"":"s")+'</span></div></article>';
+ }).join("")||'<p class="hub3-empty">'+(recognitionRows.length?"No recognition records match those filters.":"The recognition wall is ready for its first shout-out. Team achievements will appear here as producers recognize contributions.")+'</p>');
+}
 async function loadRecognition(){
- const list=await rows("tn_production_recognition",db.from("tn_production_recognition").select("id,recipient_name,award_name,reason,awarded_at").order("awarded_at",{ascending:false}).limit(60));
- set("h3RecognitionList",list.map(x=>'<article class="hub3-row recognition"><div><b>'+esc(x.recipient_name)+'</b><p>'+esc(x.reason)+'</p><small>'+when(x.awarded_at)+'</small></div><span class="hub3-award">'+esc(x.award_name)+'</span></article>').join("")||'<p class="hub3-empty">The recognition wall is ready for its first shout-out.</p>');
+ recognitionRows=await rows("tn_production_recognition",db.from("tn_production_recognition").select("id,recipient_id,recipient_name,award_name,reason,awarded_at,episode_id,tn_production_episodes(episode_number,title)").order("awarded_at",{ascending:false}).limit(250));
+ renderRecognition();
 }
 async function submit(form){
  const type=form.dataset.h3Form,d=formData(form);notice(form,"Saving…");
@@ -319,8 +344,8 @@ async function init(){
   const complete=e.target.closest("[data-h3-complete]");if(complete){const {error}=await db.from("tn_production_training_progress").upsert({resource_id:complete.dataset.h3Complete,user_id:user.id,completed_at:new Date().toISOString()},{onConflict:"resource_id,user_id"});if(!error){await logActivity("training_completed","Completed a training resource");loadTraining()}else alert(error.message)}
  });
  document.addEventListener("click",async e=>{const save=e.target.closest("[data-editing-save]");if(!save||!isAdmin)return;const id=save.dataset.editingSave;const row=save.closest("[data-editing-row]");const stage=row?.querySelector("[data-editing-stage]")?.value;if(!stage)return;save.disabled=true;const payload={status:stage,updated_by:user.id,updated_at:new Date().toISOString()};if(stage==="approved"){payload.approved_by=user.id;payload.approved_at=new Date().toISOString()}else{payload.approved_by=null;payload.approved_at=null}const {error}=await db.from("tn_production_editing").update(payload).eq("id",id);save.disabled=false;if(error){alert("Could not update editing stage: "+error.message);return}await logActivity("editing_stage_updated","Moved an episode edit to "+stage.replaceAll("_"," "));await refresh()});
- document.addEventListener("input",e=>{if(e.target.id==="h3FeedbackSearch"){const cursor=e.target.selectionStart;feedbackSearch=e.target.value.trim().toLowerCase();renderFeedback();const input=$("#h3FeedbackSearch");if(input){input.focus();try{input.setSelectionRange(cursor,cursor)}catch{}}}});
- document.addEventListener("change",async e=>{if(e.target.id==="h3FeedbackStatus"){feedbackStatusFilter=e.target.value;renderFeedback()}if(e.target.id==="h3FeedbackCategory"){feedbackCategoryFilter=e.target.value;renderFeedback()}const field=e.target.closest("[data-h3-feedback]");if(field&&isAdmin){field.disabled=true;const {error}=await db.from("tn_production_feedback").update({status:field.value,reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",field.dataset.h3Feedback);if(error){field.disabled=false;alert("Could not update feedback status: "+error.message)}else{await logActivity("feedback_updated","Changed audience feedback status to "+field.value);await loadFeedback()}}const guest=e.target.closest("[data-h3-guest-status]");if(guest&&isAdmin){const {error}=await db.from("tn_production_guests").update({status:guest.value,updated_at:new Date().toISOString()}).eq("id",guest.dataset.h3GuestStatus);if(error)alert(error.message);else await logActivity("guest_status_updated","Changed guest booking status to "+guest.value)}});
+ document.addEventListener("input",e=>{if(e.target.id==="h3RecognitionSearch"){const cursor=e.target.selectionStart;recognitionSearch=e.target.value.trim().toLowerCase();renderRecognition();const input=$("#h3RecognitionSearch");if(input){input.focus();try{input.setSelectionRange(cursor,cursor)}catch{}}}if(e.target.id==="h3FeedbackSearch"){const cursor=e.target.selectionStart;feedbackSearch=e.target.value.trim().toLowerCase();renderFeedback();const input=$("#h3FeedbackSearch");if(input){input.focus();try{input.setSelectionRange(cursor,cursor)}catch{}}}});
+ document.addEventListener("change",async e=>{if(e.target.id==="h3RecognitionAwardFilter"){recognitionAwardFilter=e.target.value;renderRecognition()}if(e.target.id==="h3FeedbackStatus"){feedbackStatusFilter=e.target.value;renderFeedback()}if(e.target.id==="h3FeedbackCategory"){feedbackCategoryFilter=e.target.value;renderFeedback()}const field=e.target.closest("[data-h3-feedback]");if(field&&isAdmin){field.disabled=true;const {error}=await db.from("tn_production_feedback").update({status:field.value,reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",field.dataset.h3Feedback);if(error){field.disabled=false;alert("Could not update feedback status: "+error.message)}else{await logActivity("feedback_updated","Changed audience feedback status to "+field.value);await loadFeedback()}}const guest=e.target.closest("[data-h3-guest-status]");if(guest&&isAdmin){const {error}=await db.from("tn_production_guests").update({status:guest.value,updated_at:new Date().toISOString()}).eq("id",guest.dataset.h3GuestStatus);if(error)alert(error.message);else await logActivity("guest_status_updated","Changed guest booking status to "+guest.value)}});
  await refresh();
 }
 init().catch(e=>{console.error("Production Hub 3.0 could not initialize",e);["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"].forEach(id=>set(id,'<p class="hub3-empty">The production workspace could not initialize: '+esc(e?.message||"Please refresh and try again.")+'</p>'))});
