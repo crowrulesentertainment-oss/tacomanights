@@ -364,3 +364,14 @@
 .h3-request-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.h3-request-card p{font-size:12px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
 .h3-request-card small{color:#aeb8c6;font-size:10px}.h3-request-review-label{margin-top:12px}.h3-request-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 @media(max-width:580px){.h3-request-form{grid-template-columns:1fr}.h3-request-form .full{grid-column:1}.h3-request-form button{width:100%}.h3-request-actions .ph-btn{flex:1}}
+
+/* Production Hub 8.0 — schedule intelligence */
+.h3-scheduling-panel{margin-top:22px;padding:20px;border:1px solid rgba(217,183,125,.2);border-radius:12px;background:linear-gradient(145deg,rgba(217,183,125,.055),rgba(4,8,14,.28))}
+.h3-schedule-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.h3-schedule-card{min-width:0;padding:14px;border:1px solid rgba(180,194,211,.13);border-radius:9px;background:rgba(4,8,14,.4)}
+.h3-schedule-card>.hub3-kicker{display:block}.h3-schedule-number{display:block;margin:8px 0 0;font:800 29px Manrope;letter-spacing:-.05em}.h3-schedule-card>small{display:block;color:#aeb8c6;font-size:11px;margin-bottom:12px}
+.h3-schedule-item{padding:11px;margin:9px 0;border:1px solid rgba(180,194,211,.12);border-radius:8px;background:rgba(255,255,255,.025);overflow-wrap:anywhere}
+.h3-schedule-item b{display:block;font-size:12px}.h3-schedule-item small{display:block;color:#aeb8c6;font-size:10px;margin:4px 0}.h3-schedule-item p{font-size:11px;line-height:1.5;margin:6px 0 0;color:#d4dbe4}.h3-schedule-item.conflict{border-color:rgba(225,91,103,.42);background:rgba(190,48,64,.07)}.h3-schedule-item.watch{border-color:rgba(217,183,125,.35)}
+.h3-schedule-disclaimer{font-size:10px!important;color:#aeb8c6!important;line-height:1.5;margin-top:12px}
+@media(max-width:900px){.h3-schedule-grid{grid-template-columns:1fr 1fr}.h3-schedule-grid>.h3-schedule-card:last-child{grid-column:1/-1}}
+@media(max-width:580px){.h3-scheduling-panel{padding:14px}.h3-schedule-grid{grid-template-columns:1fr}.h3-schedule-grid>.h3-schedule-card:last-child{grid-column:auto}}
