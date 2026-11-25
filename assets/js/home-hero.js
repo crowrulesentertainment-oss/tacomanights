@@ -21,7 +21,7 @@ const createPlayer=()=>{
  player=new YT.Player(host,{videoId,playerVars:{autoplay:0,controls:1,rel:0,playsinline:1,enablejsapi:1,origin:location.origin},events:{
   onReady:()=>{playerReady=true;if(index===2)playFeature()},
   onStateChange:event=>{if(event.data===YT.PlayerState.ENDED&&index===2){stopVideo();show(0);start()}},
-  onError:()=>{const note=root.querySelector("[data-hero-video-status]");if(note)note.textContent="The featured video could not be played. Open CrowRules Entertainment on YouTube.";}
+  onError:()=>{const note=root.querySelector("[data-hero-video-status]");if(note)note.textContent="The featured video could not be played. Open CrowRules Entertainment on YouTube.";show(0);start();}
  }});
 };
 const playFeature=()=>{
