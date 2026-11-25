@@ -334,7 +334,7 @@ notice.textContent='Connected securely. Welcome to the production workspace.';aw
 }
 async function init(){
 if(!window.supabase?.createClient||!cfg.supabaseUrl||!cfg.supabaseAnonKey){notice.textContent='Supabase browser configuration is missing. Production tools cannot connect yet.';return}
-db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+db=window.__tnSupabaseClient||(window.__tnSupabaseClient=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
 const {data:{session},error}=await db.auth.getSession();if(error)throw error;
 if(session){await start(session)}else{$('#authPanel').classList.remove('hidden');notice.textContent='Sign in with your approved production team account.'}
 db.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>{if(session)start(session).catch(e=>fail('Could not load your profile',e));else location.reload()},0)});
