@@ -29,9 +29,10 @@ async function loadBase(){
 
 
 async function loadRequests(){
- const all=await rows("tn_production_requests",db.from("tn_production_requests").select("id,requester_id,request_type,assignment_id,requested_status,starts_on,ends_on,details,status,review_note,reviewed_at,created_at").order("created_at",{ascending:false}).limit(150));
+ const all=await rows("tn_production_requests",db.from("tn_production_requests").select("id,requester_id,request_type,assignment_id,requested_status,starts_on,ends_on,availability_slots,details,status,review_note,reviewed_at,created_at").order("created_at",{ascending:false}).limit(150));
  const label={assignment_status:"Assignment status",availability:"Availability",time_off:"Time off"};
- const render=x=>'<article class="h3-request-card"><div class="h3-request-top"><b>'+esc(label[x.request_type]||x.request_type)+'</b>'+status(x.status)+'</div>'+(x.requested_status?'<p><b>Requested status:</b> '+esc(x.requested_status.replaceAll("_"," "))+'</p>':"")+(x.starts_on?'<p><b>Dates:</b> '+esc(x.starts_on)+' – '+esc(x.ends_on||x.starts_on)+'</p>':"")+'<p>'+esc(x.details)+'</p>'+(x.review_note?'<div class="hub3-review-note"><b>Producer response</b><p>'+esc(x.review_note)+'</p></div>':"")+'<small>'+when(x.created_at)+(x.reviewed_at?' · Reviewed '+when(x.reviewed_at):'')+'</small></article>';
+ const slotSummary=slots=>(Array.isArray(slots)&&slots.length?'<div class="h3-request-slots">'+slots.map(s=>'<span>'+esc(["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][Number(s.weekday)]||"Day") +' · '+esc(s.start_time)+'–'+esc(s.end_time)+' · '+esc(s.timezone||"America/Los_Angeles")+'</span>').join("")+'</div>':"");
+ const render=x=>'<article class="h3-request-card"><div class="h3-request-top"><b>'+esc(label[x.request_type]||x.request_type)+'</b>'+status(x.status)+'</div>'+(x.requested_status?'<p><b>Requested status:</b> '+esc(x.requested_status.replaceAll("_"," "))+'</p>':"")+(x.starts_on?'<p><b>Dates:</b> '+esc(x.starts_on)+' – '+esc(x.ends_on||x.starts_on)+'</p>':"")+slotSummary(x.availability_slots)+'<p>'+esc(x.details)+'</p>'+(x.review_note?'<div class="hub3-review-note"><b>Producer response</b><p>'+esc(x.review_note)+'</p></div>':"")+'<small>'+when(x.created_at)+(x.reviewed_at?' · Reviewed '+when(x.reviewed_at):'')+'</small></article>';
  set("h3MyRequests",all.filter(x=>x.requester_id===user.id).map(render).join("")||'<p class="hub3-empty">You have not sent any requests yet.</p>');
  if(!isAdmin){set("h3RequestReviewQueue",'<p class="hub3-empty">Request approvals are restricted to producers and administrators.</p>');return}
  const pending=all.filter(x=>x.status==="pending"),names=new Map(members.map(m=>[m.id,m.display_name||m.email||"Team member"]));
@@ -40,18 +41,21 @@ async function loadRequests(){
 async function submitContributorRequest(form){
  const d=formData(form);if(d.request_type==="assignment_status"&&!d.assignment_id){notice(form,"Choose an assignment first.");return}
  if(d.starts_on&&d.ends_on&&d.ends_on<d.starts_on){notice(form,"The end date must be on or after the start date.");return}
- const payload={requester_id:user.id,request_type:d.request_type,assignment_id:d.request_type==="assignment_status"?d.assignment_id:null,requested_status:d.request_type==="assignment_status"?d.requested_status:null,starts_on:d.request_type==="assignment_status"?null:(d.starts_on||null),ends_on:d.request_type==="assignment_status"?null:(d.ends_on||null),details:d.details.trim(),status:"pending"};
+ const availabilitySlots=d.request_type==="availability"?[...form.querySelectorAll(".h3-weekday-toggle:checked")].map(check=>({weekday:Number(check.value),start_time:form.querySelector('[data-availability-start="'+check.value+'"]')?.value,end_time:form.querySelector('[data-availability-end="'+check.value+'"]')?.value,timezone:$("#h3AvailabilityTimezone")?.value||"America/Los_Angeles"})):[ ];
+ if(d.request_type==="availability"&&!availabilitySlots.length){notice(form,"Choose at least one day for your weekly availability.");return}
+ if(availabilitySlots.some(s=>!s.start_time||!s.end_time||s.end_time<=s.start_time)){notice(form,"Each selected day needs a valid end time later than its start time.");return}
+ const payload={requester_id:user.id,request_type:d.request_type,assignment_id:d.request_type==="assignment_status"?d.assignment_id:null,requested_status:d.request_type==="assignment_status"?d.requested_status:null,starts_on:d.request_type==="time_off"?(d.starts_on||null):null,ends_on:d.request_type==="time_off"?(d.ends_on||null):null,availability_slots:d.request_type==="availability"?availabilitySlots:null,details:d.details.trim(),status:"pending"};
  const button=form.querySelector('button[type="submit"]');button.disabled=true;notice(form,"Sending your request…");
  try{const {error}=await db.from("tn_production_requests").insert(payload);if(error)throw error;await logActivity("contributor_request_submitted",d.request_type.replaceAll("_"," "));form.reset();updateRequestForm();notice(form,"Request submitted. It is now waiting for producer review.");await loadRequests()}
  catch(error){notice(form,"Could not submit request: "+(error.message||"Please try again."))}
  finally{button.disabled=false}
 }
 function updateRequestForm(){
- const type=$("#h3RequestType")?.value||"assignment_status",isAssignment=type==="assignment_status",isDates=!isAssignment;
+ const type=$("#h3RequestType")?.value||"assignment_status",isAssignment=type==="assignment_status",isTimeOff=type==="time_off",isAvailability=type==="availability";
  $("#h3RequestAssignmentWrap")?.classList.toggle("hidden",!isAssignment);$("#h3RequestStatusWrap")?.classList.toggle("hidden",!isAssignment);
- $("#h3RequestStartWrap")?.classList.toggle("hidden",!isDates);$("#h3RequestEndWrap")?.classList.toggle("hidden",!isDates);
+ $("#h3RequestStartWrap")?.classList.toggle("hidden",!isTimeOff);$("#h3RequestEndWrap")?.classList.toggle("hidden",!isTimeOff);$("#h3WeeklyAvailabilityWrap")?.classList.toggle("hidden",!isAvailability);
  const assignment=$("#h3RequestAssignment");if(assignment)assignment.required=isAssignment;
- const start=$("#h3RequestStartWrap input"),end=$("#h3RequestEndWrap input");if(start)start.required=type==="time_off";if(end)end.required=type==="time_off";
+ const start=$("#h3RequestStartWrap input"),end=$("#h3RequestEndWrap input");if(start)start.required=isTimeOff;if(end)end.required=isTimeOff;
 }
 async function reviewContributorRequest(button){
  if(!isAdmin)return;
@@ -67,7 +71,7 @@ async function reviewContributorRequest(button){
   const label={assignment_status:"Assignment status",availability:"Availability",time_off:"Time-off"}[req.request_type]||"Contributor";
   const {error:notifyError}=await db.from("tn_notifications").insert({user_id:req.requester_id,title:decision==="approved"?"Production request approved":"Production request update",message:label+" request "+decision+". "+(note||""),href:"https://crowrulesentertainment-oss.github.io/tacomanights/production/"});
   if(notifyError)console.warn("Request notification",notifyError.message);
-  await logActivity("contributor_request_"+decision,req.request_type+" request from "+req.requester_id);await loadRequests();
+  await logActivity("contributor_request_"+decision,req.request_type+" request from "+req.requester_id);if(decision==="approved"&&req.request_type==="availability")await loadHostAvailability();await loadRequests();
  }catch(error){statusEl.textContent="Could not save decision: "+(error.message||"Please retry.");buttons.forEach(b=>b.disabled=false)}
 }
 
