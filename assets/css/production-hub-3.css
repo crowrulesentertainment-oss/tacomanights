@@ -61,3 +61,11 @@
 
 .hub3-cycle-note{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:8px 0 16px;padding:13px 16px;border:1px solid rgba(212,173,112,.3);border-left:3px solid #d4ad70;border-radius:9px;background:rgba(212,173,112,.07)}
 .hub3-cycle-note b{font-size:10px;letter-spacing:.14em;color:#e7c58e}.hub3-cycle-note span{font-size:12px;line-height:1.5;color:#d0d7e1}
+
+/* Production activity feed */
+.hub3-activity{padding:12px 0;border-bottom:1px solid rgba(180,194,211,.12)}
+.hub3-activity:last-child{border-bottom:0}
+.hub3-activity-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hub3-activity-top b{font-size:12px;color:#f0d5d7}
+.hub3-activity-top time{font-size:10px;color:#9da9b8}
+.hub3-activity p{margin:6px 0 0;color:#c8d0da;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
