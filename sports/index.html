@@ -82,7 +82,7 @@ function renderGames(week,db){
  if(!games.length){showError("The next weekly slate is being prepared. Check back soon for the next set of matchups.");return}
  const cards=games.map((g,i)=>{
   const id=String(g.id||("game-"+i));
-  const sport=g.sport||g.league||"FEATURED MATCHUP";
+  const sport=g.league||g.sport||"FEATURED MATCHUP";
   const matchup=(g.away||"Away team")+" @ "+(g.home||"Home team");
   const kickoff=g.starts_at?date(g.starts_at):"";
   const locked=!!(g.starts_at&&new Date(g.starts_at).getTime()<=Date.now())||!!(g.result&&g.result!=="pending");
