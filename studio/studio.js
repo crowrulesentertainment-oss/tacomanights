@@ -88,6 +88,7 @@ async function refresh(){
     if(q.error)throw q.error;queued=q.count||0;if(stateResult.error)throw stateResult.error;
     const state=stateResult.data;
     if(state){
+     await syncPublicSchedule(auth,session.user.id,state);
      setText("scheduler-health","CONNECTED");setText("data-error","");
      setText("active-program",state.current_program_title||"No program loaded");
      const toggle=$("publish-toggle");if(toggle){toggle.hidden=false;toggle.textContent=state.is_published?"Unpublish public status":"Publish public status";toggle.dataset.published=String(!!state.is_published)}
@@ -139,6 +140,34 @@ async function runCommand(button){
  try{const d=await api("/command",{type:commandType,value,engine:$("engine-select").value});setText("bridge-message",d.message||"Command sent successfully.");recordEvent("Encoder command: "+commandType+" · "+String(value||""),"control");await refresh()}
  catch(e){setText("bridge-message","Command failed: "+e.message)}
  finally{button.disabled=false}
+}
+async function syncPublicSchedule(auth,userId,state){
+ try{
+  const now=new Date().toISOString();
+  const base=auth.client.from("live_network_schedule").select("id,starts_at,ends_at,status,host_name,is_public,live_network_programs(title,format)").eq("owner_id",userId).eq("is_public",true);
+  const [currentResult,nextResult]=await Promise.all([
+   base.in("status",["scheduled","ready","on_air"]).lte("starts_at",now).gt("ends_at",now).order("starts_at",{ascending:false}).limit(1),
+   auth.client.from("live_network_schedule").select("id,starts_at,ends_at,status,host_name,is_public,live_network_programs(title,format)").eq("owner_id",userId).eq("is_public",true).in("status",["scheduled","ready"]).gt("starts_at",now).order("starts_at",{ascending:true}).limit(1)
+  ]);
+  if(currentResult.error)throw currentResult.error;
+  if(nextResult.error)throw nextResult.error;
+  const current=currentResult.data?.[0]||null,next=nextResult.data?.[0]||null;
+  const programOf=row=>Array.isArray(row?.live_network_programs)?row.live_network_programs[0]:row?.live_network_programs;
+  const currentProgram=programOf(current),nextProgram=programOf(next);
+  const patch={
+   current_program_title:currentProgram?.title||"Tacoma Nights Network",
+   current_host:current?.host_name||null,
+   description:current?(currentProgram?.format||state?.description||"Live from Tacoma, Washington."):"No public program is scheduled right now. Follow CrowRules TV for live broadcasts.",
+   next_program_title:nextProgram?.title||"Check back for upcoming programming.",
+   next_program_starts_at:next?.starts_at||null
+  };
+  const changed=Object.keys(patch).some(key=>(state?.[key]??null)!==(patch[key]??null));
+  if(changed){
+   const result=await auth.client.from("live_network_public_state").update(patch).eq("owner_id",userId);
+   if(result.error)throw result.error;
+  }
+  setText("active-program",patch.current_program_title);
+ }catch(error){console.info("Public schedule sync is waiting for readable Studio schedule data.",error)}
 }
 async function loadRundown(){
  const list=$("rundown-list");if(!list)return;const auth=await window.TNStudioReady,session=auth.getSession();if(!session?.user){list.textContent="Sign in to view the private network schedule.";return}
