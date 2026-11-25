@@ -23,7 +23,7 @@ async function refresh(){
 async function loadBase(){
  episodes=await rows("tn_production_episodes",db.from("tn_production_episodes").select("id,episode_number,title,topic,premiere_at,status").order("premiere_at",{ascending:true}));
  $("#h3EditingEpisode").innerHTML=options(episodes,"Choose episode…");$("#h3ResearchEpisode").innerHTML=options(episodes,"General research / idea vault");const researchOwner=$("#h3ResearchOwner");if(researchOwner&&isAdmin)researchOwner.innerHTML='<option value="">Unassigned</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");$("#h3GuestEpisode").innerHTML=options(episodes,"Not assigned yet");$("#h3RecognitionEpisode").innerHTML=options(episodes,"General contribution");
- if(isAdmin){members=await rows("tn_production_profiles",db.from("tn_production_profiles").select("id,display_name,email,role").in("role",["contributor","producer","admin"]).order("display_name"));$("#h3RecognitionMember").innerHTML=members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");const editor=$("#h3EditingEditor");if(editor)editor.innerHTML='<option value="">Assign to me</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+' · '+esc(m.role)+'</option>').join("")}
+ if(isAdmin){members=await rows("tn_production_profiles",db.from("tn_production_profiles").select("id,display_name,email,role,requested_role,application_note").in("role",["contributor","producer","admin"]).order("display_name"));$("#h3RecognitionMember").innerHTML=members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");const editor=$("#h3EditingEditor");if(editor)editor.innerHTML='<option value="">Assign to me</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+' · '+esc(m.role)+'</option>').join("")}
  document.querySelectorAll(".hub3-form button.admin-only").forEach(b=>b.classList.toggle("hidden",!isAdmin));document.querySelectorAll(".hub3-form[data-admin-only]").forEach(form=>form.classList.toggle("hidden",!isAdmin));document.querySelectorAll("[data-h3-admin-only]").forEach(el=>el.classList.toggle("hidden",!isAdmin));
 }
 
@@ -118,9 +118,72 @@ function renderScheduleIntelligence(assignments,calendarRows,guestRows,byPerson)
  target.innerHTML='<div class="h3-schedule-card"><span class="hub3-kicker">CONFLICT SCAN</span><b class="h3-schedule-number">'+conflictCount+'</b><small>Potential scheduling conflicts</small>'+(conflictHtml||'<p class="hub3-empty">No same-day deadline clusters or overlapping timed calendar events detected.</p>')+'</div><div class="h3-schedule-card"><span class="hub3-kicker">ASSIGNMENT MATCHING</span><b class="h3-schedule-number">'+unassigned.length+'</b><small>Open assignments without an owner</small>'+(suggestionHtml||'<p class="hub3-empty">No unassigned work needs a recommendation.</p>')+'<p class="h3-schedule-disclaimer">Suggestions use current open-assignment counts only. Confirm skills, availability and consent before assigning.</p></div><div class="h3-schedule-card"><span class="hub3-kicker">UPCOMING SCHEDULE</span><b class="h3-schedule-number">'+(calendarRows.length+guestRows.length)+'</b><small>Future events and guest sessions loaded</small>'+(scheduleHtml||'<p class="hub3-empty">No future calendar events or guest sessions are scheduled.</p>')+'</div>';
 }
 
+
+async function loadSmartAssignmentDesk(assignments){
+ const target=$("#h3ScheduleInsights");if(!target||!isAdmin)return;
+ const existing=$("#h3SmartAssignmentDesk");if(existing)existing.remove();
+ const panel=document.createElement("section");panel.id="h3SmartAssignmentDesk";panel.className="h3-smart-assignment-card";
+ panel.innerHTML='<div class="h3-smart-head"><div><span class="hub3-kicker">PRODUCTION HUB 10.0</span><h4>Smart assignment desk</h4><p class="hub3-small">Ranks approved contributors using declared interests, current workload, overdue work and recurring availability on the deadline weekday. Nothing is assigned or changed automatically.</p></div><span class="h3-smart-status">PRODUCER REVIEW</span></div><div class="h3-smart-content"><p class="hub3-empty">Building assignment recommendations…</p></div>';
+ target.appendChild(panel);
+ const content=panel.querySelector(".h3-smart-content");
+ try{
+  const [hosts,slots]=await Promise.all([
+   rows("tacoma_nights_remote_hosts",db.from("tacoma_nights_remote_hosts").select("id,user_id,role,team_status,segment_interests").limit(300)),
+   rows("tacoma_nights_host_availability",db.from("tacoma_nights_host_availability").select("host_id,weekday,timezone").limit(500))
+  ]);
+  const activeHosts=new Map(hosts.filter(h=>String(h.team_status||"").toLowerCase()==="active"&&h.user_id).map(h=>[h.user_id,h]));
+  const eligible=members.filter(m=>["contributor","producer"].includes(String(m.role||"").toLowerCase()));
+  const norm=v=>String(v||"").toLowerCase();
+  const active=assignments.filter(a=>!["complete","completed","approved","published","done","cancelled"].includes(norm(a.status).replaceAll(" ","_")));
+  if(!active.length){content.innerHTML='<p class="hub3-empty">No active assignments are available to rank yet. Once production tasks are added, this desk will compare contributor fit and workload.</p>';return}
+  if(!eligible.length){content.innerHTML='<p class="hub3-empty">No approved contributor or producer profiles are available for matching yet. Pending applications and administrator accounts are intentionally excluded.</p>';return}
+  const now=Date.now(),workload=new Map(eligible.map(m=>[m.id,{open:0,overdue:0}]));
+  active.forEach(a=>{if(!a.assignee_id||!workload.has(a.assignee_id))return;const w=workload.get(a.assignee_id);w.open++;if(a.due_at&&new Date(a.due_at).getTime()<now)w.overdue++});
+  const tags=["sports","community","teen","young adult","entertainment","business","culture","research","editing","producer","host","correspondent","interview","writing","social media","technology","music","film","television","real life","weekly lineup","people's perspective"];
+  const weekdayIndex={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+  const rankedAssignments=[...active].sort((a,b)=>{
+   const urgency=x=>!x.due_at?3:(new Date(x.due_at).getTime()<now?0:new Date(x.due_at).getTime()<now+48*3600000?1:2);
+   return urgency(a)-urgency(b)||(new Date(a.due_at||"9999-12-31")-new Date(b.due_at||"9999-12-31"));
+  }).slice(0,8);
+  content.innerHTML=rankedAssignments.map(a=>{
+   const task=[a.title,a.instructions,a.tn_production_episodes?.title,a.tn_production_episodes?.topic].filter(Boolean).join(" ").toLowerCase();
+   const dueDate=a.due_at?new Date(a.due_at):null;
+   const candidates=eligible.map(m=>{
+    const host=activeHosts.get(m.id);
+    const profileText=[m.requested_role,m.application_note,host?.segment_interests,host?.role].filter(Boolean).join(" ").toLowerCase();
+    const matched=tags.filter(tag=>task.includes(tag)&&profileText.includes(tag));
+    let available=null;
+    if(host&&dueDate&&!Number.isNaN(dueDate.getTime())){
+     const zone=(slots.find(s=>s.host_id===host.id)?.timezone)||"America/Los_Angeles";
+     const dayName=new Intl.DateTimeFormat("en-US",{weekday:"short",timeZone:zone}).format(dueDate);
+     const day=weekdayIndex[dayName];
+     available=slots.some(s=>s.host_id===host.id&&Number(s.weekday)===day);
+    }
+    const load=workload.get(m.id)||{open:0,overdue:0};
+    const score=matched.length*10+(available===true?3:0)-load.open*2-load.overdue*4;
+    const reasons=[];
+    if(matched.length)reasons.push("Interest match: "+matched.slice(0,3).join(", "));
+    if(available===true)reasons.push("Recurring availability listed that weekday");
+    if(available===false)reasons.push("No recurring availability listed that weekday");
+    if(available===null)reasons.push("Availability not on file");
+    reasons.push(load.open+" open · "+load.overdue+" overdue");
+    return {m,score,matched,available,load,reasons};
+   }).sort((x,y)=>y.score-x.score||x.load.open-y.load.open||String(x.m.display_name||x.m.email).localeCompare(String(y.m.display_name||y.m.email)));
+   const deadline=dueDate&&!Number.isNaN(dueDate.getTime())?when(a.due_at):"No deadline set";
+   const urgency=dueDate&&dueDate.getTime()<now?"OVERDUE":dueDate&&dueDate.getTime()<now+48*3600000?"DUE SOON":"ACTIVE WORK";
+   const rowsHtml=candidates.slice(0,3).map((c,i)=>{
+    const isOwner=c.m.id===a.assignee_id,fit=c.matched.length?"Declared interest match":"Workload-based fallback";
+    return '<div class="h3-smart-candidate"><div class="h3-smart-rank">#'+(i+1)+'</div><div class="h3-smart-candidate-main"><b>'+esc(c.m.display_name||c.m.email||"Contributor")+(isOwner?' <span class="h3-smart-owner">CURRENT OWNER</span>':"")+'</b><small>'+esc(fit)+' · '+c.load.open+' open · '+c.load.overdue+' overdue</small><p>'+esc(c.reasons.join(" · "))+'</p></div></div>';
+   }).join("");
+   return '<article class="h3-smart-assignment"><div class="h3-smart-task"><div><span class="hub3-kicker">'+urgency+'</span><b>'+esc(a.title)+'</b><small>'+esc(a.tn_production_episodes?.episode_number||"Episode")+' · '+esc(deadline)+'</small></div>'+status(a.status)+'</div><div class="h3-smart-candidates">'+rowsHtml+'</div></article>';
+  }).join("");
+  content.insertAdjacentHTML("beforeend",'<p class="h3-schedule-disclaimer">Matching is advisory. Profile interests may be incomplete; recurring weekday availability is only a rough signal because a deadline is not a scheduled work session. Confirm skills, capacity and consent with the contributor before changing an assignment.</p>');
+ }catch(error){content.innerHTML='<p class="hub3-empty">Smart matching could not load: '+esc(error.message||"Please retry.")+'</p>'}
+}
+
 async function loadCommand(){
  const [assignmentRows,uploadRows,editRows,researchRows,calendarRows,guestRows]=await Promise.all([
-  rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,status,due_at,assignee_id,tn_production_episodes(episode_number,title)").order("due_at").limit(300)),
+  rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,instructions,status,due_at,assignee_id,tn_production_episodes(episode_number,title,topic)").order("due_at").limit(300)),
   rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,created_at,producer_note,uploader_id,tn_production_episodes(episode_number,title)").order("created_at",{ascending:false}).limit(200)),
   rows("tn_production_editing",db.from("tn_production_editing").select("id,status,editor_id,target_ready_at,tn_production_episodes(episode_number,title)").order("target_ready_at").limit(200)),
   rows("tn_production_research",db.from("tn_production_research").select("id,status").limit(200)),
@@ -159,6 +222,7 @@ async function loadCommand(){
   const workload=[...byPerson.values()].sort((a,b)=>b.overdue-a.overdue||b.total-a.total).slice(0,10);
   set("h3Workload",workload.map(x=>'<article class="hub3-workload-item"><div><b>'+esc(x.name)+'</b><small>'+x.total+' open assignment'+(x.total===1?"":"s")+'</small></div><span class="'+(x.overdue?"hub3-overdue":"")+'">'+x.overdue+' overdue</span><small>'+x.dueSoon+' due within 48h</small></article>').join("")||'<p class="hub3-empty">No active contributor assignments yet.</p>');
   renderScheduleIntelligence(activeAssignments,calendarRows,guestRows,byPerson);
+  await loadSmartAssignmentDesk(activeAssignments);
   await loadHostAvailability();
  }else set("h3Workload",'<p class="hub3-empty">Team workload is available to producers and administrators.</p>');
 }
