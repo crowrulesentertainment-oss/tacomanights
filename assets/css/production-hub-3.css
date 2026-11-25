@@ -375,3 +375,9 @@
 .h3-schedule-disclaimer{font-size:10px!important;color:#aeb8c6!important;line-height:1.5;margin-top:12px}
 @media(max-width:900px){.h3-schedule-grid{grid-template-columns:1fr 1fr}.h3-schedule-grid>.h3-schedule-card:last-child{grid-column:1/-1}}
 @media(max-width:580px){.h3-scheduling-panel{padding:14px}.h3-schedule-grid{grid-template-columns:1fr}.h3-schedule-grid>.h3-schedule-card:last-child{grid-column:auto}}
+
+/* Production Hub 9.0 — structured weekly availability */
+.h3-weekly-availability{grid-column:1/-1;padding:14px;border:1px solid rgba(217,183,125,.22);border-radius:10px;background:rgba(4,8,14,.34)}
+.h3-weekly-head b{display:block;font-size:13px}.h3-weekly-head small{display:block;color:#aeb8c6;font-size:11px;margin-top:4px}.h3-timezone-label{display:block;max-width:280px;margin:12px 0}
+.h3-weekday-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}.h3-weekday-row{display:grid;grid-template-columns:minmax(85px,1fr) minmax(85px,1fr) minmax(85px,1fr);gap:8px;align-items:end;padding:9px;border:1px solid rgba(180,194,211,.12);border-radius:8px}.h3-weekday-row label{font-size:10px;color:#aeb8c6}.h3-weekday-row input[type=time]{width:100%;min-width:0;margin-top:4px}.h3-weekday-row .h3-weekday-check{display:flex;align-items:center;gap:7px;padding-bottom:9px;color:#f3f5f8;font-size:12px}.h3-weekday-check input{accent-color:#d9b77d}.h3-request-slots{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.h3-request-slots span{padding:5px 8px;border:1px solid rgba(217,183,125,.24);border-radius:6px;color:#e8d5b4;font-size:10px}
+@media(max-width:640px){.h3-weekday-list{grid-template-columns:1fr}.h3-weekday-row{grid-template-columns:minmax(78px,1fr) minmax(85px,1fr) minmax(85px,1fr)}}
