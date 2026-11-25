@@ -17,7 +17,7 @@ function options(list,empty=""){return (empty?'<option value="">'+esc(empty)+'</
 async function refresh(){
  const baseTargets=["h3EditingEpisode","h3ResearchEpisode","h3GuestEpisode","h3RecognitionEpisode","h3RecognitionMember"];
  try{await loadBase()}catch(error){console.error("Production Hub base data",error);baseTargets.forEach(id=>{const el=$("#"+id);if(el)el.innerHTML='<option value="">Could not load options — use Refresh to retry</option>'})}
- const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"],loadCommand],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList"],loadEditing],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk]];
+ const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"],loadCommand],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList"],loadEditing],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk],["Contributor requests",["h3MyRequests","h3RequestReviewQueue"],loadRequests]];
  await Promise.all(tasks.map(async([label,targets,fn])=>{try{await fn()}catch(error){console.error(label,error);const html='<p class="hub3-empty">Could not load '+label.toLowerCase()+': '+esc(error?.message||"Please try again.")+'</p>';targets.forEach(id=>set(id,html))}}));
 }
 async function loadBase(){
@@ -25,6 +25,52 @@ async function loadBase(){
  $("#h3EditingEpisode").innerHTML=options(episodes,"Choose episode…");$("#h3ResearchEpisode").innerHTML=options(episodes,"General research / idea vault");const researchOwner=$("#h3ResearchOwner");if(researchOwner&&isAdmin)researchOwner.innerHTML='<option value="">Unassigned</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");$("#h3GuestEpisode").innerHTML=options(episodes,"Not assigned yet");$("#h3RecognitionEpisode").innerHTML=options(episodes,"General contribution");
  if(isAdmin){members=await rows("tn_production_profiles",db.from("tn_production_profiles").select("id,display_name,email,role").in("role",["contributor","producer","admin"]).order("display_name"));$("#h3RecognitionMember").innerHTML=members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");const editor=$("#h3EditingEditor");if(editor)editor.innerHTML='<option value="">Assign to me</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+' · '+esc(m.role)+'</option>').join("")}
  document.querySelectorAll(".hub3-form button.admin-only").forEach(b=>b.classList.toggle("hidden",!isAdmin));document.querySelectorAll(".hub3-form[data-admin-only]").forEach(form=>form.classList.toggle("hidden",!isAdmin));document.querySelectorAll("[data-h3-admin-only]").forEach(el=>el.classList.toggle("hidden",!isAdmin));
+}
+
+
+async function loadRequests(){
+ const all=await rows("tn_production_requests",db.from("tn_production_requests").select("id,requester_id,request_type,assignment_id,requested_status,starts_on,ends_on,details,status,review_note,reviewed_at,created_at").order("created_at",{ascending:false}).limit(150));
+ const label={assignment_status:"Assignment status",availability:"Availability",time_off:"Time off"};
+ const render=x=>'<article class="h3-request-card"><div class="h3-request-top"><b>'+esc(label[x.request_type]||x.request_type)+'</b>'+status(x.status)+'</div>'+(x.requested_status?'<p><b>Requested status:</b> '+esc(x.requested_status.replaceAll("_"," "))+'</p>':"")+(x.starts_on?'<p><b>Dates:</b> '+esc(x.starts_on)+' – '+esc(x.ends_on||x.starts_on)+'</p>':"")+'<p>'+esc(x.details)+'</p>'+(x.review_note?'<div class="hub3-review-note"><b>Producer response</b><p>'+esc(x.review_note)+'</p></div>':"")+'<small>'+when(x.created_at)+(x.reviewed_at?' · Reviewed '+when(x.reviewed_at):'')+'</small></article>';
+ set("h3MyRequests",all.filter(x=>x.requester_id===user.id).map(render).join("")||'<p class="hub3-empty">You have not sent any requests yet.</p>');
+ if(!isAdmin){set("h3RequestReviewQueue",'<p class="hub3-empty">Request approvals are restricted to producers and administrators.</p>');return}
+ const pending=all.filter(x=>x.status==="pending"),names=new Map(members.map(m=>[m.id,m.display_name||m.email||"Team member"]));
+ set("h3RequestReviewQueue",pending.map(x=>'<article class="h3-request-card" data-request-card="'+esc(x.id)+'"><div class="h3-request-top"><b>'+esc(names.get(x.requester_id)||"Contributor")+' · '+esc(label[x.request_type]||x.request_type)+'</b>'+status(x.status)+'</div>'+(x.requested_status?'<p><b>Requested status:</b> '+esc(x.requested_status.replaceAll("_"," "))+'</p>':"")+(x.starts_on?'<p><b>Dates:</b> '+esc(x.starts_on)+' – '+esc(x.ends_on||x.starts_on)+'</p>':"")+'<p>'+esc(x.details)+'</p><label class="h3-request-review-label">Producer response<textarea data-request-note maxlength="1500" rows="2" placeholder="Optional response or instructions"></textarea></label><div class="h3-request-actions"><button class="ph-btn primary" type="button" data-request-review="'+esc(x.id)+'" data-request-decision="approved">Approve</button><button class="ph-btn" type="button" data-request-review="'+esc(x.id)+'" data-request-decision="declined">Decline</button></div><p class="hub3-status" aria-live="polite"></p></article>').join("")||'<p class="hub3-empty">No contributor requests are waiting for review.</p>');
+}
+async function submitContributorRequest(form){
+ const d=formData(form);if(d.request_type==="assignment_status"&&!d.assignment_id){notice(form,"Choose an assignment first.");return}
+ if(d.starts_on&&d.ends_on&&d.ends_on<d.starts_on){notice(form,"The end date must be on or after the start date.");return}
+ const payload={requester_id:user.id,request_type:d.request_type,assignment_id:d.request_type==="assignment_status"?d.assignment_id:null,requested_status:d.request_type==="assignment_status"?d.requested_status:null,starts_on:d.request_type==="assignment_status"?null:(d.starts_on||null),ends_on:d.request_type==="assignment_status"?null:(d.ends_on||null),details:d.details.trim(),status:"pending"};
+ const button=form.querySelector('button[type="submit"]');button.disabled=true;notice(form,"Sending your request…");
+ try{const {error}=await db.from("tn_production_requests").insert(payload);if(error)throw error;await logActivity("contributor_request_submitted",d.request_type.replaceAll("_"," "));form.reset();updateRequestForm();notice(form,"Request submitted. It is now waiting for producer review.");await loadRequests()}
+ catch(error){notice(form,"Could not submit request: "+(error.message||"Please try again."))}
+ finally{button.disabled=false}
+}
+function updateRequestForm(){
+ const type=$("#h3RequestType")?.value||"assignment_status",isAssignment=type==="assignment_status",isDates=!isAssignment;
+ $("#h3RequestAssignmentWrap")?.classList.toggle("hidden",!isAssignment);$("#h3RequestStatusWrap")?.classList.toggle("hidden",!isAssignment);
+ $("#h3RequestStartWrap")?.classList.toggle("hidden",!isDates);$("#h3RequestEndWrap")?.classList.toggle("hidden",!isDates);
+ const assignment=$("#h3RequestAssignment");if(assignment)assignment.required=isAssignment;
+ const start=$("#h3RequestStartWrap input"),end=$("#h3RequestEndWrap input");if(start)start.required=type==="time_off";if(end)end.required=type==="time_off";
+}
+async function reviewContributorRequest(button){
+ if(!isAdmin)return;
+ const card=button.closest("[data-request-card]"),id=button.dataset.requestReview,decision=button.dataset.requestDecision;
+ if(!card||!id||!["approved","declined"].includes(decision))return;
+ const note=card.querySelector("[data-request-note]")?.value.trim()||"",buttons=[...card.querySelectorAll("[data-request-review]")],statusEl=card.querySelector(".hub3-status");
+ buttons.forEach(b=>b.disabled=true);statusEl.textContent="Saving decision…";
+ try{
+  const {data:req,error}=await db.from("tn_production_requests").update({status:decision,review_note:note||null,reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",id).eq("status","pending").select("*").single();
+  if(error)throw error;
+  if(decision==="approved"&&req.request_type==="assignment_status"){
+   const {error:assignmentError}=await db.from("tn_production_assignments").update({status:req.requested_status}).eq("id",req.assignment_id).eq("assignee_id",req.requester_id);
+   if(assignmentError)throw new Error("Request approved, but assignment status update failed: "+assignmentError.message);
+  }
+  const label={assignment_status:"Assignment status",availability:"Availability",time_off:"Time-off"}[req.request_type]||"Contributor";
+  const {error:notifyError}=await db.from("tn_notifications").insert({user_id:req.requester_id,title:decision==="approved"?"Production request approved":"Production request update",message:label+" request "+decision+". "+(note||""),href:"https://crowrulesentertainment-oss.github.io/tacomanights/production/"});
+  if(notifyError)console.warn("Request notification",notifyError.message);
+  await logActivity("contributor_request_"+decision,req.request_type+" request from "+req.requester_id);await loadRequests();
+ }catch(error){statusEl.textContent="Could not save decision: "+(error.message||"Please retry.");buttons.forEach(b=>b.disabled=false)}
 }
 
 async function loadHostAvailability(){
@@ -89,6 +135,8 @@ async function loadContributor(){
   rows("tn_notifications",db.from("tn_notifications").select("id,title,message,created_at,read_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(8))
  ]);
  const now=Date.now(), day=86400000, norm=v=>String(v||"").toLowerCase();
+ const requestSelect=$("#h3RequestAssignment");if(requestSelect){const active=assignments.filter(a=>!["complete","cancelled"].includes(norm(a.status)));requestSelect.innerHTML='<option value="">Choose an open assignment…</option>'+active.map(a=>'<option value="'+esc(a.id)+'">'+esc(a.title)+' · '+esc(a.tn_production_episodes?.episode_number||"Episode")+'</option>').join("")}
+
  const open=assignments.filter(a=>!["complete","cancelled"].includes(norm(a.status)));
  const completed=assignments.filter(a=>norm(a.status)==="complete").length;
  const overdue=open.filter(a=>a.due_at&&new Date(a.due_at).getTime()<now);
@@ -476,6 +524,9 @@ async function init(){
  $("#h3CalendarType")?.addEventListener("change",renderCalendar);
  $("#h3CalendarRefresh")?.addEventListener("click",()=>loadCalendar().catch(e=>{set("h3CalendarList",'<p class="hub3-empty">Calendar refresh failed: '+esc(e.message||"Please try again.")+'</p>')}));
  $("#h3AvailabilityRefresh")?.addEventListener("click",loadHostAvailability);
+ $("#h3RequestType")?.addEventListener("change",updateRequestForm);updateRequestForm();
+ $("#h3ContributorRequestForm")?.addEventListener("submit",e=>{e.preventDefault();submitContributorRequest(e.currentTarget)});
+
 
  document.querySelectorAll("[data-h3-go]").forEach(b=>b.addEventListener("click",()=>{tab(b.dataset.h3Go);document.querySelector(".hub3-nav")?.scrollIntoView({behavior:"smooth",block:"start"})}));
  document.querySelectorAll("[data-h3-legacy]").forEach(b=>b.addEventListener("click",()=>{const target=document.getElementById(b.dataset.h3Legacy);if(!target)return;document.querySelectorAll(".ph-view").forEach(v=>v.classList.remove("active"));target.classList.add("active");document.querySelectorAll(".ph-tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===b.dataset.h3Legacy.replace("view-","")));target.scrollIntoView({behavior:"smooth",block:"start"})}));
@@ -484,6 +535,8 @@ async function init(){
  document.addEventListener("click",async e=>{
   if(e.target.closest("#h3CommunicationRefresh")){const b=$("#h3CommunicationRefresh");b.disabled=true;try{await loadChat();await loadNotifications()}catch(error){set("h3ChatMessages",'<p class="hub3-empty">Inbox refresh failed: '+esc(error.message||"Please try again.")+'</p>')}finally{b.disabled=false}return}
   const review=e.target.closest("[data-h3-review]");if(review){await reviewSubmission(review);return}
+  const requestReview=e.target.closest("[data-request-review]");if(requestReview){await reviewContributorRequest(requestReview);return}
+
   const researchSave=e.target.closest("[data-h3-research-save]");if(researchSave&&isAdmin){const card=researchSave.closest(".hub3-research-card"),id=researchSave.dataset.h3ResearchSave,get=name=>card?.querySelector('[data-research-field="'+name+'"][data-research-id="'+id+'"]')?.value||"";const stage=get("status");if(!["idea","researching","ready","archived"].includes(stage)){alert("Choose a valid research stage.");return}researchSave.disabled=true;const {error}=await db.from("tn_production_research").update({status:stage,assigned_to:get("assigned_to")||null,notes:get("notes").trim()||null,updated_at:new Date().toISOString()}).eq("id",id);researchSave.disabled=false;if(error){alert("Could not save research review: "+error.message);return}await logActivity("research_updated","Updated research status, ownership, or fact-check notes");await loadResearch();return}
   const guestSave=e.target.closest("[data-h3-guest-save]");if(guestSave&&isAdmin){const card=guestSave.closest(".hub3-guest-card"),id=guestSave.dataset.h3GuestSave,get=name=>card?.querySelector('[data-guest-field="'+name+'"]')?.value||"";let availability={};try{availability=get("availability").trim()?JSON.parse(get("availability")):{}}catch{alert("Guest availability must be valid JSON.");return}const meeting=get("meeting_url");if(meeting&&!safeHttps(meeting)){alert("Meeting links must use HTTPS.");return}const interview=get("interview_at");if(interview&&Number.isNaN(new Date(interview).getTime())){alert("Enter a valid interview date and time.");return}guestSave.disabled=true;const payload={phone:get("phone").trim()||null,interview_at:interview?new Date(interview).toISOString():null,meeting_url:meeting.trim()||null,notes:get("notes").trim()||null,availability,updated_at:new Date().toISOString()};const {error}=await db.from("tn_production_guests").update(payload).eq("id",id);guestSave.disabled=false;if(error){alert("Could not save booking details: "+error.message);return}await logActivity("guest_booking_updated","Updated guest booking details");await loadGuests();return}
   const filter=e.target.closest("[data-h3-notification-filter]");if(filter){notificationFilter=filter.dataset.h3NotificationFilter;renderNotifications()}
