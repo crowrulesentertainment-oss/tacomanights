@@ -64,11 +64,34 @@ async function getState(key:string){const {data}=await db.from("tn_pickem_provid
 async function setState(key:string,patch:Record<string,unknown>){const {error}=await db.from("tn_pickem_provider_state").upsert({provider:"apisports",provider_sport:key,...patch,updated_at:new Date().toISOString()},{onConflict:"provider,provider_sport"});if(error)throw error;}
 async function fetchSchedule(cfg:SportConfig,now:Date){
  const rows:any[]=[];
- if(cfg.key==="football"){const data=await apiGet(cfg,{from:calendarDate(now),to:datePlus(calendarDate(now),6),timezone:"America/Los_Angeles"});for(const item of data){const n=normalizeRow(item,cfg);if(n&&SOCCER_LEAGUES.has(String(n.league_id)))rows.push(n);}}
- else{for(let i=0;i<7;i++){const data=await apiGet(cfg,{date:datePlus(calendarDate(now),i),timezone:"America/Los_Angeles"});for(const item of data){const n=normalizeRow(item,cfg);if(n)rows.push(n);}}}
+ // Free API-Sports plans may expose only a short forward date window.
+ // Stay within the three-day window returned by the provider's plan error.
+ if(cfg.key==="football"){
+  const from=calendarDate(now),to=datePlus(from,2),season=Number(from.slice(0,4));
+  for(const league of SOCCER_LEAGUES){
+   const data=await apiGet(cfg,{league,season:String(season),from,to});
+   for(const item of data){const n=normalizeRow(item,cfg);if(n)rows.push(n);}
+  }
+ }else{
+  for(let i=0;i<3;i++){
+   const params:Record<string,string>={date:datePlus(calendarDate(now),i)};
+   if(cfg.key!=="nba")params.timezone="America/Los_Angeles";
+   const data=await apiGet(cfg,params);
+   for(const item of data){const n=normalizeRow(item,cfg);if(n)rows.push(n);}
+  }
+ }
  return rows;
 }
-async function fetchToday(cfg:SportConfig,now:Date){return cfg.key==="football"?await apiGet(cfg,{live:"all",timezone:"America/Los_Angeles"}):await apiGet(cfg,{date:calendarDate(now),timezone:"America/Los_Angeles"});}
+async function fetchToday(cfg:SportConfig,now:Date){
+ if(cfg.key==="football"){
+  const date=calendarDate(now),season=Number(date.slice(0,4)),rows:any[]=[];
+  for(const league of SOCCER_LEAGUES){rows.push(...await apiGet(cfg,{league,season:String(season),from:date,to:date}));}
+  return rows;
+ }
+ const params:Record<string,string>={date:calendarDate(now)};
+ if(cfg.key!=="nba")params.timezone="America/Los_Angeles";
+ return await apiGet(cfg,params);
+}
 function chooseSlate(events:any[]){
  const groups=new Map<string,any[]>();
  for(const e of events){const s=e.sport==="cfb"?"cfb":e.sport;const list=groups.get(s)||[];list.push(e);groups.set(s,list);}
@@ -125,7 +148,7 @@ Deno.serve(async(req:Request)=>{
   for(const cfg of SPORTS){
    try{
     const state=await getState(cfg.key),today=calendarDate(now),lastSchedule=state?.last_schedule_sync_at?calendarDate(new Date(state.last_schedule_sync_at)):"";
-    if(lastSchedule!==today){const rows=await fetchSchedule(cfg,now);requests+=cfg.key==="football"?1:7;received+=rows.length;upserted+=await upsertRows(rows);await setState(cfg.key,{last_schedule_sync_at:now.toISOString(),last_status:"schedule_ok",last_error:null});}
+    if(lastSchedule!==today){const rows=await fetchSchedule(cfg,now);requests+=cfg.key==="football"?SOCCER_LEAGUES.size:3;received+=rows.length;upserted+=await upsertRows(rows);await setState(cfg.key,{last_schedule_sync_at:now.toISOString(),last_status:"schedule_ok",last_error:null});}
     const midnight=pacificMidnight(today).toISOString(),tomorrow=pacificMidnight(datePlus(today,1)).toISOString();
     const {count:activeCount}=await db.from("tn_pickem_provider_events").select("id",{count:"exact",head:true}).eq("provider","apisports").eq("provider_sport",cfg.key).gte("starts_at",midnight).lt("starts_at",tomorrow).eq("result","pending");
     if((activeCount||0)>0){const raw=await fetchToday(cfg,now);requests++;received+=raw.length;const rows=raw.map((r:any)=>normalizeRow(r,cfg)).filter(Boolean);upserted+=await upsertRows(rows);await setState(cfg.key,{last_live_sync_at:now.toISOString(),last_status:"live_ok",last_error:null});}
