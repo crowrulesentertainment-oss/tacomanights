@@ -145,7 +145,7 @@ async function renderBoard(week,db){
  const {data,error}=await db.from("tn_pickem_leaderboard").select("display_name,points,updated_at").eq("week_id",week.id).order("points",{ascending:false}).order("updated_at",{ascending:true}).limit(100);
  if(error){showError("The leaderboard is temporarily unavailable.");return}
  const weekly=data?.length?'<div class="pe-table-wrap"><table class="pe-table"><thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead><tbody>'+data.map((e,i)=>'<tr><td class="pe-rank">#'+(i+1)+'</td><td>'+esc(e.display_name)+'</td><td>'+Number(e.points||0)+'</td></tr>').join("")+'</tbody></table></div>':'<div class="pe-empty">The weekly picks are locked. Scores will appear here when the results have been entered.</div>';
- content.innerHTML='<p class="pe-muted">Final or current standings for '+esc(week.title)+'.</p>'+weekly+'<div id="season-board"></div>';
+ content.innerHTML='<p class="pe-muted">Final or current standings for '+esc(week.title)+'.</p>'+weekly+'<div id="season-board"></div><div id="weekly-boards" aria-live="polite"></div>';
  await renderSeasonBoard(week,db);
  await renderSportBoards(week,db);
 }
