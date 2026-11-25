@@ -87,3 +87,15 @@
 .hub3-review-actions{display:flex;flex-wrap:wrap;gap:8px}
 .hub3-review-actions .danger{border-color:rgba(224,85,98,.45);color:#f1aab0}
 @media(max-width:580px){.hub3-review-head{flex-direction:column}.hub3-review-actions>*{flex:1 1 100%}}
+
+/* Contributor dashboard upgrade */
+#h3ContributorStats{margin:18px 0}
+.hub3-contributor-actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0 22px}
+.hub3-subheading{margin-top:22px!important;padding-top:18px;border-top:1px solid rgba(180,194,211,.12)}
+.hub3-next-deadline{padding:16px 18px;border:1px solid rgba(217,183,125,.28);border-left:3px solid #d9b77d;border-radius:10px;background:linear-gradient(110deg,rgba(217,183,125,.09),rgba(18,24,33,.4))}
+.hub3-next-deadline b{display:block;margin:7px 0;font-size:16px}
+.hub3-next-deadline p{margin:0 0 6px;color:#b8c3d1}
+.hub3-overdue{color:#ff929b!important;font-weight:800}
+.hub3-producer-note{display:block;margin-top:7px;padding:8px 10px;border-left:2px solid #d9b77d;background:rgba(217,183,125,.08);color:#e9d8b7!important;border-radius:0 6px 6px 0}
+.hub3-mini.unread{border-color:rgba(216,74,88,.42);background:rgba(216,74,88,.07)}
+@media(max-width:620px){.hub3-contributor-actions .ph-btn{flex:1 1 100%}}
