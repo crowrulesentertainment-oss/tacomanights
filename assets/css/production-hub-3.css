@@ -232,3 +232,19 @@
 .hub3-onboarding-steps b,.hub3-onboarding-steps span{display:block}
 .hub3-onboarding-steps span{color:#aeb8c6;font-size:11px;line-height:1.55;margin-top:4px}
 @media(max-width:720px){.hub3-training-toolbar{grid-template-columns:1fr}.hub3-training-card{grid-template-columns:32px minmax(0,1fr);gap:10px;padding:13px}.hub3-training-card-index{width:30px;height:30px;font-size:11px}.hub3-training-card-action{grid-column:2;justify-self:start}.hub3-training-card h4{font-size:14px}}
+
+/* Communication center inbox */
+.hub3-communication-toolbar{display:grid;grid-template-columns:minmax(180px,1fr) minmax(150px,.45fr) auto;gap:12px;align-items:end;margin:18px 0}
+.hub3-communication-toolbar label{display:grid;gap:6px;color:#c4cedb;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.hub3-communication-toolbar input,.hub3-communication-toolbar select{width:100%;min-height:43px;box-sizing:border-box;background:#090e15;border:1px solid rgba(175,191,211,.2);border-radius:7px;color:#fff;padding:10px 12px;font:inherit}
+.hub3-communication-toolbar input:focus,.hub3-communication-toolbar select:focus{outline:none;border-color:#d45160;box-shadow:0 0 0 3px rgba(212,81,96,.12)}
+.hub3-chat-message{padding:14px 16px}
+.hub3-chat-message .hub3-chat-meta{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:6px}
+.hub3-chat-message .hub3-chat-meta b{font-size:12px;color:#f2d7d9}
+.hub3-chat-message .hub3-chat-meta time{font-size:10px;color:#9da9b8}
+.hub3-chat-message>p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55}
+.hub3-chat-message.mine{border-color:rgba(216,74,88,.42)}
+.hub3-chat-compose-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.hub3-chat-compose-foot small{color:#aeb8c6;font-size:11px}
+#h3Announcements .hub3-mini{margin-bottom:10px}
+@media(max-width:700px){.hub3-communication-toolbar{grid-template-columns:1fr}.hub3-communication-toolbar button{width:100%}.hub3-chat-compose-foot{align-items:stretch}.hub3-chat-compose-foot button{width:100%}}
