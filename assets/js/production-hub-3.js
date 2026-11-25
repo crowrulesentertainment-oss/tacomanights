@@ -23,7 +23,7 @@ async function refresh(){
 async function loadBase(){
  episodes=await rows("tn_production_episodes",db.from("tn_production_episodes").select("id,episode_number,title,topic,premiere_at,status").order("premiere_at",{ascending:true}));
  $("#h3EditingEpisode").innerHTML=options(episodes,"Choose episode…");$("#h3ResearchEpisode").innerHTML=options(episodes,"General research / idea vault");const researchOwner=$("#h3ResearchOwner");if(researchOwner&&isAdmin)researchOwner.innerHTML='<option value="">Unassigned</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");$("#h3GuestEpisode").innerHTML=options(episodes,"Not assigned yet");$("#h3RecognitionEpisode").innerHTML=options(episodes,"General contribution");
- if(isAdmin){members=await rows("tn_production_profiles",db.from("tn_production_profiles").select("id,display_name,email,role,requested_role,application_note").in("role",["contributor","producer","admin"]).order("display_name"));$("#h3RecognitionMember").innerHTML=members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");const editor=$("#h3EditingEditor");if(editor)editor.innerHTML='<option value="">Assign to me</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+' · '+esc(m.role)+'</option>').join("")}
+ if(isAdmin){members=await rows("tn_production_profiles",db.from("tn_production_profiles").select("id,display_name,email,role,requested_role,application_note,skills,segment_interests").in("role",["contributor","producer","admin"]).order("display_name"));$("#h3RecognitionMember").innerHTML=members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");const editor=$("#h3EditingEditor");if(editor)editor.innerHTML='<option value="">Assign to me</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+' · '+esc(m.role)+'</option>').join("")}
  document.querySelectorAll(".hub3-form button.admin-only").forEach(b=>b.classList.toggle("hidden",!isAdmin));document.querySelectorAll(".hub3-form[data-admin-only]").forEach(form=>form.classList.toggle("hidden",!isAdmin));document.querySelectorAll("[data-h3-admin-only]").forEach(el=>el.classList.toggle("hidden",!isAdmin));
 }
 
@@ -150,7 +150,7 @@ async function loadSmartAssignmentDesk(assignments){
    const dueDate=a.due_at?new Date(a.due_at):null;
    const candidates=eligible.map(m=>{
     const host=activeHosts.get(m.id);
-    const profileText=[m.requested_role,m.application_note,host?.segment_interests,host?.role].filter(Boolean).join(" ").toLowerCase();
+    const profileText=[...(m.skills||[]),...(m.segment_interests||[]),m.requested_role,m.application_note,host?.segment_interests,host?.role].filter(Boolean).join(" ").toLowerCase();
     const matched=tags.filter(tag=>task.includes(tag)&&profileText.includes(tag));
     let available=null;
     if(host&&dueDate&&!Number.isNaN(dueDate.getTime())){
@@ -179,6 +179,45 @@ async function loadSmartAssignmentDesk(assignments){
   }).join("");
   content.insertAdjacentHTML("beforeend",'<p class="h3-schedule-disclaimer">Matching is advisory. Profile interests may be incomplete; recurring weekday availability is only a rough signal because a deadline is not a scheduled work session. Confirm skills, capacity and consent with the contributor before changing an assignment.</p>');
  }catch(error){content.innerHTML='<p class="hub3-empty">Smart matching could not load: '+esc(error.message||"Please retry.")+'</p>'}
+}
+
+
+async function loadCapabilityManager(){
+ const target=$("#h3ScheduleInsights");if(!target||!isAdmin)return;
+ $("#h3CapabilityManager")?.remove();
+ const skills=["Show hosting","Sports analysis","Community reporting","Teen perspective","Young adult perspective","Research","Writing","Editing","Interviews","Entertainment","Business coverage","Culture","Social media","Production coordination","Camera and audio","Live streaming","Graphic design","Podcasting","Film and television"];
+ const interests=["Tacoma and Pierce County","Pacific Northwest","National news","Community","Sports","Entertainment","Real-life stories","Business","Culture","Teen and young adults","Music","Film and television","Technology","Education","Local events"];
+ const panel=document.createElement("section");panel.id="h3CapabilityManager";panel.className="h3-capability-card";
+ const memberOptions=members.filter(m=>["contributor","producer"].includes(String(m.role||"").toLowerCase())).map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Contributor")+'</option>').join("");
+ panel.innerHTML='<div class="h3-smart-head"><div><span class="hub3-kicker">PRODUCTION HUB 11.0</span><h4>Contributor skills & capabilities</h4><p class="hub3-small">Maintain each approved contributor’s strengths and preferred coverage areas. These tags improve assignment recommendations; they do not certify experience or replace a conversation with the contributor.</p></div><span class="h3-smart-status">ADMIN MANAGED</span></div><div class="h3-capability-controls"><label for="h3CapabilityMember">Contributor</label><select id="h3CapabilityMember">'+(memberOptions||'<option value="">No approved contributors or producers</option>')+'</select></div><div id="h3CapabilityEditor"></div><div class="h3-capability-actions"><button type="button" class="ph-btn primary" id="h3CapabilitySave" '+(memberOptions?"":"disabled")+'>Save capability profile</button><span id="h3CapabilityMessage" role="status" aria-live="polite"></span></div>';
+ target.appendChild(panel);
+ const memberSelect=panel.querySelector("#h3CapabilityMember"),editor=panel.querySelector("#h3CapabilityEditor");
+ const group=(title,name,items,selected)=>'<fieldset class="h3-capability-group"><legend>'+title+'</legend><div class="h3-capability-options">'+items.map((item,i)=>'<label><input type="checkbox" name="'+name+'" value="'+esc(item)+'" '+(selected.includes(item)?"checked":"")+'><span>'+esc(item)+'</span></label>').join("")+'</div></fieldset>';
+ const render=()=>{
+  const m=members.find(x=>x.id===memberSelect.value);
+  if(!m){editor.innerHTML='<p class="hub3-empty">No approved contributor profiles are available to manage yet. Pending applications and admin accounts are not included.</p>';return}
+  editor.innerHTML=group("Skills & production capabilities","h3Skill",skills,m.skills||[])+group("Preferred segments & coverage","h3Interest",interests,m.segment_interests||[]);
+ };
+ memberSelect.addEventListener("change",render);render();
+ panel.querySelector("#h3CapabilitySave").addEventListener("click",async()=>{
+  const id=memberSelect.value;if(!id)return;
+  const button=panel.querySelector("#h3CapabilitySave"),message=panel.querySelector("#h3CapabilityMessage");
+  const values=name=>[...editor.querySelectorAll('input[name="'+name+'"]:checked')].map(x=>x.value);
+  const update={skills:values("h3Skill"),segment_interests:values("h3Interest")};
+  button.disabled=true;message.textContent="Saving…";
+  try{
+   const {error}=await db.from("tn_production_profiles").update(update).eq("id",id);
+   if(error)throw error;
+   const member=members.find(x=>x.id===id);if(member)Object.assign(member,update);
+   message.textContent="Saved. Assignment recommendations will use these tags.";
+   await loadSmartAssignmentDeskFromCurrent();
+  }catch(error){message.textContent="Could not save: "+(error.message||"Please try again.");}
+  finally{button.disabled=false}
+ });
+}
+async function loadSmartAssignmentDeskFromCurrent(){
+ const assignments=await rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,instructions,status,due_at,assignee_id,tn_production_episodes(episode_number,title,topic)").order("due_at").limit(300));
+ await loadSmartAssignmentDesk(assignments);
 }
 
 async function loadCommand(){
@@ -223,6 +262,7 @@ async function loadCommand(){
   set("h3Workload",workload.map(x=>'<article class="hub3-workload-item"><div><b>'+esc(x.name)+'</b><small>'+x.total+' open assignment'+(x.total===1?"":"s")+'</small></div><span class="'+(x.overdue?"hub3-overdue":"")+'">'+x.overdue+' overdue</span><small>'+x.dueSoon+' due within 48h</small></article>').join("")||'<p class="hub3-empty">No active contributor assignments yet.</p>');
   renderScheduleIntelligence(activeAssignments,calendarRows,guestRows,byPerson);
   await loadSmartAssignmentDesk(activeAssignments);
+  await loadCapabilityManager();
   await loadHostAvailability();
  }else set("h3Workload",'<p class="hub3-empty">Team workload is available to producers and administrators.</p>');
 }
