@@ -267,3 +267,16 @@
 .hub3-workload-item small{font-size:10px;color:#aeb8c6}
 .hub3-workload-item>span{font-size:11px;color:#aeb8c6}
 @media(max-width:760px){#h3CommandStats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Production Calendar 4.0 */
+.hub3-calendar-nav{display:flex;align-items:center;gap:8px;flex:1 1 100%;flex-wrap:wrap}
+.hub3-calendar-nav b{min-width:180px;text-align:center;color:#f0d7aa;font-size:14px}
+.hub3-month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-top:14px}
+.hub3-month-weekday{text-align:center;padding:9px 2px;color:#d9bd8b;font-size:10px;font-weight:900}
+.hub3-month-day{min-width:0;min-height:112px;padding:7px;border:1px solid rgba(180,194,211,.13);border-radius:8px;background:rgba(7,12,19,.62)}
+.hub3-month-day.is-outside{opacity:.4}.hub3-month-day.is-today{border-color:#d9b77d}
+.hub3-month-day-number{display:block;font-size:11px;color:#c9d3df;margin-bottom:7px}
+.hub3-month-day-events{display:grid;gap:4px}
+.hub3-month-event{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:4px 5px;border-radius:4px;background:rgba(130,158,194,.13);border-left:2px solid #829ec2;color:#dbe5f2;font-size:9px}
+.hub3-month-event.event-deadline{border-left-color:#e0a66e}.hub3-month-event.event-premiere{border-left-color:#d9b77d}.hub3-month-event.event-editing{border-left-color:#a78bd4}.hub3-month-event.event-submission{border-left-color:#78b6a0}
+@media(max-width:620px){.hub3-month-grid{gap:2px}.hub3-month-day{min-height:76px;padding:4px 3px}.hub3-month-weekday{font-size:8px;padding:6px 0}.hub3-month-day-number{font-size:10px;margin-bottom:4px}.hub3-month-event{font-size:8px;padding:3px 2px}.hub3-calendar-nav b{flex:1;min-width:120px;font-size:12px}.hub3-calendar-nav .ph-btn{padding:8px 10px}}
