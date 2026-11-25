@@ -86,9 +86,32 @@ async function loadEditing(){
   return '<article class="hub3-edit-card"><div class="hub3-edit-head"><div><span class="hub3-kicker">'+esc(x.tn_production_episodes?.episode_number||"EPISODE")+'</span><h4>'+esc(x.tn_production_episodes?.title||"Untitled episode")+'</h4></div>'+status(x.status)+'</div><div class="hub3-edit-progress"><span style="width:'+progress+'%"></span></div><div class="hub3-edit-meta"><span>Editor: <b>'+esc(x.editor_id===user.id?"You":editor?.display_name||"Unassigned")+'</b></span><span>Version: <b>'+esc(x.version_label||"Not set")+'</b></span><span>Target: <b>'+when(x.target_ready_at)+'</b></span></div>'+(x.notes?'<p>'+esc(x.notes)+'</p>':"")+(x.review_notes?'<div class="hub3-review-note"><b>Producer review notes</b><p>'+esc(x.review_notes)+'</p></div>':"")+'<div class="hub3-edit-update" data-editing-row="'+esc(x.id)+'"><label>Update stage<select data-editing-stage="'+esc(x.id)+'">'+stages.map(s=>'<option value="'+s+'" '+(s===x.status?"selected":"")+'>'+s.replaceAll("_"," ")+'</option>').join("")+'</select></label><button type="button" class="ph-btn" data-editing-save="'+esc(x.id)+'" '+(!isAdmin?"disabled":"")+'>'+ (isAdmin?"Save stage":"Producer updates only")+'</button></div><small class="hub3-edit-updated">Last updated '+when(x.updated_at)+'</small></article>';
  }).join("")||'<p class="hub3-empty">No editing records yet. Create an episode editing record to start tracking ingest, rough cut, review, revisions, and final approval.</p>');
 }
+let calendarEvents=[];
+function calendarDate(value,opts={}){if(!value)return "Date to be confirmed";return new Date(value).toLocaleString("en-US",{timeZone:"America/Los_Angeles",...opts})}
+function renderCalendar(){
+ const type=$("#h3CalendarType")?.value||"all",range=$("#h3CalendarRange")?.value||"upcoming",now=Date.now();
+ let events=calendarEvents.filter(x=>type==="all"||x.type===type);
+ events=events.filter(x=>{const t=new Date(x.start).getTime();if(range==="upcoming")return t>=now-86400000;if(range==="week")return t>=now-86400000&&t<=now+7*86400000;if(range==="month")return t>=now-86400000&&t<=now+31*86400000;return true});
+ const countBy=k=>events.filter(x=>x.type===k).length;
+ set("h3CalendarStats",[['Upcoming items',events.length],['Deadlines',countBy("deadline")],['Premieres',countBy("premiere")],['Guest sessions',countBy("guest")]].map(([label,n])=>'<div class="hub3-calendar-stat"><b>'+n+'</b><span>'+label+'</span></div>').join(""));
+ if(!events.length){set("h3CalendarList",'<p class="hub3-empty">No items match this calendar view. Try another time range or category.</p>');return}
+ const groups=new Map();
+ events.forEach(x=>{const key=calendarDate(x.start,{weekday:"long",month:"long",day:"numeric",year:"numeric"});if(!groups.has(key))groups.set(key,[]);groups.get(key).push(x)});
+ set("h3CalendarList",Array.from(groups.entries()).map(([day,items])=>'<section class="hub3-calendar-day"><h4>'+esc(day)+'</h4>'+items.map(x=>'<article class="hub3-calendar-event"><div class="hub3-calendar-time">'+(x.allDay?"ALL DAY":esc(calendarDate(x.start,{hour:"numeric",minute:"2-digit"})))+'</div><div class="hub3-calendar-event-main"><div class="hub3-calendar-event-head"><b>'+esc(x.title)+'</b>'+status(x.type)+'</div>'+(x.description?'<p>'+esc(x.description)+'</p>':"")+'<small>'+esc(x.source)+(x.end?' · Ends '+esc(calendarDate(x.end,{hour:"numeric",minute:"2-digit"})):"")+'</small></div></article>').join("")+'</section>').join(""));
+}
 async function loadCalendar(){
- const list=await rows("tn_production_calendar",db.from("tn_production_calendar").select("id,title,description,event_type,starts_at,ends_at,all_day").gte("starts_at",new Date(Date.now()-86400000).toISOString()).order("starts_at").limit(40));
- set("h3CalendarList",list.map(x=>'<article class="hub3-row"><div><b>'+esc(x.title)+'</b><p>'+esc(x.description||"")+'</p><small>'+when(x.starts_at)+' '+(x.ends_at?"— "+when(x.ends_at):"")+'</small></div>'+status(x.event_type)+'</article>').join("")||'<p class="hub3-empty">No scheduled production events. The weekly rhythm above is your default workflow.</p>');
+ const from=new Date(Date.now()-14*86400000).toISOString();
+ const [saved,assignments,guests]=await Promise.all([
+  rows("tn_production_calendar",db.from("tn_production_calendar").select("id,title,description,event_type,starts_at,ends_at,all_day").gte("starts_at",from).order("starts_at").limit(100)),
+  rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,instructions,due_at,status,episode_id").not("due_at","is",null).gte("due_at",from).order("due_at").limit(100)),
+  isAdmin?rows("tn_production_guests",db.from("tn_production_guests").select("id,guest_name,topic,status,interview_at").not("interview_at","is",null).gte("interview_at",from).order("interview_at").limit(60)):Promise.resolve([])
+ ]);
+ const items=saved.map(x=>({id:"event-"+x.id,title:x.title,description:x.description,type:x.event_type,start:x.starts_at,end:x.ends_at,allDay:x.all_day,source:"Production event"}));
+ episodes.filter(x=>x.premiere_at&&new Date(x.premiere_at).getTime()>=Date.now()-14*86400000).forEach(x=>items.push({id:"episode-"+x.id,title:(x.episode_number?x.episode_number+" · ":"")+x.title,description:x.topic||"Episode premiere",type:"premiere",start:x.premiere_at,source:"Episode schedule"}));
+ assignments.filter(x=>!["complete","completed","cancelled"].includes(String(x.status||"").toLowerCase())).forEach(x=>{const ep=episodes.find(e=>e.id===x.episode_id);items.push({id:"assignment-"+x.id,title:x.title,description:x.instructions||"",type:"deadline",start:x.due_at,source:"Contributor deadline"+(ep?" · "+ep.episode_number+" "+ep.title:"")})});
+ guests.filter(x=>!["completed","cancelled","declined"].includes(String(x.status||"").toLowerCase())).forEach(x=>items.push({id:"guest-"+x.id,title:"Guest: "+x.guest_name,description:x.topic||"Guest interview",type:"guest",start:x.interview_at,source:"Guest booking"}));
+ calendarEvents=items.filter(x=>x.start).sort((a,b)=>new Date(a.start)-new Date(b.start));
+ renderCalendar();
 }
 async function loadResearch(){
  const list=await rows("tn_production_research",db.from("tn_production_research").select("id,title,category,summary,source_url,source_name,status,created_at,created_by").order("created_at",{ascending:false}).limit(60));
@@ -199,6 +222,10 @@ async function init(){
  profile=p;isAdmin=["producer","admin"].includes(p.role);
  const shell=$("#hub3Shell");shell?.classList.add("ready");
  document.querySelectorAll(".hub3-tab").forEach(b=>b.addEventListener("click",()=>tab(b.dataset.h3Tab)));
+ $("#h3CalendarRange")?.addEventListener("change",renderCalendar);
+ $("#h3CalendarType")?.addEventListener("change",renderCalendar);
+ $("#h3CalendarRefresh")?.addEventListener("click",()=>loadCalendar().catch(e=>{set("h3CalendarList",'<p class="hub3-empty">Calendar refresh failed: '+esc(e.message||"Please try again.")+'</p>')}));
+
  document.querySelectorAll("[data-h3-go]").forEach(b=>b.addEventListener("click",()=>{tab(b.dataset.h3Go);document.querySelector(".hub3-nav")?.scrollIntoView({behavior:"smooth",block:"start"})}));
  document.querySelectorAll("[data-h3-legacy]").forEach(b=>b.addEventListener("click",()=>{const target=document.getElementById(b.dataset.h3Legacy);if(!target)return;document.querySelectorAll(".ph-view").forEach(v=>v.classList.remove("active"));target.classList.add("active");document.querySelectorAll(".ph-tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===b.dataset.h3Legacy.replace("view-","")));target.scrollIntoView({behavior:"smooth",block:"start"})}));
  document.querySelectorAll(".hub3-form").forEach(f=>f.addEventListener("submit",e=>{e.preventDefault();submit(f)}));
