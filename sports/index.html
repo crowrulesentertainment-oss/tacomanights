@@ -114,7 +114,8 @@ function renderGames(week,db){
    btn.textContent="PICKS SAVED ✓";
   }catch(err){msg.textContent=err.message||"We couldn't save your picks. Please try again.";btn.disabled=false}
  });
- await renderSeasonBoard(week,db);\n await renderSportBoards(week,db);
+ await renderSeasonBoard(week,db);
+ await renderSportBoards(week,db);
 }
 async function renderSportBoards(week,db){
  const target=document.getElementById("weekly-boards");
@@ -145,7 +146,8 @@ async function renderBoard(week,db){
  if(error){showError("The leaderboard is temporarily unavailable.");return}
  const weekly=data?.length?'<div class="pe-table-wrap"><table class="pe-table"><thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead><tbody>'+data.map((e,i)=>'<tr><td class="pe-rank">#'+(i+1)+'</td><td>'+esc(e.display_name)+'</td><td>'+Number(e.points||0)+'</td></tr>').join("")+'</tbody></table></div>':'<div class="pe-empty">The weekly picks are locked. Scores will appear here when the results have been entered.</div>';
  content.innerHTML='<p class="pe-muted">Final or current standings for '+esc(week.title)+'.</p>'+weekly+'<div id="season-board"></div>';
- await renderSeasonBoard(week,db);\n await renderSportBoards(week,db);
+ await renderSeasonBoard(week,db);
+ await renderSportBoards(week,db);
 }
 async function init(){
  if(!host?.createClient||!config.supabaseUrl||!config.supabaseAnonKey){showError("The Pick'em board is not connected yet. Please check back soon.");status.textContent="OFFLINE";return}
@@ -166,7 +168,8 @@ async function init(){
   else{status.textContent=week.status==="completed"?"WEEK COMPLETE":"PICKS LOCKED";await renderBoard(week,db)}
  }catch(e){console.error("Pick'em load failed",e);status.textContent="BOARD UNAVAILABLE";showError("The weekly challenge could not load right now. Please refresh in a moment.")}
 }
-init();
+setTimeout(()=>{if(status.textContent==="CHECKING SLATE"){status.textContent="CONNECTION DELAY";showError("The Pick’em board is taking too long to respond. Refresh the page to try again.");}},12000);
+init().catch(err=>{console.error("Pick’em startup error",err);status.textContent="BOARD UNAVAILABLE";showError("The Pick’em board could not start. Please refresh the page.");});
 })();
 </script>
 </body></html>
