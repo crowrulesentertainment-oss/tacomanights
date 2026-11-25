@@ -478,3 +478,71 @@
 
 /* Production Hub 22.0 — team communications */
 .h3-comms{margin:0 0 18px;padding:18px;border:1px solid rgba(161,135,205,.3);border-radius:12px;background:linear-gradient(145deg,rgba(28,24,42,.98),rgba(10,13,22,.99))}.h3-comms-head{display:flex;justify-content:space-between;gap:14px}.h3-comms-head h3{font:700 19px Manrope;margin:5px 0}.h3-comms-head p{font-size:12px;color:#c0bdcf;max-width:720px}.h3-comms-chip{font-size:10px;letter-spacing:.13em;color:#d3c0f2;border:1px solid rgba(161,135,205,.45);border-radius:5px;padding:7px 9px;white-space:nowrap}.h3-comms-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}.h3-comms-summary>div{padding:11px;border:1px solid rgba(190,175,220,.16);border-radius:8px;background:rgba(255,255,255,.025)}.h3-comms-summary b{display:block;font:700 19px Manrope;color:#fff}.h3-comms-summary span{font-size:10px;color:#c0bdcf}.h3-comms-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);gap:14px}.h3-comms-sectionhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0}.h3-comms-sectionhead h4,.h3-comms-compose h4{font:700 14px Manrope;margin:0}.h3-comms-list{display:grid;gap:8px}.h3-comms-item,.h3-comms-deadline{padding:11px;border:1px solid rgba(190,175,220,.16);border-radius:8px;background:rgba(255,255,255,.025)}.h3-comms-item.unread{border-left:3px solid #bba0e8;background:rgba(161,135,205,.07)}.h3-comms-itemtop{display:flex;justify-content:space-between;gap:8px;color:#c9b7e8;font-size:9px;text-transform:uppercase;letter-spacing:.08em}.h3-comms-itemtop time{color:#9ca8b7;text-transform:none;letter-spacing:0}.h3-comms-item>b{display:block;color:#fff;font-size:12px;margin:7px 0}.h3-comms-item p{white-space:pre-wrap;font-size:11px;color:#c4c9d2;margin:0}.h3-comms-actions{display:flex;gap:12px;margin-top:9px}.h3-comms-actions a,.h3-comms-actions button{font-size:10px;color:#d3c0f2;background:none;border:0;padding:0;text-decoration:none;cursor:pointer}.h3-comms-deadline{display:flex;justify-content:space-between;align-items:center;gap:8px}.h3-comms-deadline b{font-size:11px}.h3-comms-deadline small{display:block;color:#9ca8b7;font-size:9px}.h3-comms-deadline>span{font-size:9px;color:#d7c18f;text-align:right}.h3-comms-deadline.late>span{color:#f08c78}.h3-comms-compose{padding:14px;border:1px solid rgba(190,175,220,.18);border-radius:9px;background:rgba(255,255,255,.025)}.h3-comms-compose form{display:grid;gap:10px;margin-top:12px}.h3-comms-compose label{display:grid;gap:5px;color:#c9c5d4;font-size:10px}.h3-comms-compose input,.h3-comms-compose select,.h3-comms-compose textarea{width:100%;min-width:0;background:#090e15;color:#fff;border:1px solid rgba(190,175,220,.24);border-radius:7px;padding:10px;font:inherit}.h3-comms-compose button{justify-self:start}@media(max-width:760px){.h3-comms-head{flex-direction:column}.h3-comms-layout{grid-template-columns:1fr}.h3-comms-summary{gap:6px}.h3-comms-summary>div{padding:8px}.h3-comms-deadline{align-items:flex-start;flex-direction:column}.h3-comms-deadline>span{text-align:left}}
+
+
+/* Production Hub 22.1 — Raven cinematic visual refresh */
+:root{
+ --raven-ink:#080810;--raven-panel:#11111d;--raven-panel2:#171626;
+ --raven-purple:#6f4aa8;--raven-violet:#a78ad5;--raven-gold:#c8a96b;
+ --raven-line:rgba(173,145,218,.22);--raven-muted:#b7b0c5;
+}
+body{background:radial-gradient(ellipse at 76% 3%,rgba(91,57,143,.22),transparent 34%),linear-gradient(180deg,#090811 0%,#0b0b13 45%,#080810 100%)!important}
+.ph-hero{
+ min-height:510px!important;
+ background:
+  linear-gradient(90deg,rgba(7,7,14,.97) 0%,rgba(10,8,20,.78) 48%,rgba(10,8,20,.22) 100%),
+  linear-gradient(0deg,#090811 0%,transparent 60%),
+  url('https://commons.wikimedia.org/wiki/Special:FilePath/Tacoma%20downtown%20at%20night.jpg') center 48%/cover!important;
+ border-bottom:1px solid rgba(167,138,213,.2);
+}
+.ph-hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 80% 35%,rgba(118,76,177,.22),transparent 42%);mix-blend-mode:screen}
+.ph-hero .ph-wrap{position:relative;z-index:1}
+.ph-hero h1{max-width:850px;text-shadow:0 8px 36px rgba(0,0,0,.65)}
+.ph-hero h1 span{color:#b99adf!important}
+.ph-hero .eyebrow,.eyebrow{color:#c6a8ec}
+.ph-btn.primary{background:linear-gradient(135deg,#7953b2,#50327e)!important;border-color:#8c6bc0!important;box-shadow:0 8px 24px rgba(83,52,130,.22)}
+.ph-btn{border-color:rgba(177,151,218,.28)!important;background:#171522!important}
+.ph-card,.hub3-card{background:linear-gradient(145deg,rgba(25,22,38,.98),rgba(13,13,23,.98))!important;border-color:var(--raven-line)!important;box-shadow:0 14px 38px rgba(0,0,0,.22)}
+.hub3-shell{border-top-color:var(--raven-line)!important}
+.hub3-heading{align-items:center!important;padding:18px 20px;border:1px solid var(--raven-line);border-radius:16px;background:linear-gradient(110deg,rgba(39,29,57,.9),rgba(13,13,23,.94))}
+.hub3-heading h2{color:#f5f0ff!important}
+.hub3-heading p{color:#c3bbd2!important}
+.hub3-kicker{color:#c5a7eb!important}
+.hub3-live{border-color:rgba(200,169,107,.35)!important;color:#e0c58f!important;background:rgba(200,169,107,.08)!important}
+.hub3-nav{
+ position:relative!important;top:auto!important;z-index:1!important;
+ display:grid!important;grid-template-columns:repeat(auto-fit,minmax(145px,1fr))!important;
+ gap:8px!important;padding:12px!important;margin:16px 0 22px!important;
+ background:rgba(14,12,23,.96)!important;border:1px solid var(--raven-line)!important;
+ border-radius:14px!important;backdrop-filter:none!important;
+}
+.hub3-tab{
+ min-width:0!important;white-space:normal!important;text-align:left!important;
+ min-height:43px;padding:11px 13px!important;border-radius:9px!important;
+ border:1px solid rgba(173,145,218,.16)!important;
+ background:linear-gradient(145deg,#1b1828,#11111b)!important;
+ color:#d6cfe2!important;font-size:11px!important;line-height:1.3!important;
+ transition:background .15s ease,border-color .15s ease!important;
+}
+.hub3-tab:hover{border-color:rgba(183,153,226,.55)!important;background:#262037!important}
+.hub3-tab.active{background:linear-gradient(135deg,#7550a9,#4a326e)!important;border-color:#a78ad5!important;color:#fff!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 5px 16px rgba(0,0,0,.2)}
+.hub3-view{animation:none!important}
+.hub3-card{padding:22px!important;border-radius:14px!important}
+.hub3-card h3{color:#f5f0ff!important}
+.hub3-card>p,.hub3-card p{color:#bdb6ca}
+.hub3-stat,.hub3-item,.hub3-list>*,.h3-comms-item,.h3-comms-deadline{
+ border-color:rgba(173,145,218,.18)!important;background:rgba(255,255,255,.035)!important
+}
+.hub3-stat b{color:#f4edff!important}
+.hub3-stat span{color:#bcb2ce!important}
+.hub3-tab:focus-visible,.ph-btn:focus-visible{outline:2px solid #c5a7eb!important;outline-offset:3px}
+#workspace{scroll-margin-top:18px}
+@media(max-width:760px){
+ .ph-hero{min-height:430px!important;padding:84px 0 48px!important;background-position:center,center,58% center!important}
+ .hub3-heading{align-items:flex-start!important;flex-direction:column!important;padding:16px!important}
+ .hub3-nav{grid-template-columns:repeat(2,minmax(0,1fr))!important;padding:9px!important;gap:7px!important}
+ .hub3-tab{font-size:10px!important;padding:10px!important;min-height:44px!important}
+ .hub3-card{padding:16px!important}
+}
+@media(max-width:390px){.hub3-nav{grid-template-columns:1fr!important}}
+@media(prefers-reduced-motion:reduce){.hub3-tab,.ph-btn{transition:none!important}}
