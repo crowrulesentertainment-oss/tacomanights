@@ -13,6 +13,8 @@ const SPORTS: SportConfig[] = [
  {key:"football",host:"https://v3.football.api-sports.io",path:"fixtures",sport:"soccer",label:"Soccer"}
 ];
 const SOCCER_LEAGUES=new Set(["2","39","61","78","135","140","253"]);
+const ALLOWED_HOCKEY_LEAGUES=new Set(["NHL"]);
+const ALLOWED_BASEBALL_LEAGUES=new Set(["MLB"]);
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{"content-type":"application/json","cache-control":"no-store"}});
 const calendarDate=(d:Date)=>{const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);const get=(k:string)=>p.find(x=>x.type===k)?.value||"00";return get("year")+"-"+get("month")+"-"+get("day");};
 const datePlus=(date:string,days:number)=>{const d=new Date(date+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);};
@@ -30,7 +32,7 @@ const allowTie=(sport:string)=>sport==="soccer"||sport==="nfl";
 function normalizeRow(row:any,cfg:SportConfig){
  const fixture=obj(row.fixture),game=obj(row.game),teams=obj(row.teams),league=obj(row.league),home=obj(teams.home),away=obj(teams.away);
  const rawId=first(fixture.id,game.id,row.id,row.game_id);
- const dateRaw=first(fixture.date,game.date?.date,game.date,row.date,row.datetime,row.start_time);
+ const dateRaw=first(fixture.date,game.date?.start,game.date?.date,game.date,row.date,row.datetime,row.start_time);
  const starts=dateRaw?new Date(String(dateRaw)):null;
  const homeName=str(first(home.name,row.home?.name,row.home_team,row.homeTeam,row.home));
  const awayName=str(first(away.name,row.away?.name,row.away_team,row.awayTeam,row.away));
@@ -46,6 +48,8 @@ function normalizeRow(row:any,cfg:SportConfig){
   else if(/\bnfl\b/.test(lower))sport="nfl";
   else return null;
  }
+ if(cfg.key==="hockey"&&!ALLOWED_HOCKEY_LEAGUES.has(leagueName))return null;
+ if(cfg.key==="baseball"&&!ALLOWED_BASEBALL_LEAGUES.has(leagueName))return null;
  let result="pending";
  if(isVoidStatus(state))result="void";
  else if(isFinalStatus(state)&&homeScore!==null&&awayScore!==null)result=homeScore>awayScore?"home":awayScore>homeScore?"away":"tie";
@@ -152,7 +156,7 @@ Deno.serve(async(req:Request)=>{
     const midnight=pacificMidnight(today).toISOString(),tomorrow=pacificMidnight(datePlus(today,1)).toISOString();
     const {count:activeCount}=await db.from("tn_pickem_provider_events").select("id",{count:"exact",head:true}).eq("provider","apisports").eq("provider_sport",cfg.key).gte("starts_at",midnight).lt("starts_at",tomorrow).eq("result","pending");
     if((activeCount||0)>0){const raw=await fetchToday(cfg,now);requests++;received+=raw.length;const rows=raw.map((r:any)=>normalizeRow(r,cfg)).filter(Boolean);upserted+=await upsertRows(rows);await setState(cfg.key,{last_live_sync_at:now.toISOString(),last_status:"live_ok",last_error:null});}
-   }catch(sportError){const message=sportError instanceof Error?sportError.message:"Provider sport sync failed";sportErrors.push({sport:cfg.key,message});await setState(cfg.key,{last_status:"error",last_error:message}).catch(()=>{});}
+   }catch(sportError){const message=sportError instanceof Error?sportError.message:"Provider sport sync failed";const planLimited=/free plans do not have access to this season/i.test(message);sportErrors.push({sport:cfg.key,message,planLimited});await setState(cfg.key,{last_status:planLimited?"plan_limited":"error",last_schedule_sync_at:planLimited?now.toISOString():null,last_error:message}).catch(()=>{});}
   }
   slate=await publishSlate(now);scored=await refreshWeekResults();
   const runStatus=sportErrors.length?"partial":"success";
