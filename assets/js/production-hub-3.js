@@ -102,7 +102,7 @@ async function loadActivity(){
   set("h3ActivityFeed",list.map(x=>'<article class="hub3-activity"><div class="hub3-activity-top"><b>'+esc(members.find(m=>m.id===x.actor_id)?.display_name||"Production team")+'</b><time>'+when(x.created_at)+'</time></div><p>'+esc(x.action.replaceAll("_"," "))+(x.detail?' · '+esc(x.detail):"")+'</p></article>').join("")||'<p class="hub3-empty">No production activity has been recorded yet.</p>');
 }
 async function logActivity(action,detail){
-  try{const {error}=await db.from("tn_production_activity").insert({actor_id:user.id,action,detail:detail||null});if(error)console.warn("Production activity log",error.message)}catch(error){console.warn("Production activity log",error)}
+  try{const {error}=await db.from("tn_production_activity").insert({actor_id:user.id,action,detail:detail||null});if(error){console.warn("Production activity log",error.message);return}if(isAdmin)await loadActivity()}catch(error){console.warn("Production activity log",error)}
 }
 async function loadRecognition(){
  const list=await rows("tn_production_recognition",db.from("tn_production_recognition").select("id,recipient_name,award_name,reason,awarded_at").order("awarded_at",{ascending:false}).limit(60));
