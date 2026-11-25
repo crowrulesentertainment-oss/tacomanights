@@ -15,12 +15,12 @@ async function approximateLocation(){try{const controller=new AbortController(),
 if(locate)locate.addEventListener("click",()=>{if(!navigator.geolocation){weatherNote.textContent="This browser does not support location services.";return;}locate.disabled=true;locate.textContent="Finding location…";navigator.geolocation.getCurrentPosition(async p=>{await getWeather(p.coords.latitude,p.coords.longitude,"Your current location");locate.disabled=false;locate.textContent="Refresh my weather";},()=>{locate.disabled=false;locate.textContent="Try my location again";weatherNote.textContent="Location permission was not granted. Showing approximate area weather where available.";approximateLocation();},{enableHighAccuracy:false,timeout:10000,maximumAge:900000});});
 approximateLocation();
 let db=null;
-let liveSession=null;
+let liveSession=null,visitorId=null;
 async function updateLiveVisitors(){
  if(!db||!liveSession)return;
  const liveCount=$("#tn-live-visitor-count"),liveNote=$("#tn-live-visitor-note");
  try{
-  const {data,error}=await db.rpc("tn_homepage_live_visitors",{p_session_id:liveSession,p_visitor_id:visitor});
+  const {data,error}=await db.rpc("tn_homepage_live_visitors",{p_session_id:liveSession,p_visitor_id:visitorId});
   if(error)throw error;
   if(liveCount)liveCount.textContent=Number(data||0).toLocaleString();
   if(liveNote)liveNote.textContent="On the homepage right now · refreshes every 20 seconds";
@@ -33,12 +33,12 @@ async function updateLiveVisitors(){
 async function views(){
  if(!cfg.supabaseUrl||!cfg.supabaseAnonKey||!window.supabase){count.textContent="—";countNote.textContent="View counter is not configured.";return;}
  try{
-  let visitor=localStorage.getItem("tn-production-visitor-v1");
-  if(!visitor){visitor=crypto.randomUUID();localStorage.setItem("tn-production-visitor-v1",visitor);}
+  visitorId=localStorage.getItem("tn-production-visitor-v1");
+  if(!visitorId){visitorId=crypto.randomUUID();localStorage.setItem("tn-production-visitor-v1",visitorId);}
   liveSession=sessionStorage.getItem("tn-home-live-session");
   if(!liveSession){liveSession=crypto.randomUUID();sessionStorage.setItem("tn-home-live-session",liveSession);}
   db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
-  const {error}=await db.from("tn_homepage_views").insert({visitor_id:visitor,page_path:"/tacomanights/index.html"});
+  const {error}=await db.from("tn_homepage_views").insert({visitor_id:visitorId,page_path:"/tacomanights/index.html"});
   if(error&&error.code!=="23505")throw error;
   const result=await db.from("tn_homepage_views").select("id",{count:"exact",head:true});
   if(result.error)throw result.error;
