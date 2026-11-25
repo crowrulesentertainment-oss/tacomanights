@@ -101,6 +101,9 @@ button:focus-visible,a:focus-visible{outline:2px solid #e36b77;outline-offset:3p
 #hub3-episode-studio textarea{min-height:340px;line-height:1.65;resize:vertical}
 #hub3-episode-studio .h3-release-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
 @media(max-width:600px){#hub3-episode-studio .h3-release-fields{grid-template-columns:1fr}#hub3-episode-studio .h3-release-fields .wide{grid-column:1}#hub3-episode-studio textarea{min-height:260px}}
+
+/* Production Hub 22.3 — local clock, weather and privacy-conscious visit analytics */
+.h3-site-pulse{margin:0 0 20px;display:grid;gap:12px}.h3-pulse-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.h3-pulse-card,.h3-pulse-records{min-width:0;padding:17px;border:1px solid rgba(173,145,218,.22);border-radius:12px;background:linear-gradient(145deg,rgba(29,24,43,.96),rgba(13,13,23,.98))}.h3-pulse-label{display:block;color:#c5a7eb;font-size:9px;font-weight:800;letter-spacing:.14em}.h3-pulse-card strong{display:block;margin:9px 0 4px;color:#fff;font:800 clamp(22px,3vw,32px) Manrope;letter-spacing:-.045em}.h3-pulse-card small,.h3-pulse-records p,.h3-pulse-records>small{color:#b7b0c5;font-size:11px;line-height:1.5}.h3-pulse-refresh{margin-top:9px;border:1px solid rgba(173,145,218,.3);border-radius:6px;padding:7px 10px;background:#201a2e;color:#e8ddf7;font-size:10px;font-weight:700;cursor:pointer}.h3-pulse-records-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}.h3-pulse-records h4{font:700 17px Manrope;margin:5px 0}.h3-pulse-records p{margin:4px 0 10px;max-width:760px}.h3-pulse-table-wrap{overflow-x:auto}.h3-pulse-table{width:100%;border-collapse:collapse;font-size:11px}.h3-pulse-table th,.h3-pulse-table td{padding:10px 9px;text-align:left;border-bottom:1px solid rgba(173,145,218,.13);white-space:nowrap}.h3-pulse-table th{color:#d5c3ed;font-size:9px;text-transform:uppercase;letter-spacing:.08em}.h3-pulse-table td{color:#d3cedd}.h3-pulse-records>small{display:block;margin-top:10px}@media(max-width:850px){.h3-pulse-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.h3-pulse-grid{grid-template-columns:1fr 1fr;gap:8px}.h3-pulse-card,.h3-pulse-records{padding:12px}.h3-pulse-card strong{font-size:22px}.h3-pulse-records-head{flex-direction:column}.h3-pulse-refresh{margin-top:0}.h3-pulse-table{min-width:520px}}
 </style>
 </head>
 <body data-root="../">
@@ -140,7 +143,14 @@ button:focus-visible,a:focus-visible{outline:2px solid #e36b77;outline-offset:3p
 </section>
  <section class="hub3-view active" id="hub3-command">
  <div class="hub3-card wide" style="margin:0 0 18px"><span class="hub3-kicker">UNIFIED PRODUCTION WORKSPACE</span><h3>Episode overview & team operations</h3><p>Episodes, assignments, segment uploads, ideas, updates, team chat and media downloads are now grouped together at the top of your command center.</p></div>
- <div class="ph-grid">
+ 
+<section class="h3-site-pulse" aria-label="Tacoma local time, weather and production site traffic"><div class="h3-pulse-grid">
+<article class="h3-pulse-card"><span class="h3-pulse-label">TACOMA LOCAL TIME</span><strong id="h3TacomaTime">--:--</strong><small id="h3TacomaDate">Loading Pacific time…</small></article>
+<article class="h3-pulse-card"><span class="h3-pulse-label">TACOMA WEATHER</span><strong id="h3TacomaWeather">Loading…</strong><small id="h3TacomaWeatherDetail">Current conditions · Tacoma, WA</small><button type="button" class="h3-pulse-refresh" id="h3WeatherRefresh">Refresh weather</button></article>
+<article class="h3-pulse-card h3-pulse-traffic admin-only hidden"><span class="h3-pulse-label">PRODUCTION PAGE VIEWS</span><strong id="h3ProductionViews">—</strong><small>All-time recorded visits</small></article>
+<article class="h3-pulse-card h3-pulse-traffic admin-only hidden"><span class="h3-pulse-label">VISITS TODAY</span><strong id="h3ProductionToday">—</strong><small id="h3ProductionWeek">Last 7 days: —</small></article></div>
+<article class="h3-pulse-records admin-only hidden" id="h3VisitRecordsCard"><div class="h3-pulse-records-head"><div><span class="h3-pulse-label">SITE TRAFFIC AUDIT</span><h4>Recent visit records</h4><p>Daily unique visits to the Production Hub. Visitor IDs are random pseudonymous IDs; no IP addresses or full referrer URLs are stored.</p></div><button type="button" class="h3-pulse-refresh" id="h3TrafficRefresh">Refresh records</button></div><div class="h3-pulse-table-wrap"><table class="h3-pulse-table"><thead><tr><th>Visit time</th><th>Page</th><th>Device</th><th>Referrer domain</th></tr></thead><tbody id="h3VisitRecords"><tr><td colspan="4">Loading visit records…</td></tr></tbody></table></div><small id="h3ProductionUnique">Unique visitors · last 30 days: —</small></article></section>
+<div class="ph-grid">
 <div class="ph-card span-3"><div class="ph-small">SIGNED-IN TEAM MEMBER</div><div class="stat" style="font-size:20px" id="memberName">Team member</div><span class="pill" id="memberRole">Contributor</span><div style="margin-top:12px"><button class="ph-btn" id="signOut">Sign out</button></div></div>
 <div class="ph-card span-3"><div class="ph-small">OPEN EPISODES</div><div class="stat" id="statEpisodes">—</div><div class="ph-small">Planning and in production</div></div>
 <div class="ph-card span-3"><div class="ph-small">PENDING ASSIGNMENTS</div><div class="stat" id="statAssignments">—</div><div class="ph-small">Work still in progress</div></div>
@@ -391,5 +401,5 @@ init().catch(e=>fail('Production database setup required',e));
 })();
 </script>
 <link rel="stylesheet" href="../assets/css/production-hub-3.css?v=22.2.2-unified-dashboard">
-<script defer src="../assets/js/production-hub-3.js?v=22.2.2-unified-dashboard"></script>
+<script defer src="../assets/js/production-hub-3.js?v=22.3.0-site-pulse"></script>
 </body></html>
