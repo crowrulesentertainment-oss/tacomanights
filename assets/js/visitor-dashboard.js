@@ -43,7 +43,7 @@ async function views(){
   const result=await db.from("tn_homepage_views").select("id",{count:"exact",head:true});
   if(result.error)throw result.error;
   count.textContent=Number(result.count||0).toLocaleString();
-  countNote.textContent="Recorded visits · one count per browser session each day";
+  countNote.textContent="Recorded visits · one count per browser each day";
   await updateLiveVisitors();
   setInterval(()=>{if(!document.hidden)updateLiveVisitors();},20000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)updateLiveVisitors();});
  }catch(e){
