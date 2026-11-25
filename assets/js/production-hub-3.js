@@ -51,9 +51,28 @@ async function loadCommand(){
  set("h3NeedsAttention",attention.join("")||'<p class="hub3-empty">No submissions are awaiting review and no assignments are overdue.</p>');
 }
 async function loadContributor(){
- const [assignments,uploads]=await Promise.all([rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,instructions,status,due_at,tn_production_episodes(episode_number,title)").eq("assignee_id",user.id).order("due_at")),rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,producer_note,created_at").eq("uploader_id",user.id).order("created_at",{ascending:false}).limit(12))]);
- set("h3MyAssignments",assignments.map(a=>'<article class="hub3-row"><div><b>'+esc(a.title)+'</b><p>'+esc(a.tn_production_episodes?.episode_number||"Episode")+" · "+esc(a.tn_production_episodes?.title||"")+'</p><p>'+esc(a.instructions||"No additional instructions.")+'</p><small>Due '+when(a.due_at)+'</small></div>'+status(a.status)+'</article>').join("")||'<p class="hub3-empty">You do not have any assignments yet.</p>');
- set("h3MyUploads",uploads.map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b>'+status(a.status)+(a.producer_note?'<small>'+esc(a.producer_note)+'</small>':"")+'</div>').join("")||'<p class="hub3-empty">Your uploaded segments will appear here.</p>');
+ const [assignments,uploads,notifications]=await Promise.all([
+  rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,instructions,status,due_at,tn_production_episodes(episode_number,title)").eq("assignee_id",user.id).order("due_at").limit(100)),
+  rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,producer_note,created_at").eq("uploader_id",user.id).order("created_at",{ascending:false}).limit(12)),
+  rows("tn_notifications",db.from("tn_notifications").select("id,title,message,created_at,read_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(8))
+ ]);
+ const now=Date.now(), day=86400000;
+ const open=assignments.filter(a=>!["complete","completed","approved","cancelled"].includes(String(a.status||"").toLowerCase()));
+ const overdue=open.filter(a=>a.due_at&&new Date(a.due_at).getTime()<now);
+ const dueSoon=open.filter(a=>a.due_at&&new Date(a.due_at).getTime()>=now&&new Date(a.due_at).getTime()<=now+7*day);
+ const unread=notifications.filter(n=>!n.read_at).length;
+ const review=uploads.filter(x=>["submitted","revision","revision_requested","pending_review"].includes(String(x.status||"").toLowerCase())).length;
+ set("h3ContributorStats",[
+  ["Open assignments",open.length],["Due in 7 days",dueSoon.length],["Overdue",overdue.length],["Unread updates",unread],["Uploads awaiting review",review]
+ ].map(([label,n])=>'<div class="hub3-stat"><b>'+n+'</b><span>'+label+'</span></div>').join(""));
+ const next=open.filter(a=>a.due_at).sort((a,b)=>new Date(a.due_at)-new Date(b.due_at))[0];
+ set("h3ContributorNext",next?'<div class="hub3-next-deadline"><span class="hub3-kicker">NEXT DEADLINE</span><b>'+esc(next.title)+'</b><p>'+esc(next.tn_production_episodes?.episode_number||"Episode")+' · '+esc(next.tn_production_episodes?.title||"")+'</p><small>'+when(next.due_at)+'</small></div>':'<p class="hub3-empty">No upcoming assignment deadlines. Check back when a producer assigns your next segment.</p>');
+ set("h3MyAssignments",assignments.map(a=>{
+  const late=a.due_at&&new Date(a.due_at).getTime()<now&&!["complete","completed","approved","cancelled"].includes(String(a.status||"").toLowerCase());
+  return '<article class="hub3-row"><div><b>'+esc(a.title)+'</b><p>'+esc(a.tn_production_episodes?.episode_number||"Episode")+" · "+esc(a.tn_production_episodes?.title||"")+'</p><p>'+esc(a.instructions||"No additional instructions.")+'</p><small class="'+(late?"hub3-overdue":"")+'">Due '+when(a.due_at)+(late?" · OVERDUE":"")+'</small></div>'+status(a.status)+'</article>';
+ }).join("")||'<p class="hub3-empty">You do not have any assignments yet. Your producer will post your segment and deadline here.</p>');
+ set("h3MyUploads",uploads.map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b>'+status(a.status)+(a.producer_note?'<small class="hub3-producer-note">Producer feedback: '+esc(a.producer_note)+'</small>':"")+'<small>Submitted '+when(a.created_at)+'</small></div>').join("")||'<p class="hub3-empty">Your uploaded segments and producer feedback will appear here.</p>');
+ set("h3ContributorUpdates",notifications.slice(0,5).map(n=>'<div class="hub3-mini '+(n.read_at?"":"unread")+'"><b>'+esc(n.title)+'</b><p>'+esc(n.message)+'</p><small>'+when(n.created_at)+(n.read_at?"":" · NEW")+'</small></div>').join("")||'<p class="hub3-empty">No new team updates yet.</p>');
 }
 async function loadEditing(){
  const list=await rows("tn_production_editing",db.from("tn_production_editing").select("*,tn_production_episodes(episode_number,title,premiere_at)").order("updated_at",{ascending:false}));
