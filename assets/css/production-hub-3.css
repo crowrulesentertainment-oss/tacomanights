@@ -288,3 +288,14 @@
 .hub3-notification-toolbar .ph-btn:disabled{opacity:.45;cursor:not-allowed}
 .hub3-row.unread{border-left:3px solid #d9b77d;background:rgba(217,183,125,.055)}
 @media(max-width:620px){.hub3-notification-actions{margin-left:0;width:100%}.hub3-notification-actions .ph-btn{flex:1}.hub3-notification-filters .ph-btn{padding:8px 10px;font-size:11px}}
+
+/* Guest Booking 4.0 */
+.hub3-guest-stats{margin:16px 0}.hub3-guest-toolbar{display:grid;grid-template-columns:minmax(0,2fr) minmax(170px,1fr);gap:12px;margin:16px 0;align-items:end}
+.hub3-guest-toolbar label,.hub3-guest-status{display:grid;gap:6px;color:#bfc9d6;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.hub3-guest-toolbar input,.hub3-guest-toolbar select,.hub3-guest-status select,.hub3-guest-edit-grid input,.hub3-guest-edit-grid textarea{box-sizing:border-box;width:100%;min-width:0;padding:10px 11px;border:1px solid rgba(180,194,211,.2);border-radius:7px;background:#080d14;color:#f4f6f8;font:inherit;letter-spacing:normal;text-transform:none}
+.hub3-guest-card{min-width:0;margin:12px 0;padding:16px;border:1px solid rgba(180,194,211,.15);border-radius:11px;background:rgba(5,10,16,.48)}
+.hub3-guest-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}.hub3-guest-head h4{margin:6px 0;font:800 17px Manrope,sans-serif;color:#f4f6f8;overflow-wrap:anywhere}.hub3-guest-head p{margin:0;color:#aeb8c6;font-size:11px;overflow-wrap:anywhere}.hub3-guest-status{min-width:145px}
+.hub3-guest-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0;padding:12px 0;border-top:1px solid rgba(180,194,211,.12);border-bottom:1px solid rgba(180,194,211,.12)}
+.hub3-guest-meta span{min-width:0;color:#cbd4df;font-size:11px;overflow-wrap:anywhere}.hub3-guest-meta b{display:block;margin-bottom:4px;color:#d9bd8b;font-size:9px;text-transform:uppercase;letter-spacing:.08em}
+.hub3-guest-edit{margin-top:12px;color:#e4c58e;font-size:11px}.hub3-guest-edit summary{cursor:pointer;font-weight:800}.hub3-guest-edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.hub3-guest-edit-grid label{display:grid;gap:5px;color:#aeb8c6;font-size:10px}.hub3-guest-edit-grid .wide{grid-column:1/-1}.hub3-guest-edit-grid button{justify-self:start}
+@media(max-width:680px){.hub3-guest-toolbar{grid-template-columns:1fr}.hub3-guest-head{display:grid}.hub3-guest-status{width:100%}.hub3-guest-meta{grid-template-columns:1fr 1fr}.hub3-guest-edit-grid{grid-template-columns:1fr}.hub3-guest-edit-grid .wide{grid-column:auto}}
