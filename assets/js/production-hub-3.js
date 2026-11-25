@@ -128,7 +128,7 @@ function renderNotifications(){
 }
 async function loadNotifications(){
  notificationRows=await rows("tn_notifications",db.from("tn_notifications").select("id,title,message,href,read_at,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(100));
- renderNotifications();
+ renderNotifications();if(typeof renderCommunication==="function")renderCommunication();
 }
 async function syncAssignmentReminders(assignments){
  const now=Date.now(),soon=now+48*60*60*1000,base="https://crowrulesentertainment-oss.github.io/tacomanights/production/";
