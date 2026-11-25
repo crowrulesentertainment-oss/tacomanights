@@ -100,7 +100,7 @@ async function loadEpisodes(item,append=false){
  try{
   const config=window.TACOMA_NIGHTS_CONFIG||{};
   if(!config.supabaseUrl||!config.supabaseAnonKey)throw new Error("The archive service configuration is missing.");
-  const endpoint=new URL(config.supabaseUrl.replace(/\\/$/,"")+"/functions/v1/tacoma-nights-archive");
+  const endpoint=new URL(config.supabaseUrl.replace(/\/$/,"")+"/functions/v1/tacoma-nights-archive");
   endpoint.searchParams.set("playlistId",item.playlist);
   if(pageToken)endpoint.searchParams.set("pageToken",pageToken);
   const response=await fetch(endpoint.toString(),{headers:{apikey:config.supabaseAnonKey,Accept:"application/json"},cache:"no-store"});
