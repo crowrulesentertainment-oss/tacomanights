@@ -72,3 +72,39 @@ body{background:var(--tn2-ink);color:var(--tn2-text)}
 @media(max-width:980px){.tn2-grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}.tn2-live-layout{grid-template-columns:1fr}.tn2-raven-mark{right:2%;opacity:.3}}
 @media(max-width:700px){.tn2-wrap{width:calc(100% - 32px)}.tn2-section{padding:60px 0}.tn2-heading{align-items:flex-start;flex-direction:column}.tn2-feature{grid-template-columns:1fr;padding:25px;gap:25px}.tn2-grid-3{grid-template-columns:1fr}.tn2-form-grid{grid-template-columns:1fr}.tn2-field.full{grid-column:auto}.tn2-hero{min-height:670px}.tn2-hero-content{padding:80px 0}.tn2-raven-mark{width:220px;top:8%;right:-5%;opacity:.28}.tn2-meta{margin-top:45px;flex-direction:column;gap:8px}.tn2-photo{min-height:250px}}
 @media(prefers-reduced-motion:reduce){.tn2-hero:before{animation:none}.tn2-btn,.tn2-card{transition:none}}
+
+/* Home hero carousel + subscriber milestone slide */
+.tn2-hero-carousel{min-height:min(850px,calc(100vh - 78px));}
+.tn2-hero-carousel:before{transition:opacity .8s ease,filter .8s ease;}
+.tn2-hero-carousel:has(.tn2-hero-slide.is-active):before{opacity:0;}
+.tn2-hero-content{transition:opacity .55s ease,transform .55s ease;}
+.tn2-hero-content.is-hidden{opacity:0;transform:translateY(18px);pointer-events:none;visibility:hidden;}
+.tn2-hero-slide{position:absolute;inset:0;z-index:0;display:flex;align-items:center;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .7s ease,visibility .7s ease;background:#090d14;}
+.tn2-hero-slide:before{content:"";position:absolute;inset:0;z-index:-2;background:url("https://commons.wikimedia.org/wiki/Special:FilePath/Tacoma%20skyline%20from%20Thea%20Foss%20Waterway.jpg") center 48%/cover no-repeat;transform:scale(1.025);animation:tn2-drift 24s ease-in-out infinite alternate;}
+.tn2-hero-slide:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#05080ef5 0%,#070a10e8 48%,#070a1088 100%),linear-gradient(0deg,#070a10 0%,transparent 38%);}
+.tn2-hero-slide.is-active{opacity:1;visibility:visible;pointer-events:auto;}
+.tn2-hero-slide-content{position:relative;padding:88px 0 115px;max-width:1050px;}
+.tn2-hero-slide h2{font:800 clamp(48px,8vw,94px)/.92 Manrope,sans-serif;letter-spacing:-.07em;margin:0;}
+.tn2-hero-slide h2 span{color:#e45a66;}
+.tn2-subscriber-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:24px;max-width:920px;}
+.tn2-subscriber-card{padding:18px 20px;background:#0b111bdc;border:1px solid #ffffff38;backdrop-filter:blur(12px);box-shadow:0 16px 50px #0006;}
+.tn2-subscriber-top{display:flex;justify-content:space-between;gap:10px;align-items:center;}
+.tn2-subscriber-label,.tn2-subscriber-goal{font:800 9px Manrope,sans-serif;letter-spacing:.13em;color:#e7b9bc;}
+.tn2-subscriber-goal{color:#d5c29f;white-space:nowrap;}
+.tn2-subscriber-count{display:block;font:800 clamp(30px,4vw,42px)/1 Manrope,sans-serif;margin:12px 0 4px;font-variant-numeric:tabular-nums;}
+.tn2-subscriber-caption{display:block;color:#aeb8c4;font-size:10px;min-height:17px;}
+.tn2-progress{height:7px;background:#ffffff20;border-radius:20px;overflow:hidden;margin:13px 0 14px;}
+.tn2-progress span{display:block;height:100%;background:linear-gradient(90deg,#b92f3d,#e7a1a6);border-radius:20px;transition:width .6s ease;}
+.tn2-progress-empty span{background:#7d8795;}
+.tn2-subscriber-link{font-size:9px;font-weight:800;letter-spacing:.08em;color:#f2c2c6;}
+.tn2-subscriber-link:hover{color:white;text-decoration:underline;text-underline-offset:4px;}
+.tn2-hero-controls{position:absolute;z-index:5;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;padding:7px 10px;background:#05080e99;border:1px solid #ffffff22;backdrop-filter:blur(8px);}
+.tn2-hero-arrow,.tn2-hero-pause,.tn2-hero-dots button{border:0;color:#fff;background:transparent;cursor:pointer;}
+.tn2-hero-arrow{font-size:25px;line-height:1;padding:0 5px;}
+.tn2-hero-pause{font-size:9px;font-weight:800;letter-spacing:.12em;padding:7px 9px;border-left:1px solid #ffffff30;}
+.tn2-hero-dots{display:flex;gap:8px;align-items:center;}
+.tn2-hero-dots button{width:8px;height:8px;padding:0;border-radius:50%;background:#ffffff65;}
+.tn2-hero-dots button[aria-current="true"]{width:22px;border-radius:8px;background:#e45a66;}
+.tn2-hero-carousel button:focus-visible,.tn2-hero-carousel a:focus-visible{outline:2px solid #f0c477;outline-offset:4px;}
+@media(max-width:700px){.tn2-hero-slide-content{padding:75px 0 115px}.tn2-subscriber-grid{grid-template-columns:1fr;gap:9px;margin-top:16px}.tn2-subscriber-card{padding:13px 15px}.tn2-subscriber-count{font-size:30px}.tn2-hero-slide h2{font-size:clamp(43px,12vw,68px)}.tn2-hero-controls{bottom:12px}.tn2-hero-carousel{min-height:820px}.tn2-hero-slide:before{background-position:58% center;}}
+@media(prefers-reduced-motion:reduce){.tn2-hero-slide,.tn2-hero-content,.tn2-progress span{transition:none!important}.tn2-hero-slide:before{animation:none!important}.tn2-hero-carousel:before{animation:none!important;}}
