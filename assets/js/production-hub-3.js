@@ -17,7 +17,7 @@ function options(list,empty=""){return (empty?'<option value="">'+esc(empty)+'</
 async function refresh(){
  const baseTargets=["h3EditingEpisode","h3ResearchEpisode","h3GuestEpisode","h3RecognitionEpisode","h3RecognitionMember"];
  try{await loadBase()}catch(error){console.error("Production Hub base data",error);baseTargets.forEach(id=>{const el=$("#"+id);if(el)el.innerHTML='<option value="">Could not load options — use Refresh to retry</option>'})}
- const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"],loadCommand],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList"],loadEditing],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk],["Contributor requests",["h3MyRequests","h3RequestReviewQueue"],loadRequests],["Collaboration center",["h3CollabGroups"],loadCollaboration]];
+ const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"],loadCommand],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList","h3QcDashboard"],async()=>{await loadEditing();await loadEpisodeQC()}],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk],["Contributor requests",["h3MyRequests","h3RequestReviewQueue"],loadRequests],["Collaboration center",["h3CollabGroups"],loadCollaboration]];
  await Promise.all(tasks.map(async([label,targets,fn])=>{try{await fn()}catch(error){console.error(label,error);const html='<p class="hub3-empty">Could not load '+label.toLowerCase()+': '+esc(error?.message||"Please try again.")+'</p>';targets.forEach(id=>set(id,html))}}));
  try{await loadGrowthCenter()}catch(error){console.error("Contributor Growth Center",error);set("h3GrowthGoals",'<p class="hub3-empty">Growth goals could not load: '+esc(error?.message||"Please retry.")+'</p>')}
  try{await loadCareerPathways()}catch(error){console.error("Career pathways",error);set("h3CareerCurrent",'<p class="hub3-empty">Career pathway information could not load: '+esc(error?.message||"Please retry.")+'</p>')}
@@ -310,11 +310,43 @@ async function loadContributor(){
  }).join("")||'<p class="hub3-empty">Your uploaded segments and producer feedback will appear here.</p>');
  set("h3ContributorUpdates",notifications.slice(0,5).map(n=>'<div class="hub3-mini '+(n.read_at?"":"unread")+'"><b>'+esc(n.title)+'</b><p>'+esc(n.message)+'</p><small>'+when(n.created_at)+(n.read_at?"":" · NEW")+'</small></div>').join("")||'<p class="hub3-empty">No new team updates yet.</p>');
 }
+
+const qcChecks=[["audio","Audio levels, clarity, and sync checked"],["video","Video framing, lighting, and sync checked"],["captions","Captions / subtitles reviewed"],["names","Names, titles, and lower thirds verified"],["facts","Facts, dates, and links fact-checked"],["rights","Music, footage, and image permissions cleared"],["graphics","Graphics, intro, outro, and branding checked"],["export","Final export format and playback tested"],["thumbnail","Thumbnail and episode artwork ready"],["metadata","Title, description, chapters, and tags ready"],["premiere","Premiere date, time, and visibility confirmed"]];
+let qcRows=[],qcEpisodes=[];
+async function loadEpisodeQC(){
+ const [eps,qcs]=await Promise.all([
+  rows("tn_production_episodes",db.from("tn_production_episodes").select("id,episode_number,title,status,premiere_at").order("created_at",{ascending:false}).limit(150)),
+  rows("tn_production_episode_qc",db.from("tn_production_episode_qc").select("id,episode_id,checklist,technical_notes,qc_status,reviewed_at,updated_at").order("updated_at",{ascending:false}).limit(150))
+ ]);
+ qcEpisodes=eps;qcRows=qcs;renderEpisodeQC();
+}
+function renderEpisodeQC(){
+ const selector=$("#h3QcEpisode"),form=$("#h3QcForm"),dashboard=$("#h3QcDashboard"),editor=$("#h3QcEditor");
+ if(editor)editor.classList.toggle("hidden",!isAdmin);
+ if(selector&&isAdmin){const old=selector.value;selector.innerHTML='<option value="">Choose episode…</option>'+qcEpisodes.map(e=>'<option value="'+esc(e.id)+'">'+esc((e.episode_number?'Episode '+e.episode_number+' · ':'')+e.title)+'</option>').join("");if(old)selector.value=old}
+ if(form){const row=qcRows.find(x=>x.episode_id===selector?.value),checks=row?.checklist||{};$("#h3QcChecks").innerHTML=qcChecks.map(([key,label])=>'<label class="h3-qc-check"><input type="checkbox" name="qc_'+key+'" '+(checks[key]===true?'checked':'')+'><span>'+esc(label)+'</span></label>').join("");form.elements.technical_notes.value=row?.technical_notes||"";form.elements.qc_status.value=row?.qc_status||"in_progress"}
+ const active=qcEpisodes.filter(e=>!["published","archived","cancelled"].includes(String(e.status).toLowerCase()));
+ const cards=active.map(e=>{const row=qcRows.find(x=>x.episode_id===e.id),checked=qcChecks.filter(([k])=>row?.checklist?.[k]===true).length,total=qcChecks.length,ready=checked===total&&row?.qc_status==="approved";const editing=editingRowsCache.find(x=>x.episode_id===e.id);const gate=ready&&editing&&["approved","scheduled"].includes(editing.status);return '<article class="h3-qc-card"><div><span class="hub3-kicker">'+esc(e.episode_number||"EPISODE")+'</span><h4>'+esc(e.title)+'</h4><small>'+esc(row?.qc_status?.replaceAll("_"," ")||"Not reviewed")+' · '+checked+'/'+total+' checks</small></div><div class="h3-qc-progress"><span style="width:'+Math.round(checked/total*100)+'%"></span></div><p>'+(!row?"Quality review not started.":gate?"QC approved · editing approved":ready?"QC approved · editing approval still required":checked===total?"Checklist complete · final approval needed":"Technical checks remaining")+'</p><button type="button" class="ph-btn" data-qc-open="'+esc(e.id)+'" '+(!isAdmin?"disabled":"")+'>'+(isAdmin?"Open review":"View only")+'</button></article>'}).join("");
+ if(dashboard)dashboard.innerHTML=cards||'<p class="hub3-empty">No active episodes available for delivery review.</p>';
+}
+let editingRowsCache=[];
+async function saveEpisodeQC(form){
+ if(!isAdmin)return;const episode_id=form.elements.episode_id.value;if(!episode_id)return;
+ const checklist=Object.fromEntries(qcChecks.map(([key])=>[key,form.elements["qc_"+key].checked]));
+ const qc_status=form.elements.qc_status.value,technical_notes=form.elements.technical_notes.value.trim()||null;
+ if(qc_status==="approved"&&qcChecks.some(([key])=>!checklist[key])){notice(form,"Complete every technical check before approving this episode.");return}
+ const payload={episode_id,checklist,technical_notes,qc_status,updated_by:user.id,reviewed_by:qc_status==="approved"?user.id:null,reviewed_at:qc_status==="approved"?new Date().toISOString():null,updated_at:new Date().toISOString()};
+ const button=form.querySelector('button[type="submit"]');button.disabled=true;
+ try{const {error}=await db.from("tn_production_episode_qc").upsert(payload,{onConflict:"episode_id"});if(error)throw error;notice(form,"Quality review saved.");await logActivity("episode_quality_review_saved","Updated episode delivery and quality control");await loadEpisodeQC()}catch(e){notice(form,"Could not save quality review: "+(e.message||"Please try again."))}finally{button.disabled=false}
+}
+
 async function loadEditing(){
  const list=await rows("tn_production_editing",db.from("tn_production_editing").select("*,tn_production_episodes(episode_number,title,premiere_at)").order("updated_at",{ascending:false}).limit(100));
+ editingRowsCache=list;
  const stages=["not_started","ingest","rough_cut","review","revisions","final_cut","approved","scheduled"];
  const counts=stages.map(s=>[s,list.filter(x=>x.status===s).length]);
  set("h3EditingStats",[['In queue',list.filter(x=>!["approved","scheduled"].includes(x.status)).length],["Producer review",list.filter(x=>x.status==="review").length],["Revisions",list.filter(x=>x.status==="revisions").length],["Final cuts",list.filter(x=>x.status==="final_cut").length],["Approved",list.filter(x=>x.status==="approved"||x.status==="scheduled").length]].map(([l,n])=>'<div class="hub3-stat"><b>'+n+'</b><span>'+l+'</span></div>').join(""));
+ renderEpisodeQC();
  set("h3EditingList",list.map(x=>{
   const editor=members.find(m=>m.id===x.editor_id);
   const stageIndex=stages.indexOf(x.status);
@@ -805,6 +837,10 @@ async function init(){
  $("#h3MentorRequestForm")?.addEventListener("submit",e=>{e.preventDefault();saveMentorRequest(e.currentTarget)});
  $("#h3ReadinessForm")?.addEventListener("submit",e=>{e.preventDefault();saveReadinessReview(e.currentTarget)});
  $("#h3CollabCreateForm")?.addEventListener("submit",e=>{e.preventDefault();createCollabGroup(e.currentTarget)});
+ $("#h3QcForm")?.addEventListener("submit",e=>{e.preventDefault();saveEpisodeQC(e.currentTarget)});
+ document.addEventListener("click",e=>{const b=e.target.closest("[data-qc-open]");if(!b)return;const select=$("#h3QcEpisode");if(select){select.value=b.dataset.qcOpen;renderEpisodeQC();$("#h3QcEditor")?.scrollIntoView({behavior:"smooth",block:"center"})}});
+ document.addEventListener("change",e=>{if(e.target.id==="h3QcEpisode")renderEpisodeQC()});
+
  document.addEventListener("submit",e=>{const f=e.target.closest("[data-collab-handoff-form]");if(f){e.preventDefault();submitEpisodeHandoff(f)}});
  document.addEventListener("click",e=>{const b=e.target.closest("[data-episode-signoff]");if(b)submitEpisodeSignoff(b)});
 
