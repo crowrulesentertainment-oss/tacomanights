@@ -20,14 +20,14 @@ const createPlayer=()=>{
  const host=document.getElementById("tnHeroVideoPlayer");if(!host)return;
  player=new YT.Player(host,{videoId,playerVars:{autoplay:0,controls:1,rel:0,playsinline:1,enablejsapi:1,origin:location.origin},events:{
   onReady:()=>{playerReady=true;if(index===2)playFeature()},
-  onStateChange:event=>{if(event.data===YT.PlayerState.ENDED&&index===2){stopVideo();show(0);start()}},
+  onStateChange:event=>{if(event.data===YT.PlayerState.ENDED&&index===2){stopVideo();show(0);start()}},onAutoplayBlocked:()=>{const note=root.querySelector("[data-hero-video-status]");if(note)note.textContent="Your browser blocked autoplay with sound. Press play in the video to enable audio.";},
   onError:()=>{const note=root.querySelector("[data-hero-video-status]");if(note)note.textContent="The featured video could not be played. Open CrowRules Entertainment on YouTube.";show(0);start();}
  }});
 };
 const playFeature=()=>{
  stop();if(paused||document.hidden)return;
  if(!videoRequested){videoRequested=true;loadApi();return}
- if(playerReady){try{player.mute();if(currentLoadedVideoId!==videoId){currentLoadedVideoId=videoId;player.loadVideoById(videoId)}else player.playVideo()}catch{}}
+ if(playerReady){try{player.unMute();if(currentLoadedVideoId!==videoId){currentLoadedVideoId=videoId;player.loadVideoById({videoId, startSeconds:0})}else player.playVideo()}catch{}}
 };
 const show=next=>{
  const old=index;index=(next+slides.length)%slides.length;if(index===2&&!videoActive)index=0;
