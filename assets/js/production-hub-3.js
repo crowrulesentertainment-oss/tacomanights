@@ -317,6 +317,7 @@ async function loadReviewDesk(){
  const pending=list.filter(x=>["submitted","pending_review","revision","revision_requested"].includes(String(x.status||"").toLowerCase()));
  const reviewAlerts=pending.map(x=>({user_id:user.id,title:"Segment awaiting review",message:(x.title||"A new segment")+(x.tn_production_episodes?.episode_number?" · "+x.tn_production_episodes.episode_number:"")+" is waiting in the producer review desk.",href:"https://crowrulesentertainment-oss.github.io/tacomanights/production/?review-upload="+encodeURIComponent(x.id)}));
  try{await createDedupedNotifications(reviewAlerts)}catch(error){console.warn("Review notifications could not be created",error.message)}
+ await loadNotifications();
  if(!pending.length){set("h3ReviewQueue",'<p class="hub3-empty">No segment submissions are waiting for review. New uploads will appear here.</p>');return}
  const cards=await Promise.all(pending.map(async x=>{
   let url="";
