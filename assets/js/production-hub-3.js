@@ -144,8 +144,8 @@ async function loadResearch(){
 function renderNotifications(){
  const unread=notificationRows.filter(x=>!x.read_at).length;
  set("h3NotificationSummary",'<div class="hub3-notice-count"><b>'+unread+'</b><span>unread notifications</span><small>'+notificationRows.length+' recent messages</small></div>');
- const list=notificationRows.filter(x=>notificationFilter==="unread"?!x.read_at:notificationFilter==="deadlines"?/deadline|due|overdue/i.test((x.title||"")+" "+(x.message||"")):true);
- set("h3NotificationList",list.map(x=>'<article class="hub3-row '+(x.read_at?"":"unread")+'"><div><b>'+esc(x.title)+'</b><p>'+esc(x.message)+'</p><small>'+when(x.created_at)+'</small>'+(safeHttps(x.href)?'<p><a href="'+esc(safeHttps(x.href))+'">Open related item ↗</a></p>':"")+'</div>'+(x.read_at?status("read"):'<button class="ph-btn" data-h3-read="'+esc(x.id)+'">Mark read</button>')+'</article>').join("")||'<p class="hub3-empty">'+(notificationFilter==="unread"?"You have no unread notifications.":notificationFilter==="deadlines"?"No deadline reminders yet.":"You are all caught up. New production notifications will appear here.")+'</p>');
+ const list=notificationRows.filter(x=>notificationFilter==="unread"?!x.read_at:notificationFilter==="deadlines"?/deadline|due|overdue/i.test((x.title||"")+" "+(x.message||"")):notificationFilter==="reviews"?/awaiting review|review desk|revisions requested/i.test((x.title||"")+" "+(x.message||"")):true);
+ set("h3NotificationList",list.map(x=>'<article class="hub3-row '+(x.read_at?"":"unread")+'"><div><b>'+esc(x.title)+'</b><p>'+esc(x.message)+'</p><small>'+when(x.created_at)+'</small>'+(safeHttps(x.href)?'<p><a href="'+esc(safeHttps(x.href))+'">Open related item ↗</a></p>':"")+'</div>'+(x.read_at?status("read"):'<button class="ph-btn" data-h3-read="'+esc(x.id)+'">Mark read</button>')+'</article>').join("")||'<p class="hub3-empty">'+(notificationFilter==="unread"?"You have no unread notifications.":notificationFilter==="deadlines"?"No deadline reminders yet.":notificationFilter==="reviews"?"No submission-review alerts right now.":"You are all caught up. New production notifications will appear here.")+'</p>');
  document.querySelectorAll("[data-h3-notification-filter]").forEach(b=>b.classList.toggle("active",b.dataset.h3NotificationFilter===notificationFilter));
  const all=document.querySelector("[data-h3-read-all]");if(all)all.disabled=unread===0;
 }
@@ -153,22 +153,30 @@ async function loadNotifications(){
  notificationRows=await rows("tn_notifications",db.from("tn_notifications").select("id,title,message,href,read_at,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(100));
  renderNotifications();if(typeof renderCommunication==="function")renderCommunication();
 }
-async function syncAssignmentReminders(assignments){
- const now=Date.now(),soon=now+48*60*60*1000,base="https://crowrulesentertainment-oss.github.io/tacomanights/production/";
- const open=assignments.filter(a=>a.due_at&&!["complete","completed","approved","cancelled"].includes(String(a.status||"").toLowerCase()));
- const candidates=[];
- for(const a of open){const due=new Date(a.due_at).getTime(),overdue=due<now;if(!overdue&&due>soon)continue;
-  const kind=overdue?"overdue":"due-soon",href=base+"?reminder="+kind+"&assignment="+encodeURIComponent(a.id);
-  const ep=a.tn_production_episodes;
-  candidates.push({user_id:user.id,title:overdue?"Assignment overdue":"Deadline approaching",message:(a.title||"Your production assignment")+(ep?.episode_number?" · "+ep.episode_number:"")+(overdue?" is past its deadline. Please update your producer.":" is due within 48 hours. Please submit your segment on time."),href});
- }
+async function createDedupedNotifications(candidates){
  if(!candidates.length)return;
- const hrefs=candidates.map(x=>x.href);
- const existing=await rows("tn_notifications",db.from("tn_notifications").select("href").eq("user_id",user.id).in("href",hrefs));
+ const hrefs=candidates.map(x=>x.href).filter(Boolean);
+ const existing=hrefs.length?await rows("tn_notifications",db.from("tn_notifications").select("href").eq("user_id",user.id).in("href",hrefs)):[];
  const seen=new Set(existing.map(x=>x.href)),fresh=candidates.filter(x=>!seen.has(x.href));
  if(!fresh.length)return;
  const {error}=await db.from("tn_notifications").insert(fresh);
- if(error){console.warn("Assignment reminders could not be created",error.message);return}
+ if(error)throw error;
+}
+async function syncAssignmentReminders(assignments){
+ const now=Date.now(),soon=now+48*60*60*1000,day=now+24*60*60*1000,base="https://crowrulesentertainment-oss.github.io/tacomanights/production/";
+ const open=assignments.filter(a=>a.due_at&&!["complete","completed","approved","cancelled"].includes(String(a.status||"").toLowerCase()));
+ const candidates=[];
+ for(const a of open){
+  const due=new Date(a.due_at).getTime(),overdue=due<now;
+  let kind,title,message;
+  if(overdue){kind="overdue";title="Assignment overdue";message=" is past its deadline. Please update your producer."}
+  else if(due<=day){kind="due-24h";title="Deadline within 24 hours";message=" is due within 24 hours. Please submit your segment or contact your producer."}
+  else if(due<=soon){kind="due-48h";title="Deadline approaching";message=" is due within 48 hours. Please plan your submission."}
+  else continue;
+  const ep=a.tn_production_episodes;
+  candidates.push({user_id:user.id,title,message:(a.title||"Your production assignment")+(ep?.episode_number?" · "+ep.episode_number:"")+message,href:base+"?reminder="+kind+"&assignment="+encodeURIComponent(a.id)});
+ }
+ try{await createDedupedNotifications(candidates)}catch(error){console.warn("Assignment reminders could not be created",error.message)}
 }
 async function loadGuests(){
  if(!isAdmin){set("h3GuestList",'<p class="hub3-empty">Guest contact details are restricted to producers and administrators.</p>');return}
@@ -307,6 +315,8 @@ async function loadReviewDesk(){
  if(!isAdmin){set("h3ReviewQueue",'<p class="hub3-empty">Segment review is restricted to producers and administrators.</p>');return}
  const list=await rows("tn_production_uploads",db.from("tn_production_uploads").select("id,episode_id,uploader_id,title,notes,storage_path,original_filename,mime_type,file_size,status,producer_note,created_at,reviewed_at,tn_production_episodes(episode_number,title)").order("created_at",{ascending:false}).limit(60));
  const pending=list.filter(x=>["submitted","pending_review","revision","revision_requested"].includes(String(x.status||"").toLowerCase()));
+ const reviewAlerts=pending.map(x=>({user_id:user.id,title:"Segment awaiting review",message:(x.title||"A new segment")+(x.tn_production_episodes?.episode_number?" · "+x.tn_production_episodes.episode_number:"")+" is waiting in the producer review desk.",href:"https://crowrulesentertainment-oss.github.io/tacomanights/production/?review-upload="+encodeURIComponent(x.id)}));
+ try{await createDedupedNotifications(reviewAlerts)}catch(error){console.warn("Review notifications could not be created",error.message)}
  if(!pending.length){set("h3ReviewQueue",'<p class="hub3-empty">No segment submissions are waiting for review. New uploads will appear here.</p>');return}
  const cards=await Promise.all(pending.map(async x=>{
   let url="";
@@ -419,6 +429,7 @@ async function init(){
   if(e.target.closest("#h3CommunicationRefresh")){const b=$("#h3CommunicationRefresh");b.disabled=true;try{await loadChat();await loadNotifications()}catch(error){set("h3ChatMessages",'<p class="hub3-empty">Inbox refresh failed: '+esc(error.message||"Please try again.")+'</p>')}finally{b.disabled=false}return}
   const review=e.target.closest("[data-h3-review]");if(review){await reviewSubmission(review);return}
   const filter=e.target.closest("[data-h3-notification-filter]");if(filter){notificationFilter=filter.dataset.h3NotificationFilter;renderNotifications()}
+  const notifRefresh=e.target.closest("[data-h3-notifications-refresh]");if(notifRefresh){notifRefresh.disabled=true;try{if(isAdmin)await loadReviewDesk();else{const mine=await rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,status,due_at,tn_production_episodes(episode_number,title)").eq("assignee_id",user.id).order("due_at").limit(100));await syncAssignmentReminders(mine)}await loadNotifications()}catch(error){console.warn("Notification refresh failed",error);alert("Notifications could not be refreshed: "+(error.message||"Please try again."))}finally{notifRefresh.disabled=false}return}
   const readAll=e.target.closest("[data-h3-read-all]");if(readAll){readAll.disabled=true;const {error}=await db.from("tn_notifications").update({read_at:new Date().toISOString()}).eq("user_id",user.id).is("read_at",null);if(error){readAll.disabled=false;alert("Could not mark notifications as read: "+error.message)}else{await logActivity("notifications_read_all","Marked all notifications as read");await loadNotifications()}}
   const read=e.target.closest("[data-h3-read]");if(read){const {error}=await db.from("tn_notifications").update({read_at:new Date().toISOString()}).eq("id",read.dataset.h3Read).eq("user_id",user.id);if(!error){await logActivity("notification_read","Marked a notification as read");await loadNotifications()}}
   const complete=e.target.closest("[data-h3-complete]");if(complete){complete.disabled=true;const {error}=await db.from("tn_production_training_progress").upsert({resource_id:complete.dataset.h3Complete,user_id:user.id,completed_at:new Date().toISOString()},{onConflict:"resource_id,user_id"});if(!error){await logActivity("training_completed","Completed a training resource");await loadTraining()}else{complete.disabled=false;alert("Could not save training progress: "+error.message)}}
