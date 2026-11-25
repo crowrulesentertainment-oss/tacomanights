@@ -130,6 +130,7 @@ async function init(){
  profile=p;isAdmin=["producer","admin"].includes(p.role);
  const shell=$("#hub3Shell");shell?.classList.add("ready");
  document.querySelectorAll(".hub3-tab").forEach(b=>b.addEventListener("click",()=>tab(b.dataset.h3Tab)));
+ document.querySelectorAll("[data-h3-go]").forEach(b=>b.addEventListener("click",()=>{tab(b.dataset.h3Go);document.querySelector(".hub3-nav")?.scrollIntoView({behavior:"smooth",block:"start"})}));
  document.querySelectorAll(".hub3-form").forEach(f=>f.addEventListener("submit",e=>{e.preventDefault();submit(f)}));
  document.querySelector("[data-h3-refresh]")?.addEventListener("click",refresh);
  document.addEventListener("click",async e=>{
