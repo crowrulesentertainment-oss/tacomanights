@@ -352,3 +352,15 @@
 .h3-availability-row strong{font-size:13px}
 .h3-availability-row small{font-size:11px;color:#aeb8c6;overflow-wrap:anywhere}
 @media(max-width:560px){.h3-availability-row{grid-template-columns:1fr}.h3-availability-head .ph-btn{width:100%}}
+
+/* Production Hub 7.0 — contributor request and producer approval workflow */
+.h3-request-panel{margin-top:24px;padding:20px;border:1px solid rgba(217,183,125,.2);border-radius:12px;background:linear-gradient(145deg,rgba(217,183,125,.055),rgba(4,8,14,.28))}
+.h3-request-panel h3{margin:7px 0}.h3-request-panel h4{margin:20px 0 10px;font:700 14px Manrope}
+.h3-request-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:15px}
+.h3-request-form label,.h3-request-review-label{display:grid;gap:6px;color:#c4cedb;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.h3-request-form input,.h3-request-form select,.h3-request-form textarea,.h3-request-review-label textarea{width:100%;min-width:0;box-sizing:border-box;background:#080d14;color:#f4f6f8;border:1px solid rgba(180,194,211,.2);border-radius:7px;padding:11px;font:inherit;letter-spacing:normal;text-transform:none}
+.h3-request-form .full{grid-column:1/-1}.h3-request-form button{justify-self:start}
+.h3-request-card{padding:14px;margin:10px 0;border:1px solid rgba(180,194,211,.14);border-radius:9px;background:rgba(5,10,16,.48);min-width:0}
+.h3-request-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.h3-request-card p{font-size:12px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.h3-request-card small{color:#aeb8c6;font-size:10px}.h3-request-review-label{margin-top:12px}.h3-request-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+@media(max-width:580px){.h3-request-form{grid-template-columns:1fr}.h3-request-form .full{grid-column:1}.h3-request-form button{width:100%}.h3-request-actions .ph-btn{flex:1}}
