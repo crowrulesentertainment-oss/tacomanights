@@ -17,14 +17,14 @@ function options(list,empty=""){return (empty?'<option value="">'+esc(empty)+'</
 async function refresh(){
  const baseTargets=["h3EditingEpisode","h3ResearchEpisode","h3GuestEpisode","h3RecognitionEpisode","h3RecognitionMember"];
  try{await loadBase()}catch(error){console.error("Production Hub base data",error);baseTargets.forEach(id=>{const el=$("#"+id);if(el)el.innerHTML='<option value="">Could not load options — use Refresh to retry</option>'})}
- const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"],loadCommand],["Contributor workspace",["h3MyAssignments","h3MyUploads"],loadContributor],["Editing room",["h3EditingList"],loadEditing],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity]];
+ const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"],loadCommand],["Contributor workspace",["h3MyAssignments","h3MyUploads"],loadContributor],["Editing room",["h3EditingList"],loadEditing],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk]];
  await Promise.all(tasks.map(async([label,targets,fn])=>{try{await fn()}catch(error){console.error(label,error);const html='<p class="hub3-empty">Could not load '+label.toLowerCase()+': '+esc(error?.message||"Please try again.")+'</p>';targets.forEach(id=>set(id,html))}}));
 }
 async function loadBase(){
  episodes=await rows("tn_production_episodes",db.from("tn_production_episodes").select("id,episode_number,title,topic,premiere_at,status").order("premiere_at",{ascending:true}));
  $("#h3EditingEpisode").innerHTML=options(episodes,"Choose episode…");$("#h3ResearchEpisode").innerHTML=options(episodes,"General research / idea vault");$("#h3GuestEpisode").innerHTML=options(episodes,"Not assigned yet");$("#h3RecognitionEpisode").innerHTML=options(episodes,"General contribution");
  if(isAdmin){members=await rows("tn_production_profiles",db.from("tn_production_profiles").select("id,display_name,email,role").in("role",["contributor","producer","admin"]).order("display_name"));$("#h3RecognitionMember").innerHTML=members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("")}
- document.querySelectorAll(".hub3-form button.admin-only").forEach(b=>b.classList.toggle("hidden",!isAdmin));document.querySelectorAll(".hub3-form[data-admin-only]").forEach(form=>form.classList.toggle("hidden",!isAdmin));
+ document.querySelectorAll(".hub3-form button.admin-only").forEach(b=>b.classList.toggle("hidden",!isAdmin));document.querySelectorAll(".hub3-form[data-admin-only]").forEach(form=>form.classList.toggle("hidden",!isAdmin));document.querySelectorAll("[data-h3-admin-only]").forEach(el=>el.classList.toggle("hidden",!isAdmin));
 }
 async function loadCommand(){
  const [assignmentRows,uploadRows,editRows,researchRows]=await Promise.all([
@@ -96,6 +96,40 @@ async function loadFeedback(){
  const list=await rows("tn_production_feedback",db.from("tn_production_feedback").select("id,submitter_name,submitter_email,category,rating,message,status,created_at").order("created_at",{ascending:false}).limit(80));
  set("h3FeedbackList",list.map(x=>'<article class="hub3-row"><div><b>'+esc(x.submitter_name||"Community member")+'</b><p>'+esc(x.category.replaceAll("_"," "))+' · '+(x.rating?("★".repeat(x.rating)):"No rating")+'</p><p>'+esc(x.message)+'</p><small>'+esc(x.submitter_email||"No email")+' · '+when(x.created_at)+'</small></div><select data-h3-feedback="'+esc(x.id)+'"><option value="pending" '+(x.status==="pending"?"selected":"")+'>Pending</option><option value="reviewing" '+(x.status==="reviewing"?"selected":"")+'>Reviewing</option><option value="considered" '+(x.status==="considered"?"selected":"")+'>Considered</option><option value="featured" '+(x.status==="featured"?"selected":"")+'>Featured</option><option value="closed" '+(x.status==="closed"?"selected":"")+'>Closed</option></select></article>').join("")||'<p class="hub3-empty">No audience feedback has been received yet.</p>');
 }
+async function loadReviewDesk(){
+ if(!isAdmin){set("h3ReviewQueue",'<p class="hub3-empty">Segment review is restricted to producers and administrators.</p>');return}
+ const list=await rows("tn_production_uploads",db.from("tn_production_uploads").select("id,episode_id,uploader_id,title,notes,storage_path,original_filename,mime_type,file_size,status,producer_note,created_at,reviewed_at,tn_production_episodes(episode_number,title)").order("created_at",{ascending:false}).limit(60));
+ const pending=list.filter(x=>["submitted","pending_review","revision","revision_requested"].includes(String(x.status||"").toLowerCase()));
+ if(!pending.length){set("h3ReviewQueue",'<p class="hub3-empty">No segment submissions are waiting for review. New uploads will appear here.</p>');return}
+ const cards=await Promise.all(pending.map(async x=>{
+  let url="";
+  try{const {data,error}=await db.storage.from("tn-production-private").createSignedUrl(x.storage_path,900);if(!error)url=data.signedUrl}catch(error){console.warn("Could not create private preview URL",error)}
+  const mime=String(x.mime_type||"").toLowerCase(),safeUrl=safeHttps(url);
+  let preview=safeUrl?(mime.startsWith("video/")?'<video class="h3-review-media" controls preload="metadata" src="'+esc(safeUrl)+'"></video>':mime.startsWith("audio/")?'<audio class="h3-review-audio" controls preload="metadata" src="'+esc(safeUrl)+'"></audio>':mime.startsWith("image/")?'<a href="'+esc(safeUrl)+'" target="_blank" rel="noopener noreferrer"><img class="h3-review-image" src="'+esc(safeUrl)+'" alt="Submitted segment preview"></a>':'<a class="h3-review-file" href="'+esc(safeUrl)+'" target="_blank" rel="noopener noreferrer">Open / download original file ↗</a>'):'<p class="hub3-small">Preview unavailable. Check the private storage object and permissions.</p>';
+  const member=members.find(m=>m.id===x.uploader_id),episode=x.tn_production_episodes;
+  const mb=Number(x.file_size||0),size=mb>=1073741824?(mb/1073741824).toFixed(2)+" GB":mb>=1048576?(mb/1048576).toFixed(1)+" MB":mb?Math.max(1,Math.round(mb/1024))+" KB":"Size unavailable";
+  return '<article class="hub3-review-card" data-review-card="'+esc(x.id)+'"><div class="hub3-review-head"><div><span class="hub3-kicker">'+esc(episode?.episode_number||"GENERAL SUBMISSION")+'</span><h4>'+esc(x.title||x.original_filename||"Untitled submission")+'</h4><p>'+esc(episode?.title||"No episode linked")+'</p></div>'+status(x.status)+'</div><div class="hub3-review-meta"><span>Submitted by <b>'+esc(member?.display_name||member?.email||"Team member")+'</b></span><span>'+when(x.created_at)+'</span><span>'+esc(x.original_filename||"File")+' · '+size+'</span></div>'+preview+(x.notes?'<p class="hub3-review-notes"><b>Contributor notes:</b> '+esc(x.notes)+'</p>':"")+(x.producer_note?'<p class="hub3-review-notes"><b>Previous producer feedback:</b> '+esc(x.producer_note)+'</p>':"")+'<label class="hub3-review-label">Producer feedback<textarea data-h3-review-note rows="2" maxlength="1500" placeholder="Add approval notes or explain the changes needed…">'+esc(x.producer_note||"")+'</textarea></label><div class="hub3-review-actions"><button type="button" class="ph-btn primary" data-h3-review="'+esc(x.id)+'" data-review-status="approved">Approve segment</button><button type="button" class="ph-btn" data-h3-review="'+esc(x.id)+'" data-review-status="revision">Request revisions</button><button type="button" class="ph-btn danger" data-h3-review="'+esc(x.id)+'" data-review-status="rejected">Reject submission</button></div><p class="hub3-status" data-h3-review-status aria-live="polite"></p></article>';
+ }));
+ set("h3ReviewQueue",cards.join(""));
+}
+async function reviewSubmission(button){
+ if(!isAdmin)return;
+ const card=button.closest("[data-review-card]"),id=button.dataset.h3Review,next=button.dataset.reviewStatus,note=card?.querySelector("[data-h3-review-note]")?.value.trim()||"";
+ if(!card||!id||!["approved","revision","rejected"].includes(next))return;
+ if((next==="revision"||next==="rejected")&&!note){card.querySelector("[data-h3-review-status]").textContent="Add a note explaining the requested changes or rejection.";return}
+ const buttons=[...card.querySelectorAll("[data-h3-review]")],statusEl=card.querySelector("[data-h3-review-status]");
+ buttons.forEach(b=>b.disabled=true);statusEl.textContent="Saving review…";
+ try{
+  const {data:upload,error}=await db.from("tn_production_uploads").update({status:next,producer_note:note||null,reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",id).select("id,uploader_id,title").single();
+  if(error)throw error;
+  const titles={approved:"Segment approved",revision:"Revisions requested",rejected:"Submission not approved"};
+  const messages={approved:"Your segment “"+(upload.title||"Untitled submission")+"” has been approved.",revision:"Your segment “"+(upload.title||"Untitled submission")+"” needs revisions: "+note,rejected:"Your submission “"+(upload.title||"Untitled submission")+"” was not approved: "+note};
+  const {error:notificationError}=await db.from("tn_notifications").insert({user_id:upload.uploader_id,title:titles[next],message:messages[next],href:"https://crowrulesentertainment-oss.github.io/tacomanights/production/"});
+  if(notificationError)console.warn("Contributor notification could not be sent",notificationError.message);
+  await logActivity("upload_"+next,(upload.title||"Segment")+" · contributor "+upload.uploader_id);
+  await refresh();
+ }catch(error){statusEl.textContent="Review could not be saved: "+(error.message||"Try again.");buttons.forEach(b=>b.disabled=false)}
+}
 async function loadActivity(){
   if(!isAdmin){set("h3ActivityFeed",'<p class="hub3-empty">The production activity log is restricted to producers and administrators.</p>');return}
   const list=await rows("tn_production_activity",db.from("tn_production_activity").select("id,actor_id,action,detail,created_at").order("created_at",{ascending:false}).limit(30));
@@ -143,6 +177,7 @@ async function init(){
  document.querySelectorAll(".hub3-form").forEach(f=>f.addEventListener("submit",e=>{e.preventDefault();submit(f)}));
  document.querySelector("[data-h3-refresh]")?.addEventListener("click",refresh);
  document.addEventListener("click",async e=>{
+  const review=e.target.closest("[data-h3-review]");if(review){await reviewSubmission(review);return}
   const read=e.target.closest("[data-h3-read]");if(read){const {error}=await db.from("tn_notifications").update({read_at:new Date().toISOString()}).eq("id",read.dataset.h3Read).eq("user_id",user.id);if(!error){await logActivity("notification_read","Marked a notification as read");loadNotifications()}}
   const complete=e.target.closest("[data-h3-complete]");if(complete){const {error}=await db.from("tn_production_training_progress").upsert({resource_id:complete.dataset.h3Complete,user_id:user.id,completed_at:new Date().toISOString()},{onConflict:"resource_id,user_id"});if(!error){await logActivity("training_completed","Completed a training resource");loadTraining()}else alert(error.message)}
  });
