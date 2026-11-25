@@ -488,3 +488,8 @@
 .hub3-nav{scrollbar-width:thin}
 @media(max-width:760px){.hub3-nav{position:relative;top:auto;backdrop-filter:none;scroll-snap-type:x proximity}.hub3-tab{scroll-snap-align:start}.hub3-card,.h3-comms,.h3-pipeline{min-width:0}}
 @media(prefers-reduced-motion:reduce){#hub3Shell *,#hub3Shell *::before,#hub3Shell *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Final motion audit: avoid smooth-scroll and tab-entry motion that can feel like page jumping */
+html{scroll-behavior:auto!important;scroll-padding-top:72px}
+.ph-view,.hub3-view{animation:none!important}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}
