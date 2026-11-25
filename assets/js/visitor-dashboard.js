@@ -23,7 +23,7 @@ async function updateLiveVisitors(){
   const {data,error}=await db.rpc("tn_homepage_live_visitors",{p_session_id:liveSession,p_visitor_id:visitorId});
   if(error)throw error;
   if(liveCount)liveCount.textContent=Number(data||0).toLocaleString();
-  if(liveNote)liveNote.textContent="On the homepage right now · refreshes every 20 seconds";
+  if(liveNote)liveNote.textContent="Active homepage visitors · 20-second heartbeat · 65-second timeout";
  }catch(e){
   console.warn("Tacoma Nights live visitor count unavailable",e);
   if(liveCount)liveCount.textContent="—";
