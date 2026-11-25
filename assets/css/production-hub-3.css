@@ -313,3 +313,19 @@
 .hub3-research-standard{margin-top:16px;padding:12px;border-left:2px solid #c5a36b;background:rgba(197,163,107,.07);font-size:11px}.hub3-research-standard b{color:#dfc18e;font-size:9px;letter-spacing:.1em}.hub3-research-standard p{color:#b9c3d0;line-height:1.55}
 @media(max-width:760px){.hub3-research-toolbar{grid-template-columns:1fr 1fr}.hub3-research-toolbar label:first-child{grid-column:1/-1}}
 @media(max-width:560px){.hub3-research-toolbar{grid-template-columns:1fr}.hub3-research-toolbar label:first-child{grid-column:auto}.hub3-research-top{display:grid}.hub3-research-edit-grid{grid-template-columns:1fr}.hub3-research-edit-grid .wide{grid-column:auto}.hub3-research-source{align-items:flex-start;flex-direction:column}}
+
+/* Contributor dashboard 4.0 — personal delivery and review snapshot */
+.h3-contributor-performance{margin:16px 0 22px;padding:19px;border:1px solid rgba(217,183,125,.2);border-radius:12px;background:linear-gradient(135deg,rgba(217,183,125,.075),rgba(17,23,32,.42))}
+.h3-performance-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:15px}
+.h3-performance-head h4{font:700 17px Manrope;margin:5px 0 0}
+.h3-performance-updated,.h3-performance-foot{font-size:11px;color:#aeb8c6}
+.h3-performance-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.h3-performance-grid>div{padding:12px;border:1px solid rgba(180,194,211,.12);border-radius:8px;background:rgba(4,7,11,.28);min-width:0}
+.h3-performance-grid b{display:block;font:800 25px Manrope;letter-spacing:-.04em}
+.h3-performance-grid span{display:block;margin-top:3px;font-size:11px;line-height:1.4;color:#b7c1cf}
+.h3-progress-row{margin-top:17px}
+.h3-progress-row>div:first-child{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin-bottom:7px}
+.h3-progress-track{height:8px;background:#27303d;border-radius:20px;overflow:hidden}
+.h3-progress-track span{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#b83a49,#e16a75)}
+.h3-performance-foot{line-height:1.6;margin:10px 0 0}
+@media(max-width:580px){.h3-contributor-performance{padding:14px}.h3-performance-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.h3-performance-grid b{font-size:22px}}
