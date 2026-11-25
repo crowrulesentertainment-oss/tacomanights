@@ -381,3 +381,27 @@
 .h3-weekly-head b{display:block;font-size:13px}.h3-weekly-head small{display:block;color:#aeb8c6;font-size:11px;margin-top:4px}.h3-timezone-label{display:block;max-width:280px;margin:12px 0}
 .h3-weekday-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}.h3-weekday-row{display:grid;grid-template-columns:minmax(85px,1fr) minmax(85px,1fr) minmax(85px,1fr);gap:8px;align-items:end;padding:9px;border:1px solid rgba(180,194,211,.12);border-radius:8px}.h3-weekday-row label{font-size:10px;color:#aeb8c6}.h3-weekday-row input[type=time]{width:100%;min-width:0;margin-top:4px}.h3-weekday-row .h3-weekday-check{display:flex;align-items:center;gap:7px;padding-bottom:9px;color:#f3f5f8;font-size:12px}.h3-weekday-check input{accent-color:#d9b77d}.h3-request-slots{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.h3-request-slots span{padding:5px 8px;border:1px solid rgba(217,183,125,.24);border-radius:6px;color:#e8d5b4;font-size:10px}
 @media(max-width:640px){.h3-weekday-list{grid-template-columns:1fr}.h3-weekday-row{grid-template-columns:minmax(78px,1fr) minmax(85px,1fr) minmax(85px,1fr)}}
+
+
+/* Production Hub 10.0 — smart assignment recommendations */
+.h3-smart-assignment-card{grid-column:1/-1;min-width:0;margin-top:4px;padding:19px;border:1px solid rgba(217,183,125,.23);border-radius:11px;background:linear-gradient(145deg,rgba(217,183,125,.065),rgba(4,8,14,.36))}
+.h3-smart-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.h3-smart-head h4{font:700 18px Manrope;margin:5px 0}
+.h3-smart-head p{max-width:780px;margin:0;line-height:1.55}
+.h3-smart-status{padding:6px 9px;border:1px solid rgba(217,183,125,.3);border-radius:20px;color:#e4c58e;font-size:9px;font-weight:900;letter-spacing:.1em}
+.h3-smart-content{display:grid;gap:10px}
+.h3-smart-assignment{padding:14px;border:1px solid rgba(180,194,211,.14);border-radius:9px;background:rgba(3,8,14,.36);min-width:0}
+.h3-smart-task{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;padding-bottom:11px;border-bottom:1px solid rgba(180,194,211,.12)}
+.h3-smart-task>div{display:grid;gap:5px;min-width:0}
+.h3-smart-task b{font-size:13px;overflow-wrap:anywhere}
+.h3-smart-task small{font-size:10px;color:#aeb8c6}
+.h3-smart-candidates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:11px}
+.h3-smart-candidate{display:flex;gap:9px;align-items:flex-start;min-width:0;padding:10px;border:1px solid rgba(180,194,211,.12);border-radius:8px;background:rgba(255,255,255,.025)}
+.h3-smart-rank{display:grid;place-items:center;flex:0 0 25px;height:25px;border-radius:6px;background:rgba(217,183,125,.12);color:#e4c58e;font:800 11px Manrope}
+.h3-smart-candidate-main{min-width:0}
+.h3-smart-candidate-main b{display:block;font-size:11px;overflow-wrap:anywhere}
+.h3-smart-candidate-main small{display:block;margin-top:4px;color:#d9bd8b;font-size:9px}
+.h3-smart-candidate-main p{margin:6px 0 0;color:#aeb8c6;font-size:10px;line-height:1.5;overflow-wrap:anywhere}
+.h3-smart-owner{display:inline-block;margin-left:4px;padding:3px 5px;border-radius:4px;background:rgba(217,183,125,.13);color:#e4c58e;font-size:8px;letter-spacing:.06em}
+@media(max-width:800px){.h3-smart-candidates{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.h3-smart-assignment-card{padding:14px}.h3-smart-candidates{grid-template-columns:1fr}.h3-smart-task{display:grid}}
