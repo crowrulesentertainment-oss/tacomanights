@@ -28,27 +28,43 @@ async function loadBase(){
 }
 async function loadCommand(){
  const [assignmentRows,uploadRows,editRows,researchRows]=await Promise.all([
-  rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,status,due_at").order("due_at").limit(200)),
-  rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,created_at,producer_note").order("created_at",{ascending:false}).limit(200)),
-  rows("tn_production_editing",db.from("tn_production_editing").select("id,status").limit(200)),
+  rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,status,due_at,assignee_id,tn_production_episodes(episode_number,title)").order("due_at").limit(300)),
+  rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,created_at,producer_note,uploader_id,tn_production_episodes(episode_number,title)").order("created_at",{ascending:false}).limit(200)),
+  rows("tn_production_editing",db.from("tn_production_editing").select("id,status,editor_id,target_ready_at,tn_production_episodes(episode_number,title)").order("target_ready_at").limit(200)),
   rows("tn_production_research",db.from("tn_production_research").select("id,status").limit(200))
  ]);
- const activeEpisodes=episodes.filter(e=>!["published","archived","cancelled"].includes(String(e.status||"").toLowerCase()));
- const activeAssignments=assignmentRows.filter(a=>!["complete","completed","cancelled"].includes(String(a.status||"").toLowerCase()));
- const waitingUploads=uploadRows.filter(a=>["submitted","revision","revision_requested","pending_review"].includes(String(a.status||"").toLowerCase()));
- const reviewEdits=editRows.filter(a=>["review","producer_review","revisions"].includes(String(a.status||"").toLowerCase()));
- const readyResearch=researchRows.filter(a=>["ready","approved","complete","completed"].includes(String(a.status||"").toLowerCase()));
- set("h3CommandStats",[['Active episodes',activeEpisodes.length],['Open assignments',activeAssignments.length],['Uploads to review',waitingUploads.length],['Edits needing review',reviewEdits.length],['Research ready',readyResearch.length]].map(([l,n])=>'<div class="hub3-stat"><b>'+n+'</b><span>'+l+'</span></div>').join(""));
- const upcoming=activeEpisodes.slice(0,6);
- set("h3EpisodeCommand",upcoming.map(e=>'<article class="hub3-row"><div><b>'+esc(e.episode_number)+' · '+esc(e.title)+'</b><p>'+esc(e.topic||"Topic to be confirmed")+'</p><small>Premiere: '+when(e.premiere_at)+'</small></div>'+status(e.status)+'</article>').join("")||'<p class="hub3-empty">No active episodes yet. Create an episode in the Episodes workspace below.</p>');
- const now=Date.now();
- const overdue=activeAssignments.filter(a=>a.due_at&&new Date(a.due_at).getTime()<now);
- const upcomingAssignments=activeAssignments.filter(a=>!a.due_at||new Date(a.due_at).getTime()>=now).slice(0,8);
- set("h3Timeline",upcomingAssignments.map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b><small>Due '+when(a.due_at)+'</small></div>').join("")||'<p class="hub3-empty">No upcoming assignment deadlines.</p>');
- const reviewMarkup=waitingUploads.slice(0,10).map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b><small>'+ (["submitted","pending_review"].includes(String(a.status||"").toLowerCase())?"Awaiting producer review":"Revision requested")+' · '+when(a.created_at)+'</small>'+(a.producer_note?'<p>'+esc(a.producer_note)+'</p>':"")+'</div>');
- const overdueMarkup=overdue.slice(0,10).map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b><small>Overdue assignment · '+when(a.due_at)+'</small></div>');
- const attention=[...reviewMarkup,...overdueMarkup];
- set("h3NeedsAttention",attention.join("")||'<p class="hub3-empty">No submissions are awaiting review and no assignments are overdue.</p>');
+ const norm=v=>String(v||"").toLowerCase().replaceAll(" ","_");
+ const done=a=>["complete","completed","approved","published","done","cancelled"].includes(norm(a.status));
+ const activeEpisodes=episodes.filter(e=>!["published","archived","cancelled"].includes(norm(e.status)));
+ const activeAssignments=assignmentRows.filter(a=>!done(a));
+ const waitingUploads=uploadRows.filter(a=>["submitted","revision","revision_requested","pending_review"].includes(norm(a.status)));
+ const reviewEdits=editRows.filter(a=>["review","producer_review","revisions"].includes(norm(a.status)));
+ const activeEdits=editRows.filter(a=>!["approved","scheduled","published","complete","completed","cancelled"].includes(norm(a.status)));
+ const readyResearch=researchRows.filter(a=>["ready","approved","complete","completed"].includes(norm(a.status)));
+ const now=new Date(),todayStart=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime(),tomorrow=todayStart+86400000,soon=now.getTime()+48*3600000;
+ const overdue=activeAssignments.filter(a=>a.due_at&&new Date(a.due_at).getTime()<now.getTime());
+ const dueToday=activeAssignments.filter(a=>a.due_at&&new Date(a.due_at).getTime()>=todayStart&&new Date(a.due_at).getTime()<tomorrow);
+ const dueSoon=activeAssignments.filter(a=>a.due_at&&new Date(a.due_at).getTime()>=now.getTime()&&new Date(a.due_at).getTime()<=soon);
+ set("h3CommandStats",[
+  ["Active episodes",activeEpisodes.length],["Open assignments",activeAssignments.length],["Overdue",overdue.length],["Due today",dueToday.length],["Due in 48 hours",dueSoon.length],["Uploads to review",waitingUploads.length],["Active editing jobs",activeEdits.length],["Edits needing review",reviewEdits.length]
+ ].map(([label,n])=>'<div class="hub3-stat"><b>'+n+'</b><span>'+label+'</span></div>').join(""));
+ const upcoming=activeEpisodes.filter(e=>e.premiere_at&&new Date(e.premiere_at).getTime()>=now.getTime()).sort((a,b)=>new Date(a.premiere_at)-new Date(b.premiere_at)).slice(0,6);
+ set("h3EpisodeCommand",upcoming.map(e=>'<article class="hub3-row"><div><b>'+esc(e.episode_number)+' · '+esc(e.title)+'</b><p>'+esc(e.topic||"Topic to be confirmed")+'</p><small>Premiere: '+when(e.premiere_at)+'</small></div>'+status(e.status)+'</article>').join("")||'<p class="hub3-empty">No upcoming premieres are scheduled. Review the episode board to plan the next show.</p>');
+ const upcomingAssignments=activeAssignments.filter(a=>a.due_at&&new Date(a.due_at).getTime()>=now.getTime()).sort((a,b)=>new Date(a.due_at)-new Date(b.due_at)).slice(0,8);
+ set("h3Timeline",upcomingAssignments.map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b><small>Due '+when(a.due_at)+'</small><small>'+esc(a.tn_production_episodes?.episode_number||"Episode")+' · '+esc(a.tn_production_episodes?.title||"")+'</small></div>').join("")||'<p class="hub3-empty">No future assignment deadlines are scheduled.</p>');
+ const priorities=[
+  ...overdue.map(a=>({rank:0,time:new Date(a.due_at).getTime(),title:a.title,kind:"OVERDUE ASSIGNMENT",meta:"Due "+when(a.due_at),episode:a.tn_production_episodes?.episode_number})),
+  ...dueSoon.filter(a=>!overdue.includes(a)).map(a=>({rank:1,time:new Date(a.due_at).getTime(),title:a.title,kind:"DUE WITHIN 48 HOURS",meta:"Due "+when(a.due_at),episode:a.tn_production_episodes?.episode_number})),
+  ...waitingUploads.map(a=>({rank:2,time:new Date(a.created_at).getTime(),title:a.title||"Untitled submission",kind:"SUBMISSION REVIEW",meta:"Submitted "+when(a.created_at),episode:a.tn_production_episodes?.episode_number})),
+  ...reviewEdits.map(a=>({rank:3,time:a.target_ready_at?new Date(a.target_ready_at).getTime():now.getTime(),title:a.tn_production_episodes?.title||"Episode edit",kind:"EDIT NEEDS REVIEW",meta:"Target "+when(a.target_ready_at),episode:a.tn_production_episodes?.episode_number}))
+ ].sort((a,b)=>a.rank-b.rank||(a.rank===2? a.time-b.time:b.time-a.time)).slice(0,14);
+ set("h3NeedsAttention",priorities.map(x=>'<article class="hub3-priority-item priority-'+x.rank+'"><div><b>'+esc(x.title)+'</b><small>'+esc(x.kind)+(x.episode?" · "+esc(x.episode):"")+'</small><small>'+esc(x.meta)+'</small></div></article>').join("")||'<p class="hub3-empty">Nothing currently needs attention. New priorities will appear as assignments, submissions, and edit reviews arrive.</p>');
+ if(isAdmin){
+  const byPerson=new Map();
+  activeAssignments.forEach(a=>{const id=a.assignee_id||"unassigned";if(!byPerson.has(id))byPerson.set(id,{total:0,overdue:0,dueSoon:0,name:id==="unassigned"?"Unassigned":(members.find(m=>m.id===id)?.display_name||members.find(m=>m.id===id)?.email||"Team member")});const x=byPerson.get(id);x.total++;if(a.due_at&&new Date(a.due_at).getTime()<now.getTime())x.overdue++;else if(a.due_at&&new Date(a.due_at).getTime()<=soon)x.dueSoon++});
+  const workload=[...byPerson.values()].sort((a,b)=>b.overdue-a.overdue||b.total-a.total).slice(0,10);
+  set("h3Workload",workload.map(x=>'<article class="hub3-workload-item"><div><b>'+esc(x.name)+'</b><small>'+x.total+' open assignment'+(x.total===1?"":"s")+'</small></div><span class="'+(x.overdue?"hub3-overdue":"")+'">'+x.overdue+' overdue</span><small>'+x.dueSoon+' due within 48h</small></article>').join("")||'<p class="hub3-empty">No active contributor assignments yet.</p>');
+ }else set("h3Workload",'<p class="hub3-empty">Team workload is available to producers and administrators.</p>');
 }
 async function loadContributor(){
  const [assignments,uploads,notifications]=await Promise.all([
