@@ -447,40 +447,62 @@ async function loadChat(){
  chatRows=messages;teamUpdateRows=updates;renderCommunication();
 }
 
-let collabGroups=[],collabMembers=[],collabMessages=[],collabMilestones=[];
+let collabGroups=[],collabMembers=[],collabMessages=[],collabMilestones=[],collabEpisodes=[],collabHandoffs=[],collabSignoffs=[];
 async function loadCollaboration(){
+ collabEpisodes=await rows('tn_production_episodes',db.from('tn_production_episodes').select('id,episode_number,title,status').order('created_at',{ascending:false}).limit(100));
  const mine=await rows("tn_production_collab_members",db.from("tn_production_collab_members").select("group_id,user_id").eq("user_id",user.id));
  const memberRows=isAdmin?await rows("tn_production_collab_members",db.from("tn_production_collab_members").select("group_id,user_id")):mine;
  const ids=[...new Set(memberRows.map(x=>x.group_id))];
- const groups=ids.length?await rows("tn_production_collab_groups",isAdmin?db.from("tn_production_collab_groups").select("id,name,description,group_type,created_at").order("created_at",{ascending:false}):db.from("tn_production_collab_groups").select("id,name,description,group_type,created_at").in("id",ids).order("created_at",{ascending:false})): [];
- const [messages,milestones]=ids.length?await Promise.all([
+ const groups=ids.length?await rows("tn_production_collab_groups",isAdmin?db.from("tn_production_collab_groups").select("id,name,description,group_type,episode_id,created_at").order("created_at",{ascending:false}):db.from("tn_production_collab_groups").select("id,name,description,group_type,created_at").in("id",ids).order("created_at",{ascending:false})): [];
+ const [messages,milestones,handoffs]=ids.length?await Promise.all([
   rows("tn_production_collab_messages",db.from("tn_production_collab_messages").select("id,group_id,sender_id,message,created_at").in("group_id",ids).order("created_at",{ascending:false}).limit(300)),
-  rows("tn_production_collab_milestones",db.from("tn_production_collab_milestones").select("id,group_id,title,details,due_date,status,created_by,created_at").in("group_id",ids).order("due_date",{ascending:true}))
- ]):[[],[]];
- collabGroups=groups;collabMembers=memberRows;collabMessages=messages;collabMilestones=milestones;renderCollaboration();
+  rows("tn_production_collab_milestones",db.from("tn_production_collab_milestones").select("id,group_id,title,details,due_date,status,created_by,created_at").in("group_id",ids).order("due_date",{ascending:true})),
+  rows("tn_production_episode_handoffs",db.from("tn_production_episode_handoffs").select("id,group_id,episode_id,segment_title,owner_id,recipient_id,status,due_at,handoff_notes").in("group_id",ids).order("created_at",{ascending:false}))
+ ]):[[],[],[]];
+ const handoffIds=handoffs.map(x=>x.id);
+ collabSignoffs=handoffIds.length?await rows("tn_production_episode_signoffs",db.from("tn_production_episode_signoffs").select("id,handoff_id,reviewer_id,decision,notes").in("handoff_id",handoffIds)): [];
+ collabGroups=groups;collabMembers=memberRows;collabMessages=messages;collabMilestones=milestones;collabHandoffs=handoffs;renderCollaboration();
 }
 function renderCollaboration(){
  const form=$("#h3CollabCreateForm");if(form)form.classList.toggle("hidden",!isAdmin);
+ const ep=$("#h3CollabEpisodeSelect");if(ep&&isAdmin){const old=ep.value;ep.innerHTML='<option value="">General workspace</option>'+collabEpisodes.map(x=>'<option value="'+esc(x.id)+'">'+esc((x.episode_number?"Episode "+x.episode_number+" · ":"")+x.title)+'</option>').join("");ep.value=old}
  const select=$("#h3CollabMemberSelect");if(select&&isAdmin)select.innerHTML=members.filter(m=>m.role==="contributor"||m.role==="producer").map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+' · '+esc(m.role)+'</option>').join("");
  const label=id=>id===user.id?"You":(members.find(m=>m.id===id)?.display_name||"Team member");
  const status={planned:"Planned",in_progress:"In progress",completed:"Completed",blocked:"Blocked"};
  set("h3CollabGroups",collabGroups.map(g=>{
-  const groupMembers=collabMembers.filter(m=>m.group_id===g.id),messages=collabMessages.filter(m=>m.group_id===g.id).slice().reverse(),milestones=collabMilestones.filter(m=>m.group_id===g.id);
+  const groupMembers=collabMembers.filter(m=>m.group_id===g.id),episode=collabEpisodes.find(e=>e.id===g.episode_id),handoffs=collabHandoffs.filter(h=>h.group_id===g.id),messages=collabMessages.filter(m=>m.group_id===g.id).slice().reverse(),milestones=collabMilestones.filter(m=>m.group_id===g.id);
   const messageHtml=messages.map(m=>'<article class="h3-collab-message '+(m.sender_id===user.id?"mine":"")+'"><b>'+esc(label(m.sender_id))+'</b><p>'+esc(m.message)+'</p><small>'+when(m.created_at)+'</small></article>').join("")||'<p class="hub3-empty">No messages yet. Start the conversation.</p>';
   const milestoneHtml=milestones.map(m=>'<article class="h3-collab-milestone"><div><b>'+esc(m.title)+'</b><small>'+(m.due_date?'Due '+esc(new Date(m.due_date+"T12:00:00").toLocaleDateString()):"No due date")+' · '+esc(status[m.status]||m.status)+'</small>'+(m.details?'<p>'+esc(m.details)+'</p>':"")+'</div><select data-collab-milestone="'+esc(m.id)+'" data-owner="'+esc(m.created_by)+'" aria-label="Milestone status"><option value="planned" '+(m.status==="planned"?"selected":"")+'>Planned</option><option value="in_progress" '+(m.status==="in_progress"?"selected":"")+'>In progress</option><option value="completed" '+(m.status==="completed"?"selected":"")+'>Completed</option><option value="blocked" '+(m.status==="blocked"?"selected":"")+'>Blocked</option></select></article>').join("")||'<p class="hub3-empty">No milestones added yet.</p>';
   const memberNames=groupMembers.map(m=>label(m.user_id)).join(" · ");
-  return '<article class="h3-collab-group" data-collab-group="'+esc(g.id)+'"><header><div><span class="h3-growth-tag">'+esc(({project:"PROJECT TEAM",episode:"EPISODE TEAM",mentorship:"MENTORSHIP ROOM",crew:"PRODUCTION CREW"}[g.group_type]||"TEAM WORKSPACE"))+'</span><h5>'+esc(g.name)+'</h5><p>'+esc(g.description||"Private team workspace")+'</p><small>'+esc(memberNames||"Assigned members")+'</small></div><span class="pill">'+groupMembers.length+' members</span></header><div class="h3-collab-columns"><section><h6>Team conversation</h6><div class="h3-collab-messages">'+messageHtml+'</div><form class="h3-collab-message-form" data-collab-message-form="'+esc(g.id)+'"><textarea name="message" required maxlength="3000" rows="2" placeholder="Write a message for this workspace…"></textarea><button class="ph-btn primary" type="submit">Send message</button><p class="hub3-status" aria-live="polite"></p></form></section><section><h6>Shared milestones</h6><div class="h3-collab-milestones">'+milestoneHtml+'</div><form class="h3-collab-milestone-form" data-collab-milestone-form="'+esc(g.id)+'"><input name="title" required minlength="3" maxlength="160" placeholder="New milestone"><input name="due_date" type="date" aria-label="Milestone due date"><textarea name="details" maxlength="1200" rows="2" placeholder="Owner, next step, or handoff notes"></textarea><button class="ph-btn" type="submit">Add milestone</button><p class="hub3-status" aria-live="polite"></p></form></section></div></article>';
+
+  const handoffHtml=episode ? '<section class="h3-episode-handoffs"><h6>Segment handoffs & sign-offs</h6>'+handoffs.map(h=>{const mine=collabSignoffs.some(s=>s.handoff_id===h.id&&s.reviewer_id===user.id);return '<article class="h3-episode-handoff"><div><b>'+esc(h.segment_title)+'</b><small>'+esc(h.status.replaceAll("_"," "))+' · '+esc(label(h.owner_id))+'</small>'+(h.handoff_notes?'<p>'+esc(h.handoff_notes)+'</p>':'')+'</div><div><button class="ph-btn" type="button" data-episode-signoff="'+esc(h.id)+'" data-decision="approved" '+(mine?'disabled':'')+'>Approve</button> <button class="ph-btn" type="button" data-episode-signoff="'+esc(h.id)+'" data-decision="revision_requested" '+(mine?'disabled':'')+'>Request revision</button></div></article>'}).join('')+'<form class="h3-collab-handoff-form" data-collab-handoff-form="'+esc(g.id)+'" data-episode-id="'+esc(g.episode_id)+'"><input name="segment_title" required minlength="3" maxlength="160" placeholder="Segment title"><select name="owner_id" required>'+groupMembers.map(m=>'<option value="'+esc(m.user_id)+'">'+esc(label(m.user_id))+'</option>').join('')+'</select><textarea name="handoff_notes" maxlength="2000" placeholder="Deliverables and handoff notes"></textarea><button class="ph-btn primary" type="submit">Create segment handoff</button><p class="hub3-status"></p></form></section>' : '';
+
+  return '<article class="h3-collab-group" data-collab-group="'+esc(g.id)+'"><header><div><span class="h3-growth-tag">'+esc(({project:"PROJECT TEAM",episode:"EPISODE TEAM",mentorship:"MENTORSHIP ROOM",crew:"PRODUCTION CREW"}[g.group_type]||"TEAM WORKSPACE"))+'</span><h5>'+esc(g.name)+'</h5><p>'+esc(g.description||"Private team workspace")+'</p><small>'+esc(memberNames||"Assigned members")+'</small></div><span class="pill">'+groupMembers.length+' members</span></header>'+(episode?'<p class="h3-episode-linked-title">Linked episode: '+esc(episode.title)+'</p>':'')+handoffHtml+'<div class="h3-collab-columns"><section><h6>Team conversation</h6><div class="h3-collab-messages">'+messageHtml+'</div><form class="h3-collab-message-form" data-collab-message-form="'+esc(g.id)+'"><textarea name="message" required maxlength="3000" rows="2" placeholder="Write a message for this workspace…"></textarea><button class="ph-btn primary" type="submit">Send message</button><p class="hub3-status" aria-live="polite"></p></form></section><section><h6>Shared milestones</h6><div class="h3-collab-milestones">'+milestoneHtml+'</div><form class="h3-collab-milestone-form" data-collab-milestone-form="'+esc(g.id)+'"><input name="title" required minlength="3" maxlength="160" placeholder="New milestone"><input name="due_date" type="date" aria-label="Milestone due date"><textarea name="details" maxlength="1200" rows="2" placeholder="Owner, next step, or handoff notes"></textarea><button class="ph-btn" type="submit">Add milestone</button><p class="hub3-status" aria-live="polite"></p></form></section></div></article>';
  }).join("")||'<p class="hub3-empty">'+(isAdmin?"No private workspaces yet. Create a project or mentorship room to get started.":"You have not been added to a private project workspace yet. Production leadership can add you to an episode, project, crew, or mentorship room.")+'</p>');
 }
 async function createCollabGroup(form){
  const button=form.querySelector('button[type="submit"]'),data=new FormData(form),name=String(data.get("name")||"").trim(),description=String(data.get("description")||"").trim(),group_type=String(data.get("group_type")||"project"),selected=[...form.elements.member_ids.selectedOptions].map(o=>o.value);
  if(!isAdmin||name.length<3)return;button.disabled=true;
  try{
-  const {data:group,error}=await db.from("tn_production_collab_groups").insert({name,description,group_type,created_by:user.id}).select("id").single();if(error)throw error;
+  const {data:group,error}=await db.from("tn_production_collab_groups").insert({name,description,group_type,episode_id:data.get("episode_id")||null,created_by:user.id}).select("id").single();if(error)throw error;
   const ids=[...new Set([user.id,...selected])];const {error:memberError}=await db.from("tn_production_collab_members").insert(ids.map(user_id=>({group_id:group.id,user_id,added_by:user.id})));if(memberError)throw memberError;
   form.reset();notice(form,"Private workspace created and members added.");await logActivity("collaboration_workspace_created","Created a private production workspace");await loadCollaboration();
  }catch(error){notice(form,"Could not create workspace: "+(error.message||"Please try again."))}finally{button.disabled=false}
 }
+
+async function submitEpisodeHandoff(form){
+ const d=form.elements,button=form.querySelector("button"),group_id=form.dataset.collabHandoffForm,episode_id=form.dataset.episodeId,segment_title=d.segment_title.value.trim(),owner_id=d.owner_id.value,handoff_notes=d.handoff_notes.value.trim()||null;
+ if(segment_title.length<3||!owner_id)return;button.disabled=true;
+ try{const {error}=await db.from("tn_production_episode_handoffs").insert({group_id,episode_id,segment_title,owner_id,handoff_notes,created_by:user.id});if(error)throw error;form.reset();notice(form,"Handoff created.");await loadCollaboration()}catch(e){notice(form,"Could not create handoff: "+e.message)}finally{button.disabled=false}
+}
+async function submitEpisodeSignoff(button){
+ const decision=button.dataset.decision;if(!["approved","revision_requested"].includes(decision))return;
+ const notes=prompt(decision==="approved"?"Optional approval note":"What needs revision?");if(notes===null)return;
+ button.disabled=true;const handoff_id=button.dataset.episodeSignoff;
+ try{const {error}=await db.from("tn_production_episode_signoffs").upsert({handoff_id,reviewer_id:user.id,decision,notes:notes.trim()||null},{onConflict:"handoff_id,reviewer_id"});if(error)throw error;
+ const {error:updateError}=await db.from("tn_production_episode_handoffs").update({status:decision,updated_at:new Date().toISOString()}).eq("id",handoff_id);if(updateError)throw updateError;await loadCollaboration()}catch(e){alert("Sign-off failed: "+e.message);button.disabled=false}
+}
+
 async function submitCollabMessage(form){
  const groupId=form.dataset.collabMessageForm,message=form.elements.message.value.trim(),button=form.querySelector("button");if(!message)return;button.disabled=true;
  try{const {error}=await db.from("tn_production_collab_messages").insert({group_id:groupId,sender_id:user.id,message});if(error)throw error;form.reset();notice(form,"Message sent.");await loadCollaboration()}catch(error){notice(form,"Could not send message: "+(error.message||"Please try again."))}finally{button.disabled=false}
@@ -783,6 +805,9 @@ async function init(){
  $("#h3MentorRequestForm")?.addEventListener("submit",e=>{e.preventDefault();saveMentorRequest(e.currentTarget)});
  $("#h3ReadinessForm")?.addEventListener("submit",e=>{e.preventDefault();saveReadinessReview(e.currentTarget)});
  $("#h3CollabCreateForm")?.addEventListener("submit",e=>{e.preventDefault();createCollabGroup(e.currentTarget)});
+ document.addEventListener("submit",e=>{const f=e.target.closest("[data-collab-handoff-form]");if(f){e.preventDefault();submitEpisodeHandoff(f)}});
+ document.addEventListener("click",e=>{const b=e.target.closest("[data-episode-signoff]");if(b)submitEpisodeSignoff(b)});
+
  document.addEventListener("submit",e=>{const message=e.target.closest("[data-collab-message-form]");if(message){e.preventDefault();submitCollabMessage(message);return}const milestone=e.target.closest("[data-collab-milestone-form]");if(milestone){e.preventDefault();submitCollabMilestone(milestone)}});
  document.addEventListener("change",async e=>{const field=e.target.closest("[data-collab-milestone]");if(!field)return;const id=field.dataset.collabMilestone;if(field.dataset.owner!==user.id&&!isAdmin){alert("Only the milestone creator or production leadership can update this milestone.");await loadCollaboration();return}const next=field.value;if(!["planned","in_progress","completed","blocked"].includes(next))return;field.disabled=true;const {error}=await db.from("tn_production_collab_milestones").update({status:next,updated_at:new Date().toISOString()}).eq("id",id);if(error){alert("Could not update milestone: "+error.message);field.disabled=false;return}await loadCollaboration()});
 
