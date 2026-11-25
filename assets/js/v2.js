@@ -1,5 +1,5 @@
 (()=>{"use strict";
-const cfg=window.TACOMA_NIGHTS_CONFIG||{},db=window.supabase?.createClient&&cfg.supabaseUrl&&cfg.supabaseAnonKey?window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null;
+const cfg=window.TACOMA_NIGHTS_CONFIG||{},db=window.supabase?.createClient&&cfg.supabaseUrl&&cfg.supabaseAnonKey?(window.__tnSupabaseClient||(window.__tnSupabaseClient=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))):null;
 const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 const showData={
