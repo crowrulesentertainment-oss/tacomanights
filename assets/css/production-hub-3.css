@@ -341,3 +341,14 @@
 .h3-upload-history{padding:12px 0;border-bottom:1px solid rgba(180,194,211,.12)}
 .h3-resubmit-btn{margin-top:10px;font-size:11px}
 @media(max-width:560px){.h3-assignment-card{display:grid;grid-template-columns:1fr}.h3-assignment-checklist{max-width:none}.h3-resubmit-btn{width:100%}}
+
+/* Production Hub 6.0 — host availability overview */
+.h3-availability-panel{margin-top:22px;padding-top:20px;border-top:1px solid rgba(180,194,211,.14)}
+.h3-availability-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.h3-availability-head h4{font:700 17px Manrope;margin:5px 0}
+.h3-availability-head p{margin:0}
+.h3-availability-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(170px,.8fr);gap:12px;padding:13px;border:1px solid rgba(180,194,211,.13);border-radius:9px;background:rgba(4,8,14,.35)}
+.h3-availability-row>div{display:grid;align-content:start;justify-items:start;gap:6px;min-width:0}
+.h3-availability-row strong{font-size:13px}
+.h3-availability-row small{font-size:11px;color:#aeb8c6;overflow-wrap:anywhere}
+@media(max-width:560px){.h3-availability-row{grid-template-columns:1fr}.h3-availability-head .ph-btn{width:100%}}
