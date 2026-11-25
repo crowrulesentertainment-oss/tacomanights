@@ -1,0 +1,49 @@
+/* Tacoma Nights Production Hub 3.0 — cinematic workspace */
+.hub3-shell{display:none;margin-top:36px;padding-top:30px;border-top:1px solid rgba(255,255,255,.1)}
+.hub3-shell.ready{display:block}
+.hub3-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;margin:0 0 22px}
+.hub3-heading h2{font:800 clamp(26px,4vw,42px)/1.08 Manrope,sans-serif;letter-spacing:-.045em;margin:5px 0}
+.hub3-heading p{color:#aeb8c6;max-width:720px;margin:8px 0}
+.hub3-live{white-space:nowrap;border:1px solid rgba(217,183,125,.25);background:rgba(217,183,125,.07);padding:9px 13px;border-radius:99px;font-size:10px;font-weight:800;letter-spacing:.13em;color:#e7d6b6}
+.hub3-live span{display:inline-block;width:7px;height:7px;border-radius:50%;background:#78c79a;margin-right:8px;box-shadow:0 0 12px #78c79a}
+.hub3-nav{display:flex;gap:7px;overflow-x:auto;padding:12px;margin:20px 0 18px;background:rgba(8,11,16,.94);border:1px solid rgba(255,255,255,.08);border-radius:12px;position:sticky;top:68px;z-index:19;backdrop-filter:blur(16px)}
+.hub3-tab{flex:0 0 auto;border:1px solid rgba(180,194,211,.16);background:#111722;color:#cbd3de;border-radius:7px;padding:10px 13px;font-size:11px;font-weight:800;cursor:pointer}
+.hub3-tab.active{background:linear-gradient(135deg,#d94d5b,#a72e3d);border-color:#d94d5b;color:white}
+.hub3-view{display:none;animation:hub3In .2s ease}.hub3-view.active{display:block}
+@keyframes hub3In{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+.hub3-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.hub3-card{grid-column:span 4;min-width:0;padding:22px;border:1px solid rgba(180,194,211,.15);border-radius:14px;background:linear-gradient(145deg,rgba(21,29,41,.98),rgba(10,14,21,.98));box-shadow:0 16px 42px rgba(0,0,0,.15)}
+.hub3-card.wide{grid-column:span 8}
+.hub3-card h3{font:800 21px/1.2 Manrope,sans-serif;letter-spacing:-.03em;margin:5px 0 10px}
+.hub3-card>p{color:#aeb8c6;line-height:1.6}
+.hub3-kicker{font-size:9px;font-weight:900;letter-spacing:.18em;color:#df9aa0}
+.hub3-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.hub3-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:18px 0}
+.hub3-stat{padding:13px;border-radius:9px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08)}
+.hub3-stat b{display:block;font:800 27px Manrope,sans-serif;color:#f2d7d9}
+.hub3-stat span{display:block;color:#aeb8c6;font-size:10px;text-transform:uppercase;letter-spacing:.09em}
+.hub3-list{display:grid;gap:10px;margin-top:14px}
+.hub3-row{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;padding:14px;border:1px solid rgba(180,194,211,.12);border-radius:10px;background:rgba(255,255,255,.025);min-width:0}
+.hub3-row>div{min-width:0;overflow-wrap:anywhere}
+.hub3-row b{font-size:13px}.hub3-row p{margin:6px 0;color:#c1cad5;font-size:12px;line-height:1.55}.hub3-row small,.hub3-mini small{display:block;color:#8f9bab;font-size:10px;line-height:1.5}
+.hub3-row a{color:#e4c68e;text-decoration:underline}.hub3-row.unread{border-color:rgba(217,83,98,.4);background:rgba(217,83,98,.06)}
+.hub3-mini{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.08)}.hub3-mini b{display:block;font-size:12px;margin-bottom:4px}
+.hub3-empty,.hub3-small{color:#9ba7b6;font-size:12px;line-height:1.6}
+.hub3-form{display:grid;gap:12px;margin-top:12px}.hub3-form label{display:grid;gap:6px;color:#bfc9d6;font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.hub3-form input,.hub3-form select,.hub3-form textarea,.hub3-row select{width:100%;min-width:0;box-sizing:border-box;background:#080d14;color:#f4f6f8;border:1px solid rgba(180,194,211,.2);border-radius:7px;padding:11px;font:inherit;text-transform:none;letter-spacing:normal}
+.hub3-form textarea{resize:vertical;min-height:80px}.hub3-form input:focus,.hub3-form textarea:focus,.hub3-form select:focus{outline:0;border-color:#d45160;box-shadow:0 0 0 3px rgba(212,81,96,.12)}
+.hub3-status{color:#d9b77d;font-size:11px;min-height:16px}
+.hub3-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:16px 0}
+.hub3-week span{padding:10px 8px;border-radius:8px;background:rgba(255,255,255,.035);font-size:10px;color:#aeb8c6;line-height:1.5}
+.hub3-week b{display:block;color:#e7c98f;font-size:10px;letter-spacing:.1em;margin-bottom:5px}
+.hub3-steps{padding-left:18px;color:#bdc7d3;font-size:12px;line-height:1.9}
+.hub3-chat{max-height:390px;overflow:auto;display:grid;gap:8px;margin:14px 0;padding:12px;background:#080d14;border-radius:10px}
+.hub3-chat-message{padding:10px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#141d29}
+.hub3-chat-message b{font-size:11px;color:#e9c5c8}.hub3-chat-message p{margin:5px 0;color:#d5dce5;font-size:12px;white-space:pre-wrap}.hub3-chat-message small{color:#8e9baa;font-size:10px}
+.hub3-award{flex:0 0 auto;padding:7px 10px;border:1px solid rgba(217,183,125,.3);border-radius:7px;color:#e5ca97;font-size:10px;font-weight:800;text-transform:uppercase}
+.hub3-public-feedback{display:grid;grid-template-columns:1fr 1.3fr;gap:24px;align-items:center;padding:22px;margin:18px 0 28px;border:1px solid rgba(217,183,125,.2);border-radius:14px;background:linear-gradient(120deg,rgba(217,183,125,.08),rgba(216,74,88,.07),rgba(15,20,29,.9))}
+.hub3-public-feedback h3{font:800 22px Manrope;margin:8px 0}.hub3-public-feedback p{color:#aeb8c6;font-size:12px;line-height:1.6}
+.hub3-public-form{display:grid;grid-template-columns:1fr 1fr;gap:9px}.hub3-public-form input,.hub3-public-form select,.hub3-public-form textarea{min-width:0;width:100%;box-sizing:border-box;padding:10px;background:#080d14;border:1px solid rgba(180,194,211,.2);border-radius:7px;color:white;font:inherit;font-size:12px}.hub3-public-form textarea{grid-column:1/-1;min-height:80px}.hub3-public-form button,.hub3-public-form .hub3-status{grid-column:1/-1}
+@media(max-width:900px){.hub3-card,.hub3-card.wide{grid-column:span 6}.hub3-week{grid-template-columns:repeat(4,minmax(0,1fr))}.hub3-public-feedback{grid-template-columns:1fr}}
+@media(max-width:580px){.hub3-heading{align-items:flex-start;flex-direction:column}.hub3-card,.hub3-card.wide{grid-column:1/-1;padding:17px}.hub3-nav{top:54px}.hub3-week{grid-template-columns:repeat(2,minmax(0,1fr))}.hub3-row{flex-direction:column}.hub3-public-form{grid-template-columns:1fr}.hub3-public-form textarea{grid-column:1}.hub3-live{white-space:normal}}
+@media(prefers-reduced-motion:reduce){.hub3-view{animation:none}}
