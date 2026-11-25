@@ -5,5 +5,6 @@ window.TACOMA_NIGHTS_CONFIG = Object.freeze({
   youtubeChannelId: "UCOSm_4z9LIQUWHOc8yzPgkw",
   youtubePlaylistId: "PLKfh6Jm08P-c",
   initialSubscriberCount: 821,
-  initialSubscriberGoal: 1000
+  initialSubscriberGoal: 1000,
+  youtubeStatsEndpoint: "https://cevylpnoexugwgygvtgu.supabase.co/functions/v1/youtube-subscriber-counts"
 });
