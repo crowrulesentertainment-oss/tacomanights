@@ -772,7 +772,7 @@ async function saveReadinessReview(form){if(!isAdmin)throw Error("Only productio
 
 async function loadAnalytics(){
  if(!isAdmin){set("h3AnalyticsStats",'<p class="hub3-empty">Production analytics are restricted to producers and administrators.</p>');set("h3AnalyticsBreakdown","");return}
- const [assignmentRows,uploadRows,editRows,activityRows,guestTotal,feedbackTotal]=await Promise.all([
+ const [assignmentRows,uploadRows,editRows,activityRows,guestTotal,feedbackTotal,recognitionPerfRows]=await Promise.all([
   rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,status,due_at,assignee_id,created_at").order("created_at",{ascending:false}).limit(500)),
   rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,uploader_id,created_at,reviewed_at").order("created_at",{ascending:false}).limit(500)),
   rows("tn_production_editing",db.from("tn_production_editing").select("id,status,editor_id,created_at,updated_at,approved_at").order("updated_at",{ascending:false}).limit(300)),
@@ -999,7 +999,7 @@ async function loadProductionVisits(){if(!isAdmin)return;const activeSince=new D
 
 async function init(){
  if(!window.supabase?.createClient||!cfg.supabaseUrl||!cfg.supabaseAnonKey){const st=$("#h3PublicFeedbackForm .hub3-status");if(st)st.textContent="The feedback service is temporarily unavailable. Please try again later.";return;}
- db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+ db=window.__tnSupabaseClient||(window.__tnSupabaseClient=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
  startTacomaClock();loadTacomaWeather();$("#h3WeatherRefresh")?.addEventListener("click",loadTacomaWeather);try{await recordProductionVisit()}catch(error){console.warn("Production visit tracking unavailable",error)}$("#h3TrafficRefresh")?.addEventListener("click",()=>loadProductionVisits().catch(error=>{const body=$("#h3VisitRecords");if(body)body.innerHTML='<tr><td colspan="4">'+esc(error.message||"Could not load visit records.")+'</td></tr>'}));
  const publicForm=$("#h3PublicFeedbackForm");
  publicForm?.addEventListener("submit",async e=>{e.preventDefault();const d=formData(publicForm),st=publicForm.querySelector(".hub3-status");st.textContent="Sending…";try{const {error}=await db.from("tn_production_feedback").insert({submitter_name:d.submitter_name||null,submitter_email:d.submitter_email||null,category:d.category,rating:d.rating?Number(d.rating):null,message:d.message,status:"pending"});if(error)throw error;publicForm.reset();st.textContent="Thank you. Your feedback has been sent to the production team for review."}catch(err){st.textContent="Your message could not be sent: "+err.message}});
