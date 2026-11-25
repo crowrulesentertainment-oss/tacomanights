@@ -41,6 +41,28 @@ To take a live event on air: choose **Enter live-event mode** in Master Control,
 
 The mode control only pauses/resumes playout; it does not start/stop the encoder, change the YouTube destination, or guarantee that YouTube is receiving a signal. Verify the encoder and YouTube Live Control Room separately. For true unattended 24/7 operation, keep the bridge, encoder, computer, network, and media sources continuously available and monitor them for failures.
 
+## Hybrid 24/7 broadcast operation
+
+Tacoma Nights supports one continuous YouTube livestream with two producer-controlled operating modes:
+
+- **AUTOMATION** (default): the Node scheduler checks the existing Supabase schedule and approved playout queue. Eligible media and YouTube playlists are sent to the local TN Network Playout browser source. Queue entries are marked played or failed as playback finishes.
+- **LIVE EVENT**: Master Control pauses automatic queue playback. If an item is currently playing, its queue status is returned to queued so it can resume later. The producer switches OBS/Streamlabs to a separate live scene and runs the live show. The bridge and Supabase scheduler remain available.
+- **Resume automation**: the producer returns to Master Control and selects Resume automated programming. The next eligible approved item plays.
+
+The selected mode is saved locally in `.broadcast-mode.json` and survives a bridge restart. It is not stored in Supabase and applies to this broadcast computer. The default after first install is AUTOMATION.
+
+### Configure the encoder scenes
+
+1. Create a **Prerecorded / Network Playout** scene and place the `TN Network Playout` browser source in it.
+2. Create a separate **Live Event** scene with the camera, microphone, remote guest and graphics sources. Do **not** place the full-screen TN Network Playout browser source in this scene.
+3. Create a **Standby** scene with the Tacoma Nights branded standby slate.
+4. Connect OBS while the Prerecorded scene is active so the bridge can add its browser source there. In Streamlabs, add the browser source manually to the Prerecorded scene only.
+5. Start the continuous YouTube stream manually from Master Control after checking the destination and scene. The bridge deliberately does not create, start, or stop YouTube broadcasts automatically.
+
+To take a live event on air: choose **Enter live-event mode** in Master Control, then switch the encoder to the Live Event scene. To return to prerecorded programming: switch the encoder back to the Prerecorded scene, then choose **Resume automated programming**. Use the Standby scene when you need a safe slate between events.
+
+The mode control only pauses/resumes playout; it does not start/stop the encoder, change the YouTube destination, or guarantee that YouTube is receiving a signal. Verify the encoder and YouTube Live Control Room separately. For true unattended 24/7 operation, keep the bridge, encoder, computer, network, and media sources continuously available and monitor them for failures.
+
 ## Safety
 The service binds to `127.0.0.1` by default. Keep it local; never expose this API or OBS/Streamlabs control ports to the internet. Never commit `.env`, OBS passwords, Streamlabs tokens, YouTube stream keys, or Supabase secret/service-role keys. The bridge never starts or stops the YouTube stream automatically; stream start/stop remains a deliberate producer action.
 
