@@ -17,7 +17,7 @@ function options(list,empty=""){return (empty?'<option value="">'+esc(empty)+'</
 async function refresh(){
  const baseTargets=["h3EditingEpisode","h3ResearchEpisode","h3GuestEpisode","h3RecognitionEpisode","h3RecognitionMember"];
  try{await loadBase()}catch(error){console.error("Production Hub base data",error);baseTargets.forEach(id=>{const el=$("#"+id);if(el)el.innerHTML='<option value="">Could not load options — use Refresh to retry</option>'})}
- const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention","h3LiveDashboard","h3RemoteDashboard"],async()=>{await loadCommand();await loadLiveOperations();await loadRemoteStudio()}],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList","h3QcDashboard","h3ReleaseDashboard"],async()=>{await loadEditing();await loadEpisodeQC();await loadReleaseControl()}],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk],["Contributor requests",["h3MyRequests","h3RequestReviewQueue"],loadRequests],["Collaboration center",["h3CollabGroups"],loadCollaboration]];
+ const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention","h3LiveDashboard","h3RemoteDashboard","h3CommsSummary","h3CommsInbox","h3CommsDeadlines"],async()=>{await loadCommand();await loadLiveOperations();await loadRemoteStudio();await loadProductionCommunications()}],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList","h3QcDashboard","h3ReleaseDashboard"],async()=>{await loadEditing();await loadEpisodeQC();await loadReleaseControl()}],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk],["Contributor requests",["h3MyRequests","h3RequestReviewQueue"],loadRequests],["Collaboration center",["h3CollabGroups"],loadCollaboration]];
  await Promise.all(tasks.map(async([label,targets,fn])=>{try{await fn()}catch(error){console.error(label,error);const html='<p class="hub3-empty">Could not load '+label.toLowerCase()+': '+esc(error?.message||"Please try again.")+'</p>';targets.forEach(id=>set(id,html))}}));
  try{await loadGrowthCenter()}catch(error){console.error("Contributor Growth Center",error);set("h3GrowthGoals",'<p class="hub3-empty">Growth goals could not load: '+esc(error?.message||"Please retry.")+'</p>')}
  try{await loadCareerPathways()}catch(error){console.error("Career pathways",error);set("h3CareerCurrent",'<p class="hub3-empty">Career pathway information could not load: '+esc(error?.message||"Please retry.")+'</p>')}
@@ -283,6 +283,40 @@ async function saveRemoteStudio(form){
  const payload={episode_id,session_status:form.elements.session_status.value,scheduled_at:scheduled&&!Number.isNaN(scheduled.getTime())?scheduled.toISOString():null,platform:form.elements.platform.value.trim()||null,meeting_url:meeting||null,recording_format:form.elements.recording_format.value,participants,technical_checks,deliverables,session_notes:form.elements.session_notes.value.trim()||null,updated_by:user.id,updated_at:new Date().toISOString()};
  const btn=form.querySelector('button[type="submit"]');btn.disabled=true;
  try{const {error}=await db.from("tn_production_remote_sessions").upsert(payload,{onConflict:"episode_id"});if(error)throw error;notice(form,"Remote recording session saved.");await logActivity("remote_session_saved","Updated remote studio, contributor readiness and segment handoffs");await loadRemoteStudio()}catch(e){notice(form,"Could not save remote session: "+(e.message||"Please try again."))}finally{btn.disabled=false}
+}
+
+
+let productionNoticeRows=[],deadlineWatchRows=[];
+async function loadProductionCommunications(){
+ const [notices,assignments]=await Promise.all([
+  rows("tn_production_notifications",db.from("tn_production_notifications").select("id,episode_id,notification_type,title,message,href,read_at,created_at").eq("recipient_id",user.id).order("created_at",{ascending:false}).limit(80)),
+  rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,status,due_at,tn_production_episodes(episode_number,title)").eq("assignee_id",user.id).not("due_at","is",null).order("due_at").limit(100))
+ ]);
+ productionNoticeRows=notices;deadlineWatchRows=assignments.filter(a=>!["complete","completed","approved","published","done","cancelled"].includes(String(a.status||"").toLowerCase()));
+ renderProductionCommunications();
+}
+function renderProductionCommunications(){
+ const inbox=$("#h3CommsInbox"),deadlines=$("#h3CommsDeadlines"),compose=$("#h3CommsCompose"),recipient=$("#h3CommsRecipient"),episode=$("#h3CommsEpisode");
+ if(compose)compose.classList.toggle("hidden",!isAdmin);
+ if(recipient&&isAdmin){const old=recipient.value;recipient.innerHTML='<option value="all">All approved production members</option>'+members.filter(m=>m.role!=="admin").map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Contributor")+'</option>').join("");if(old)recipient.value=old}
+ if(episode&&isAdmin){const old=episode.value;episode.innerHTML='<option value="">General production update</option>'+episodes.map(e=>'<option value="'+esc(e.id)+'">'+esc((e.episode_number||"Episode")+" · "+e.title)+'</option>').join("");if(old)episode.value=old}
+ const unread=productionNoticeRows.filter(n=>!n.read_at).length;
+ set("h3CommsSummary",'<div><b>'+productionNoticeRows.length+'</b><span>Recent notifications</span></div><div><b>'+unread+'</b><span>Unread</span></div><div><b>'+deadlineWatchRows.length+'</b><span>Open deadlines</span></div>');
+ if(inbox)inbox.innerHTML=productionNoticeRows.map(n=>'<article class="h3-comms-item '+(n.read_at?"":"unread")+'"><div class="h3-comms-itemtop"><span>'+esc((n.notification_type||"notice").replaceAll("_"," "))+'</span><time>'+when(n.created_at)+'</time></div><b>'+esc(n.title)+'</b><p>'+esc(n.message)+'</p><div class="h3-comms-actions">'+(n.href?'<a href="'+esc(n.href)+'">Open destination ↗</a>':"")+(n.read_at?"":'<button type="button" data-notice-read="'+esc(n.id)+'">Mark read</button>')+'</div></article>').join("")||'<p class="hub3-empty">Your production inbox is clear. Team updates will appear here.</p>';
+ const now=Date.now();if(deadlines)deadlines.innerHTML=deadlineWatchRows.map(a=>{const late=new Date(a.due_at).getTime()<now;return '<article class="h3-comms-deadline '+(late?"late":"")+'"><div><b>'+esc(a.title)+'</b><small>'+esc(a.tn_production_episodes?.episode_number||"Episode")+' · '+esc(a.tn_production_episodes?.title||"")+'</small></div><span>'+(late?"OVERDUE":"DUE")+' · '+when(a.due_at)+'</span></article>'}).join("")||'<p class="hub3-empty">No open assignment deadlines are currently attached to your account.</p>';
+}
+async function sendProductionNotice(form){
+ if(!isAdmin)return;const fd=formData(form),title=String(fd.title||"").trim(),message=String(fd.message||"").trim();
+ if(!title||!message)return;
+ let href=String(fd.href||"").trim();if(href&&!href.startsWith("/")||href.startsWith("//")){notice(form,"Destination must be an internal path beginning with one slash.");return}
+ const recipient=fd.recipient||"all";const recipients=recipient==="all"?members.filter(m=>["contributor","producer","admin"].includes(m.role)).map(m=>m.id):[recipient];
+ if(!recipients.length){notice(form,"No approved recipients are available.");return}
+ const payload=recipients.map(recipient_id=>({recipient_id,episode_id:fd.episode_id||null,notification_type:fd.notification_type||"announcement",title,message,href:href||null,created_by:user.id}));
+ const btn=form.querySelector('button[type="submit"]');btn.disabled=true;
+ try{const {error}=await db.from("tn_production_notifications").insert(payload);if(error)throw error;notice(form,"Notification sent to "+recipients.length+" production member"+(recipients.length===1?"":"s")+".");await logActivity("production_notification_sent",title);await loadProductionCommunications();form.reset()}catch(e){notice(form,"Could not send notification: "+(e.message||"Please try again."))}finally{btn.disabled=false}
+}
+async function markProductionNoticeRead(id){
+ const {error}=await db.from("tn_production_notifications").update({read_at:new Date().toISOString()}).eq("id",id).eq("recipient_id",user.id);if(error)throw error;await loadProductionCommunications();
 }
 
 async function loadCommand(){
@@ -934,6 +968,9 @@ async function init(){
  $("#h3QcForm")?.addEventListener("submit",e=>{e.preventDefault();saveEpisodeQC(e.currentTarget)});
  $("#h3LiveForm")?.addEventListener("submit",e=>{e.preventDefault();saveLiveOperations(e.currentTarget)});
  $("#h3RemoteForm")?.addEventListener("submit",e=>{e.preventDefault();saveRemoteStudio(e.currentTarget)});
+ $("#h3CommsForm")?.addEventListener("submit",e=>{e.preventDefault();sendProductionNotice(e.currentTarget)});
+ $("#h3CommsRefresh")?.addEventListener("click",()=>loadProductionCommunications().catch(e=>set("h3CommsInbox",'<p class="hub3-empty">'+esc(e.message)+'</p>')));
+ document.addEventListener("click",e=>{const b=e.target.closest("[data-notice-read]");if(b)markProductionNoticeRead(b.dataset.noticeRead).catch(err=>console.error("Notification read",err))});
  document.addEventListener("click",e=>{const b=e.target.closest("[data-remote-open]");if(!b)return;const select=$("#h3RemoteEpisode");if(select){select.value=b.dataset.remoteOpen;renderRemoteStudio();$("#h3RemoteEditor")?.scrollIntoView({behavior:"smooth",block:"center"})}});
  document.addEventListener("change",e=>{if(e.target.id==="h3RemoteEpisode")renderRemoteStudio()});
  document.addEventListener("click",e=>{const b=e.target.closest("[data-live-open]");if(!b)return;const select=$("#h3LiveEpisode");if(select){select.value=b.dataset.liveOpen;renderLiveOperations();$("#h3LiveEditor")?.scrollIntoView({behavior:"smooth",block:"center"})}});
