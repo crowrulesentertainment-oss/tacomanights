@@ -5,7 +5,7 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const when=v=>{if(!v)return"Not scheduled";const d=new Date(v);return Number.isNaN(d.getTime())?"Date unavailable":d.toLocaleString([],{dateStyle:"medium",timeStyle:"short"})};
 const safeHttps=value=>{if(!value)return"";try{const u=new URL(String(value));return u.protocol==="https:"?u.href:""}catch{return""}};
 const root=document.body.dataset.root||"../";
-let db,user,profile,isAdmin=false,episodes=[],members=[];
+let db,user,profile,isAdmin=false,episodes=[],members=[],notificationRows=[],notificationFilter='all';
 const set=(id,html)=>{const el=$("#"+id);if(el)el.innerHTML=html};
 const status=v=>'<span class="pill">'+esc(String(v||"pending").replaceAll("_"," "))+'</span>';
 const notice=(form,msg)=>{const el=form?.querySelector(".hub3-status");if(el)el.textContent=msg};
@@ -61,6 +61,7 @@ async function loadContributor(){
  const overdue=open.filter(a=>a.due_at&&new Date(a.due_at).getTime()<now);
  const dueSoon=open.filter(a=>a.due_at&&new Date(a.due_at).getTime()>=now&&new Date(a.due_at).getTime()<=now+7*day);
  const unread=notifications.filter(n=>!n.read_at).length;
+ try{await syncAssignmentReminders(assignments);await loadNotifications()}catch(error){console.warn("Deadline reminder sync failed",error)}
  const review=uploads.filter(x=>["submitted","revision","revision_requested","pending_review"].includes(String(x.status||"").toLowerCase())).length;
  set("h3ContributorStats",[
   ["Open assignments",open.length],["Due in 7 days",dueSoon.length],["Overdue",overdue.length],["Unread updates",unread],["Uploads awaiting review",review]
@@ -117,9 +118,34 @@ async function loadResearch(){
  const list=await rows("tn_production_research",db.from("tn_production_research").select("id,title,category,summary,source_url,source_name,status,created_at,created_by").order("created_at",{ascending:false}).limit(60));
  set("h3ResearchList",list.map(x=>'<article class="hub3-row"><div><b>'+esc(x.title)+'</b><p>'+esc(x.category)+' · '+esc(x.summary)+'</p><small>'+esc(x.source_name||"Source not named")+' · '+when(x.created_at)+'</small>'+(safeHttps(x.source_url)?'<p><a href="'+esc(safeHttps(x.source_url))+'" target="_blank" rel="noopener noreferrer">Open source ↗</a></p>':"")+'</div>'+status(x.status)+'</article>').join("")||'<p class="hub3-empty">The research desk is ready for its first source or story brief.</p>');
 }
+function renderNotifications(){
+ const unread=notificationRows.filter(x=>!x.read_at).length;
+ set("h3NotificationSummary",'<div class="hub3-notice-count"><b>'+unread+'</b><span>unread notifications</span><small>'+notificationRows.length+' recent messages</small></div>');
+ const list=notificationRows.filter(x=>notificationFilter==="unread"?!x.read_at:notificationFilter==="deadlines"?/deadline|due|overdue/i.test((x.title||"")+" "+(x.message||"")):true);
+ set("h3NotificationList",list.map(x=>'<article class="hub3-row '+(x.read_at?"":"unread")+'"><div><b>'+esc(x.title)+'</b><p>'+esc(x.message)+'</p><small>'+when(x.created_at)+'</small>'+(safeHttps(x.href)?'<p><a href="'+esc(safeHttps(x.href))+'">Open related item ↗</a></p>':"")+'</div>'+(x.read_at?status("read"):'<button class="ph-btn" data-h3-read="'+esc(x.id)+'">Mark read</button>')+'</article>').join("")||'<p class="hub3-empty">'+(notificationFilter==="unread"?"You have no unread notifications.":notificationFilter==="deadlines"?"No deadline reminders yet.":"You are all caught up. New production notifications will appear here.")+'</p>');
+ document.querySelectorAll("[data-h3-notification-filter]").forEach(b=>b.classList.toggle("active",b.dataset.h3NotificationFilter===notificationFilter));
+ const all=document.querySelector("[data-h3-read-all]");if(all)all.disabled=unread===0;
+}
 async function loadNotifications(){
- const list=await rows("tn_notifications",db.from("tn_notifications").select("id,title,message,href,read_at,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(50));
- set("h3NotificationList",list.map(x=>'<article class="hub3-row '+(x.read_at?"":"unread")+'"><div><b>'+esc(x.title)+'</b><p>'+esc(x.message)+'</p><small>'+when(x.created_at)+'</small>'+(safeHttps(x.href)?'<p><a href="'+esc(safeHttps(x.href))+'">Open related item ↗</a></p>':"")+'</div>'+(x.read_at?status("read"):'<button class="ph-btn" data-h3-read="'+esc(x.id)+'">Mark read</button>')+'</article>').join("")||'<p class="hub3-empty">You are all caught up. New production notifications will appear here.</p>');
+ notificationRows=await rows("tn_notifications",db.from("tn_notifications").select("id,title,message,href,read_at,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(100));
+ renderNotifications();
+}
+async function syncAssignmentReminders(assignments){
+ const now=Date.now(),soon=now+48*60*60*1000,base="https://crowrulesentertainment-oss.github.io/tacomanights/production/";
+ const open=assignments.filter(a=>a.due_at&&!["complete","completed","approved","cancelled"].includes(String(a.status||"").toLowerCase()));
+ const candidates=[];
+ for(const a of open){const due=new Date(a.due_at).getTime(),overdue=due<now;if(!overdue&&due>soon)continue;
+  const kind=overdue?"overdue":"due-soon",href=base+"?reminder="+kind+"&assignment="+encodeURIComponent(a.id);
+  const ep=a.tn_production_episodes;
+  candidates.push({user_id:user.id,title:overdue?"Assignment overdue":"Deadline approaching",message:(a.title||"Your production assignment")+(ep?.episode_number?" · "+ep.episode_number:"")+(overdue?" is past its deadline. Please update your producer.":" is due within 48 hours. Please submit your segment on time."),href});
+ }
+ if(!candidates.length)return;
+ const hrefs=candidates.map(x=>x.href);
+ const existing=await rows("tn_notifications",db.from("tn_notifications").select("href").eq("user_id",user.id).in("href",hrefs));
+ const seen=new Set(existing.map(x=>x.href)),fresh=candidates.filter(x=>!seen.has(x.href));
+ if(!fresh.length)return;
+ const {error}=await db.from("tn_notifications").insert(fresh);
+ if(error){console.warn("Assignment reminders could not be created",error.message);return}
 }
 async function loadGuests(){
  if(!isAdmin){set("h3GuestList",'<p class="hub3-empty">Guest contact details are restricted to producers and administrators.</p>');return}
@@ -232,7 +258,9 @@ async function init(){
  document.querySelector("[data-h3-refresh]")?.addEventListener("click",refresh);
  document.addEventListener("click",async e=>{
   const review=e.target.closest("[data-h3-review]");if(review){await reviewSubmission(review);return}
-  const read=e.target.closest("[data-h3-read]");if(read){const {error}=await db.from("tn_notifications").update({read_at:new Date().toISOString()}).eq("id",read.dataset.h3Read).eq("user_id",user.id);if(!error){await logActivity("notification_read","Marked a notification as read");loadNotifications()}}
+  const filter=e.target.closest("[data-h3-notification-filter]");if(filter){notificationFilter=filter.dataset.h3NotificationFilter;renderNotifications()}
+  const readAll=e.target.closest("[data-h3-read-all]");if(readAll){readAll.disabled=true;const {error}=await db.from("tn_notifications").update({read_at:new Date().toISOString()}).eq("user_id",user.id).is("read_at",null);if(error){readAll.disabled=false;alert("Could not mark notifications as read: "+error.message)}else{await logActivity("notifications_read_all","Marked all notifications as read");await loadNotifications()}}
+  const read=e.target.closest("[data-h3-read]");if(read){const {error}=await db.from("tn_notifications").update({read_at:new Date().toISOString()}).eq("id",read.dataset.h3Read).eq("user_id",user.id);if(!error){await logActivity("notification_read","Marked a notification as read");await loadNotifications()}}
   const complete=e.target.closest("[data-h3-complete]");if(complete){const {error}=await db.from("tn_production_training_progress").upsert({resource_id:complete.dataset.h3Complete,user_id:user.id,completed_at:new Date().toISOString()},{onConflict:"resource_id,user_id"});if(!error){await logActivity("training_completed","Completed a training resource");loadTraining()}else alert(error.message)}
  });
  document.addEventListener("click",async e=>{const save=e.target.closest("[data-editing-save]");if(!save||!isAdmin)return;const id=save.dataset.editingSave;const row=save.closest("[data-editing-row]");const stage=row?.querySelector("[data-editing-stage]")?.value;if(!stage)return;save.disabled=true;const payload={status:stage,updated_by:user.id,updated_at:new Date().toISOString()};if(stage==="approved"){payload.approved_by=user.id;payload.approved_at=new Date().toISOString()}else{payload.approved_by=null;payload.approved_at=null}const {error}=await db.from("tn_production_editing").update(payload).eq("id",id);save.disabled=false;if(error){alert("Could not update editing stage: "+error.message);return}await logActivity("editing_stage_updated","Moved an episode edit to "+stage.replaceAll("_"," "));await refresh()});
