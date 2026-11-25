@@ -38,8 +38,8 @@ async function views(){
   liveSession=sessionStorage.getItem("tn-site-session-v1");
   if(!liveSession){liveSession=crypto.randomUUID();sessionStorage.setItem("tn-site-session-v1",liveSession);}
   db=window.__tnSupabaseClient||(window.__tnSupabaseClient=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
-  const {error}=await db.from("tn_homepage_views").insert({visitor_id:visitorId,page_path:"/tacomanights/index.html"});
-  if(error&&error.code!=="23505")throw error;
+  const {error}=await db.from("tn_homepage_views").upsert({visitor_id:visitorId,page_path:"/tacomanights/index.html"},{onConflict:"visitor_id,page_path,visit_date",ignoreDuplicates:true});
+  if(error)throw error;
   const result=await db.from("tn_homepage_views").select("id",{count:"exact",head:true});
   if(result.error)throw result.error;
   count.textContent=Number(result.count||0).toLocaleString();
