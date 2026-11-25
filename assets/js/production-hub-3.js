@@ -378,7 +378,6 @@ async function loadEditing(){
  const counts=stages.map(s=>[s,list.filter(x=>x.status===s).length]);
  set("h3EditingStats",[['In queue',list.filter(x=>!["approved","scheduled"].includes(x.status)).length],["Producer review",list.filter(x=>x.status==="review").length],["Revisions",list.filter(x=>x.status==="revisions").length],["Final cuts",list.filter(x=>x.status==="final_cut").length],["Approved",list.filter(x=>x.status==="approved"||x.status==="scheduled").length]].map(([l,n])=>'<div class="hub3-stat"><b>'+n+'</b><span>'+l+'</span></div>').join(""));
  renderEpisodeQC();
- await loadReleaseControl();
  set("h3EditingList",list.map(x=>{
   const editor=members.find(m=>m.id===x.editor_id);
   const stageIndex=stages.indexOf(x.status);
