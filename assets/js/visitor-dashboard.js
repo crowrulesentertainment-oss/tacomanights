@@ -20,7 +20,7 @@ async function updateLiveVisitors(){
  if(!db||!liveSession)return;
  const liveCount=$("#tn-live-visitor-count"),liveNote=$("#tn-live-visitor-note");
  try{
-  const {data,error}=await db.rpc("tn_homepage_live_visitors",{p_session_id:liveSession});
+  const {data,error}=await db.rpc("tn_homepage_live_visitors",{p_session_id:liveSession,p_visitor_id:visitor});
   if(error)throw error;
   if(liveCount)liveCount.textContent=Number(data||0).toLocaleString();
   if(liveNote)liveNote.textContent="On the homepage right now · refreshes every 20 seconds";
@@ -33,8 +33,8 @@ async function updateLiveVisitors(){
 async function views(){
  if(!cfg.supabaseUrl||!cfg.supabaseAnonKey||!window.supabase){count.textContent="—";countNote.textContent="View counter is not configured.";return;}
  try{
-  let visitor=sessionStorage.getItem("tn-home-visitor");
-  if(!visitor){visitor=crypto.randomUUID();sessionStorage.setItem("tn-home-visitor",visitor);}
+  let visitor=localStorage.getItem("tn-production-visitor-v1");
+  if(!visitor){visitor=crypto.randomUUID();localStorage.setItem("tn-production-visitor-v1",visitor);}
   liveSession=sessionStorage.getItem("tn-home-live-session");
   if(!liveSession){liveSession=crypto.randomUUID();sessionStorage.setItem("tn-home-live-session",liveSession);}
   db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
