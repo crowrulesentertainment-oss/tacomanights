@@ -31,8 +31,9 @@ function refresh(){
 }
 async function loadBase(){
  episodes=await rows("tn_production_episodes",db.from("tn_production_episodes").select("id,episode_number,title,topic,premiere_at,status").order("premiere_at",{ascending:true}));
+ if(isAdmin){members=await rows("tn_production_profiles",db.from("tn_production_profiles").select("id,display_name,email,role,requested_role,application_note,skills,segment_interests").in("role",["contributor","producer","admin"]).order("display_name"))}
  $("#h3EditingEpisode").innerHTML=options(episodes,"Choose episode…");$("#h3ResearchEpisode").innerHTML=options(episodes,"General research / idea vault");const researchOwner=$("#h3ResearchOwner");if(researchOwner&&isAdmin)researchOwner.innerHTML='<option value="">Unassigned</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");$("#h3GuestEpisode").innerHTML=options(episodes,"Not assigned yet");$("#h3RecognitionEpisode").innerHTML=options(episodes,"General contribution");
- if(isAdmin){members=await rows("tn_production_profiles",db.from("tn_production_profiles").select("id,display_name,email,role,requested_role,application_note,skills,segment_interests").in("role",["contributor","producer","admin"]).order("display_name"));$("#h3RecognitionMember").innerHTML=members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");const editor=$("#h3EditingEditor");if(editor)editor.innerHTML='<option value="">Assign to me</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+' · '+esc(m.role)+'</option>').join("")}
+ if(isAdmin){$("#h3RecognitionMember").innerHTML=members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");const editor=$("#h3EditingEditor");if(editor)editor.innerHTML='<option value="">Assign to me</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+' · '+esc(m.role)+'</option>').join("")}
  document.querySelectorAll(".hub3-form button.admin-only").forEach(b=>b.classList.toggle("hidden",!isAdmin));document.querySelectorAll(".hub3-form[data-admin-only]").forEach(form=>form.classList.toggle("hidden",!isAdmin));document.querySelectorAll("[data-h3-admin-only]").forEach(el=>el.classList.toggle("hidden",!isAdmin));
 }
 
@@ -817,7 +818,7 @@ async function saveReadinessReview(form){if(!isAdmin)throw Error("Only productio
 
 async function loadAnalytics(){
  if(!isAdmin){set("h3AnalyticsStats",'<p class="hub3-empty">Production analytics are restricted to producers and administrators.</p>');set("h3AnalyticsBreakdown","");return}
- const [assignmentRows,uploadRows,editRows,activityRows,guestTotal,feedbackTotal]=await Promise.all([
+ const [assignmentRows,uploadRows,editRows,activityRows,guestTotal,feedbackTotal,recognitionPerfRows]=await Promise.all([
   rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,status,due_at,assignee_id,created_at").order("created_at",{ascending:false}).limit(500)),
   rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,uploader_id,created_at,reviewed_at").order("created_at",{ascending:false}).limit(500)),
   rows("tn_production_editing",db.from("tn_production_editing").select("id,status,editor_id,created_at,updated_at,approved_at").order("updated_at",{ascending:false}).limit(300)),
