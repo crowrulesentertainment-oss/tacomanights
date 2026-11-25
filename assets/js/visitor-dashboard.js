@@ -35,9 +35,9 @@ async function views(){
  try{
   visitorId=localStorage.getItem("tn-production-visitor-v1");
   if(!visitorId){visitorId=crypto.randomUUID();localStorage.setItem("tn-production-visitor-v1",visitorId);}
-  liveSession=sessionStorage.getItem("tn-home-live-session");
-  if(!liveSession){liveSession=crypto.randomUUID();sessionStorage.setItem("tn-home-live-session",liveSession);}
-  db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+  liveSession=sessionStorage.getItem("tn-site-session-v1");
+  if(!liveSession){liveSession=crypto.randomUUID();sessionStorage.setItem("tn-site-session-v1",liveSession);}
+  db=window.__tnSupabaseClient||(window.__tnSupabaseClient=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}));
   const {error}=await db.from("tn_homepage_views").insert({visitor_id:visitorId,page_path:"/tacomanights/index.html"});
   if(error&&error.code!=="23505")throw error;
   const result=await db.from("tn_homepage_views").select("id",{count:"exact",head:true});
