@@ -69,26 +69,33 @@ async function loadCommand(){
 async function loadContributor(){
  const [assignments,uploads,notifications]=await Promise.all([
   rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,instructions,status,due_at,tn_production_episodes(episode_number,title)").eq("assignee_id",user.id).order("due_at").limit(100)),
-  rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,producer_note,created_at").eq("uploader_id",user.id).order("created_at",{ascending:false}).limit(12)),
+  rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,producer_note,created_at,reviewed_at").eq("uploader_id",user.id).order("created_at",{ascending:false}).limit(100)),
   rows("tn_notifications",db.from("tn_notifications").select("id,title,message,created_at,read_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(8))
  ]);
- const now=Date.now(), day=86400000;
- const open=assignments.filter(a=>!["complete","completed","approved","cancelled"].includes(String(a.status||"").toLowerCase()));
+ const now=Date.now(), day=86400000, norm=v=>String(v||"").toLowerCase();
+ const open=assignments.filter(a=>!["complete","cancelled"].includes(norm(a.status)));
+ const completed=assignments.filter(a=>norm(a.status)==="complete").length;
  const overdue=open.filter(a=>a.due_at&&new Date(a.due_at).getTime()<now);
  const dueSoon=open.filter(a=>a.due_at&&new Date(a.due_at).getTime()>=now&&new Date(a.due_at).getTime()<=now+7*day);
  const unread=notifications.filter(n=>!n.read_at).length;
+ const approved=uploads.filter(x=>norm(x.status)==="approved").length;
+ const revisions=uploads.filter(x=>norm(x.status)==="revision").length;
+ const rejected=uploads.filter(x=>norm(x.status)==="rejected").length;
+ const pending=uploads.filter(x=>norm(x.status)==="submitted").length;
+ const reviewed=approved+revisions+rejected, approvalRate=reviewed?Math.round(approved/reviewed*100):0;
+ const completionRate=assignments.length?Math.round(completed/assignments.length*100):0;
  try{await syncAssignmentReminders(assignments);await loadNotifications()}catch(error){console.warn("Deadline reminder sync failed",error)}
- const review=uploads.filter(x=>["submitted","revision","revision_requested","pending_review"].includes(String(x.status||"").toLowerCase())).length;
  set("h3ContributorStats",[
-  ["Open assignments",open.length],["Due in 7 days",dueSoon.length],["Overdue",overdue.length],["Unread updates",unread],["Uploads awaiting review",review]
+  ["Open assignments",open.length],["Due in 7 days",dueSoon.length],["Overdue",overdue.length],["Unread updates",unread],["Uploads awaiting review",pending]
  ].map(([label,n])=>'<div class="hub3-stat"><b>'+n+'</b><span>'+label+'</span></div>').join(""));
- const next=open.filter(a=>a.due_at).sort((a,b)=>new Date(a.due_at)-new Date(b.due_at))[0];
- set("h3ContributorNext",next?'<div class="hub3-next-deadline"><span class="hub3-kicker">NEXT DEADLINE</span><b>'+esc(next.title)+'</b><p>'+esc(next.tn_production_episodes?.episode_number||"Episode")+' · '+esc(next.tn_production_episodes?.title||"")+'</p><small>'+when(next.due_at)+'</small></div>':'<p class="hub3-empty">No upcoming assignment deadlines. Check back when a producer assigns your next segment.</p>');
+ set("h3ContributorPerformance",'<div class="h3-contributor-performance"><div class="h3-performance-head"><div><span class="hub3-kicker">YOUR CONTRIBUTION SNAPSHOT</span><h4>Work completed & reviewed</h4></div><span class="h3-performance-updated">Based on your production records</span></div><div class="h3-performance-grid"><div><b>'+completed+'</b><span>Assignments completed</span></div><div><b>'+uploads.length+'</b><span>Segments submitted</span></div><div><b>'+approved+'</b><span>Segments approved</span></div><div><b>'+revisions+'</b><span>Revisions requested</span></div><div><b>'+pending+'</b><span>Awaiting review</span></div><div><b>'+approvalRate+'%</b><span>Approval rate of reviewed uploads</span></div></div><div class="h3-progress-row"><div><span>Assignment completion</span><b>'+completionRate+'%</b></div><div class="h3-progress-track"><span style="width:'+completionRate+'%"></span></div></div><p class="h3-performance-foot">'+(reviewed?approved+' approved out of '+reviewed+' reviewed submission'+(reviewed===1?"":"s")+'.':'Your approval rate will appear after a producer reviews a submission.')+' '+(assignments.length?completed+' of '+assignments.length+' assigned tasks marked complete.':'Your task history will appear when assignments are added.')+'</p></div>');
+ const next=open.filter(a=>a.due_at).sort((a,b)=>new Date(a.due_at)-new Date(b.due_at))[0]||open[0];
+ set("h3ContributorNext",next?'<div class="hub3-next-deadline"><span class="hub3-kicker">'+(next.due_at?'NEXT DEADLINE':'CURRENT ASSIGNMENT')+'</span><b>'+esc(next.title)+'</b><p>'+esc(next.tn_production_episodes?.episode_number||"Episode")+' · '+esc(next.tn_production_episodes?.title||"")+'</p><small>'+(next.due_at?when(next.due_at):'Due date not set')+'</small></div>':'<p class="hub3-empty">No open assignments. You are caught up — check back when your producer posts the next segment.</p>');
  set("h3MyAssignments",assignments.map(a=>{
-  const late=a.due_at&&new Date(a.due_at).getTime()<now&&!["complete","completed","approved","cancelled"].includes(String(a.status||"").toLowerCase());
-  return '<article class="hub3-row"><div><b>'+esc(a.title)+'</b><p>'+esc(a.tn_production_episodes?.episode_number||"Episode")+" · "+esc(a.tn_production_episodes?.title||"")+'</p><p>'+esc(a.instructions||"No additional instructions.")+'</p><small class="'+(late?"hub3-overdue":"")+'">Due '+when(a.due_at)+(late?" · OVERDUE":"")+'</small></div>'+status(a.status)+'</article>';
+  const late=a.due_at&&new Date(a.due_at).getTime()<now&&!["complete","cancelled"].includes(norm(a.status));
+  return '<article class="hub3-row"><div><b>'+esc(a.title)+'</b><p>'+esc(a.tn_production_episodes?.episode_number||"Episode")+" · "+esc(a.tn_production_episodes?.title||"")+'</p><p>'+esc(a.instructions||"No additional instructions.")+'</p><small class="'+(late?"hub3-overdue":"")+'">'+(a.due_at?'Due '+when(a.due_at):'No due date set')+(late?" · OVERDUE":"")+'</small></div>'+status(a.status)+'</article>';
  }).join("")||'<p class="hub3-empty">You do not have any assignments yet. Your producer will post your segment and deadline here.</p>');
- set("h3MyUploads",uploads.map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b>'+status(a.status)+(a.producer_note?'<small class="hub3-producer-note">Producer feedback: '+esc(a.producer_note)+'</small>':"")+'<small>Submitted '+when(a.created_at)+'</small></div>').join("")||'<p class="hub3-empty">Your uploaded segments and producer feedback will appear here.</p>');
+ set("h3MyUploads",uploads.slice(0,15).map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b>'+status(a.status)+(a.producer_note?'<small class="hub3-producer-note">Producer feedback: '+esc(a.producer_note)+'</small>':"")+'<small>Submitted '+when(a.created_at)+(a.reviewed_at?' · Reviewed '+when(a.reviewed_at):'')+'</small></div>').join("")||'<p class="hub3-empty">Your uploaded segments and producer feedback will appear here.</p>');
  set("h3ContributorUpdates",notifications.slice(0,5).map(n=>'<div class="hub3-mini '+(n.read_at?"":"unread")+'"><b>'+esc(n.title)+'</b><p>'+esc(n.message)+'</p><small>'+when(n.created_at)+(n.read_at?"":" · NEW")+'</small></div>').join("")||'<p class="hub3-empty">No new team updates yet.</p>');
 }
 async function loadEditing(){
