@@ -15,17 +15,21 @@ async function count(table,filters=[]){let q=db.from(table).select("id",{count:"
 function tab(name){document.querySelectorAll(".hub3-tab").forEach(b=>b.classList.toggle("active",b.dataset.h3Tab===name));document.querySelectorAll(".hub3-view").forEach(v=>v.classList.toggle("active",v.id==="hub3-"+name))}
 function options(list,empty=""){return (empty?'<option value="">'+esc(empty)+'</option>':"")+list.map(x=>'<option value="'+esc(x.id)+'">'+esc((x.episode_number?x.episode_number+" · ":"")+(x.title||x.display_name||""))+'</option>').join("")}
 let refreshPromise=null,refreshAgain=false;
+function withLoadTimeout(promise,label,ms=7000){
+ let timer;
+ return Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(label+" timed out. Check your connection and use Refresh to retry.")),ms)})]).finally(()=>clearTimeout(timer));
+}
 async function runRefreshCycle(){
  const baseTargets=["h3EditingEpisode","h3ResearchEpisode","h3GuestEpisode","h3RecognitionEpisode","h3RecognitionMember"];
- try{await loadBase()}catch(error){console.error("Production Hub base data",error);baseTargets.forEach(id=>{const el=$("#"+id);if(el)el.innerHTML='<option value="">Could not load options — use Refresh to retry</option>'})}
+ try{await withLoadTimeout(loadBase(),"Base production data")}catch(error){console.error("Production Hub base data",error);baseTargets.forEach(id=>{const el=$("#"+id);if(el)el.innerHTML='<option value="">Could not load options — use Refresh to retry</option>'})}
  const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention","h3LiveDashboard","h3RemoteDashboard","h3CommsSummary","h3CommsInbox","h3CommsDeadlines"],async()=>{await loadCommand();await loadLiveOperations();await loadRemoteStudio();await loadProductionCommunications()}],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList","h3QcDashboard","h3ReleaseDashboard","h3PipelineSummary","h3PipelineList"],async()=>{await loadEditing();await loadEpisodeQC();await loadReleaseControl();await loadProductionPipeline()}],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk],["Contributor requests",["h3MyRequests","h3RequestReviewQueue"],loadRequests],["Collaboration center",["h3CollabGroups"],loadCollaboration]];
  // Limit concurrent panel loaders: a panel can issue multiple queries, so unbounded
  // Promise.all caused a large burst against Supabase on every refresh.
  let cursor=0;
- const worker=async()=>{while(cursor<tasks.length){const [label,targets,fn]=tasks[cursor++];try{await fn()}catch(error){console.error(label,error);const message='<p class="hub3-empty">Could not load '+label.toLowerCase()+': '+esc(error?.message||"Please try again.")+'</p>';targets.forEach(id=>set(id,message))}}};
- await Promise.all(Array.from({length:Math.min(3,tasks.length)},worker));
- try{await loadGrowthCenter()}catch(error){console.error("Contributor Growth Center",error);set("h3GrowthGoals",'<p class="hub3-empty">Growth goals could not load: '+esc(error?.message||"Please retry.")+'</p>')}
- try{await loadCareerPathways()}catch(error){console.error("Career pathways",error);set("h3CareerCurrent",'<p class="hub3-empty">Career pathway information could not load: '+esc(error?.message||"Please retry.")+'</p>')}
+ const worker=async()=>{while(cursor<tasks.length){const [label,targets,fn]=tasks[cursor++];try{await withLoadTimeout(fn(),label,7000)}catch(error){console.error(label,error);const message='<p class="hub3-empty">Could not load '+label.toLowerCase()+': '+esc(error?.message||"Please try again.")+'</p>';targets.forEach(id=>set(id,message))}}};
+ await Promise.all(Array.from({length:Math.min(4,tasks.length)},worker));
+ try{await withLoadTimeout(loadGrowthCenter(),"Contributor Growth Center",7000)}catch(error){console.error("Contributor Growth Center",error);set("h3GrowthGoals",'<p class="hub3-empty">Growth goals could not load: '+esc(error?.message||"Please retry.")+'</p>')}
+ try{await withLoadTimeout(loadCareerPathways(),"Career pathways",7000)}catch(error){console.error("Career pathways",error);set("h3CareerCurrent",'<p class="hub3-empty">Career pathway information could not load: '+esc(error?.message||"Please retry.")+'</p>')}
 }
 function refresh(){
  if(refreshPromise){refreshAgain=true;return refreshPromise}
