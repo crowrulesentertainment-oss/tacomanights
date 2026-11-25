@@ -14,6 +14,42 @@ async function getWeather(lat,lon,label){try{const u=new URL("https://api.open-m
 async function approximateLocation(){try{const r=await fetch("https://ipwho.is/",{cache:"no-store"});if(!r.ok)throw Error("Location unavailable");const d=await r.json();if(!d.success||!Number.isFinite(Number(d.latitude))||!Number.isFinite(Number(d.longitude)))throw Error("Location unavailable");const label=[d.city,d.region_code||d.region,d.country].filter(Boolean).join(", ");await getWeather(d.latitude,d.longitude,label||"Approximate location");}catch(e){weather.textContent="Location needed";place.textContent="Weather location unavailable";weatherNote.textContent="Allow location access to see weather for your area, or try again later.";}}
 if(locate)locate.addEventListener("click",()=>{if(!navigator.geolocation){weatherNote.textContent="This browser does not support location services.";return;}locate.disabled=true;locate.textContent="Finding location…";navigator.geolocation.getCurrentPosition(async p=>{await getWeather(p.coords.latitude,p.coords.longitude,"Your current location");locate.disabled=false;locate.textContent="Refresh my weather";},()=>{locate.disabled=false;locate.textContent="Try my location again";weatherNote.textContent="Location permission was not granted. Showing approximate area weather where available.";approximateLocation();},{enableHighAccuracy:false,timeout:10000,maximumAge:900000});});
 approximateLocation();
-async function views(){if(!cfg.supabaseUrl||!cfg.supabaseAnonKey){count.textContent="—";countNote.textContent="View counter is not configured.";return;}try{let visitor=sessionStorage.getItem("tn-home-visitor");if(!visitor){visitor=crypto.randomUUID();sessionStorage.setItem("tn-home-visitor",visitor);}const db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});const {error}=await db.from("tn_homepage_views").insert({visitor_id:visitor,page_path:"/tacomanights/index.html"});if(error&&error.code!=="23505")throw error;const result=await db.from("tn_homepage_views").select("id",{count:"exact",head:true});if(result.error)throw result.error;count.textContent=Number(result.count||0).toLocaleString();countNote.textContent="Recorded visits · one count per browser session each day";}catch(e){console.warn("Tacoma Nights view counter unavailable",e);count.textContent="—";countNote.textContent="View count temporarily unavailable.";}}
+let db=null;
+let liveSession=null;
+async function updateLiveVisitors(){
+ if(!db||!liveSession)return;
+ const liveCount=$("#tn-live-visitor-count"),liveNote=$("#tn-live-visitor-note");
+ try{
+  const {data,error}=await db.rpc("tn_homepage_live_visitors",{p_session_id:liveSession});
+  if(error)throw error;
+  if(liveCount)liveCount.textContent=Number(data||0).toLocaleString();
+  if(liveNote)liveNote.textContent="On the homepage right now · refreshes every 20 seconds";
+ }catch(e){
+  console.warn("Tacoma Nights live visitor count unavailable",e);
+  if(liveCount)liveCount.textContent="—";
+  if(liveNote)liveNote.textContent="Live visitor count temporarily unavailable.";
+ }
+}
+async function views(){
+ if(!cfg.supabaseUrl||!cfg.supabaseAnonKey||!window.supabase){count.textContent="—";countNote.textContent="View counter is not configured.";return;}
+ try{
+  let visitor=sessionStorage.getItem("tn-home-visitor");
+  if(!visitor){visitor=crypto.randomUUID();sessionStorage.setItem("tn-home-visitor",visitor);}
+  liveSession=sessionStorage.getItem("tn-home-live-session");
+  if(!liveSession){liveSession=crypto.randomUUID();sessionStorage.setItem("tn-home-live-session",liveSession);}
+  db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+  const {error}=await db.from("tn_homepage_views").insert({visitor_id:visitor,page_path:"/tacomanights/index.html"});
+  if(error&&error.code!=="23505")throw error;
+  const result=await db.from("tn_homepage_views").select("id",{count:"exact",head:true});
+  if(result.error)throw result.error;
+  count.textContent=Number(result.count||0).toLocaleString();
+  countNote.textContent="Recorded visits · one count per browser session each day";
+  await updateLiveVisitors();
+  setInterval(updateLiveVisitors,20000);
+ }catch(e){
+  console.warn("Tacoma Nights visitor counter unavailable",e);
+  count.textContent="—";countNote.textContent="Visitor count temporarily unavailable.";
+ }
+}
 views();
 })();
