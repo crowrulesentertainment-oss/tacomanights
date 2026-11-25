@@ -92,6 +92,15 @@ button:focus-visible,a:focus-visible{outline:2px solid #e36b77;outline-offset:3p
 
 /* Crew profile editor */
 .crew-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.crew-admin-grid .full{grid-column:1/-1}.crew-admin-grid label{display:block;color:#c4cedb;font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}.crew-admin-grid input,.crew-admin-grid textarea,.crew-admin-grid select{width:100%;box-sizing:border-box;background:#090e15;border:1px solid rgba(175,191,211,.2);border-radius:7px;color:#fff;padding:11px;font:inherit}.crew-admin-checks{display:flex;gap:14px;flex-wrap:wrap}.crew-admin-checks label{display:flex;gap:7px;align-items:center;text-transform:none;letter-spacing:0}.crew-admin-checks input{width:auto}.crew-admin-person{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}.crew-admin-person .meta{color:#aeb8c6;font-size:12px;line-height:1.6}.crew-admin-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.crew-admin-actions a{color:#e4c68e;text-decoration:underline;font-size:12px}@media(max-width:580px){.crew-admin-grid{grid-template-columns:1fr}.crew-admin-grid .full{grid-column:1}}
+
+/* Episode Studio workspace */
+#hub3-episode-studio .h3-release-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#hub3-episode-studio .h3-release-fields label{display:grid;gap:7px;color:#c4cedb;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+#hub3-episode-studio .h3-release-fields .wide{grid-column:1/-1}
+#hub3-episode-studio input,#hub3-episode-studio select,#hub3-episode-studio textarea{width:100%;box-sizing:border-box;background:#090e15;border:1px solid rgba(175,191,211,.2);border-radius:8px;color:#fff;padding:12px;font:inherit;min-width:0}
+#hub3-episode-studio textarea{min-height:340px;line-height:1.65;resize:vertical}
+#hub3-episode-studio .h3-release-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+@media(max-width:600px){#hub3-episode-studio .h3-release-fields{grid-template-columns:1fr}#hub3-episode-studio .h3-release-fields .wide{grid-column:1}#hub3-episode-studio textarea{min-height:260px}}
 </style>
 </head>
 <body data-root="../">
@@ -106,7 +115,29 @@ button:focus-visible,a:focus-visible{outline:2px solid #e36b77;outline-offset:3p
 <div id="appPanel" class="hidden">
 <section class="hub3-shell" id="hub3Shell">
  <div class="hub3-heading"><div><p class="eyebrow">PRODUCTION HUB 3.0 · PRIVATE OPERATIONS</p><h2>One episode. One command center.</h2><p>Plan the story, coordinate the team, track every handoff, and bring the finished episode to air.</p></div><div class="hub3-live"><span></span> TEAM WORKSPACE</div></div>
- <nav class="hub3-nav" aria-label="Production Hub 3.0"><button class="hub3-tab active" data-h3-tab="command">Command Center</button><button class="hub3-tab admin-only hidden" data-h3-tab="review" data-h3-admin-only>Review Desk</button><button class="hub3-tab" data-h3-tab="contributor">My Workspace</button><button class="hub3-tab" data-h3-tab="editing">Editing Room</button><button class="hub3-tab" data-h3-tab="calendar">Production Calendar</button><button class="hub3-tab" data-h3-tab="research">Research Desk</button><button class="hub3-tab" data-h3-tab="notifications">Notifications</button><button class="hub3-tab" data-h3-tab="guests">Guest Booking</button><button class="hub3-tab" data-h3-tab="communication">Communication</button><button class="hub3-tab" data-h3-tab="training">Training Center</button><button class="hub3-tab" data-h3-tab="analytics">Production Analytics</button><button class="hub3-tab" data-h3-tab="feedback">Audience Feedback</button><button class="hub3-tab" data-h3-tab="recognition">Crew Recognition</button></nav>
+ <nav class="hub3-nav" aria-label="Production Hub 3.0"><button class="hub3-tab active" data-h3-tab="command">Command Center</button><button class="hub3-tab" data-h3-tab="episode-studio">Episode Studio</button><button class="hub3-tab admin-only hidden" data-h3-tab="review" data-h3-admin-only>Review Desk</button><button class="hub3-tab" data-h3-tab="contributor">My Workspace</button><button class="hub3-tab" data-h3-tab="editing">Editing Room</button><button class="hub3-tab" data-h3-tab="calendar">Production Calendar</button><button class="hub3-tab" data-h3-tab="research">Research Desk</button><button class="hub3-tab" data-h3-tab="notifications">Notifications</button><button class="hub3-tab" data-h3-tab="guests">Guest Booking</button><button class="hub3-tab" data-h3-tab="communication">Communication</button><button class="hub3-tab" data-h3-tab="training">Training Center</button><button class="hub3-tab" data-h3-tab="analytics">Production Analytics</button><button class="hub3-tab" data-h3-tab="feedback">Audience Feedback</button><button class="hub3-tab" data-h3-tab="recognition">Crew Recognition</button></nav><section class="hub3-view" id="hub3-episode-studio">
+ <div class="hub3-grid">
+  <article class="hub3-card wide">
+   <span class="hub3-kicker">STORY DEVELOPMENT · WRITERS ROOM</span><h3>Episode Studio</h3>
+   <p>Build each Tacoma Nights episode from the first idea through the finished script. Save a separate outline, full script, rundown, host notes, and promotional copy for every episode.</p>
+   <form id="h3EpisodeStudioForm" class="h3-release-editor">
+    <div class="h3-release-fields">
+     <label>Episode<select id="h3StudioEpisode" required><option value="">Choose an episode…</option></select></label>
+     <label>Document<select id="h3StudioType"><option value="outline">Episode outline</option><option value="script">Full episode script</option><option value="rundown">Show rundown / segment order</option><option value="host_notes">Host & contributor notes</option><option value="promo_copy">Promotion / YouTube copy</option></select></label>
+     <label class="wide">Document title<input id="h3StudioTitle" maxlength="180" placeholder="Episode 04 — Building Community in Tacoma"></label>
+     <label class="wide">Working document<textarea id="h3StudioContent" rows="18" maxlength="50000" placeholder="Start with the opening, main conversation, segment handoffs, contributor cues, closing, and any production notes…"></textarea></label>
+     <label>Status<select id="h3StudioStatus"><option value="draft">Draft</option><option value="ready_for_review">Ready for producer review</option><option value="approved">Approved</option></select></label>
+    </div>
+    <div class="h3-release-actions"><button class="ph-btn primary" type="submit">Save document</button><button class="ph-btn" type="button" id="h3StudioExport">Export .txt</button><span class="hub3-status" id="h3StudioMessage" aria-live="polite"></span></div>
+   </form>
+  </article>
+  <article class="hub3-card">
+   <span class="hub3-kicker">WRITERS ROOM WORKFLOW</span><h3>Suggested episode build</h3>
+   <ol class="hub3-steps"><li>Lock the weekly topic and audience takeaway.</li><li>Build the outline and segment order.</li><li>Write host links, questions, intros and transitions.</li><li>Add contributor cues and Wednesday delivery deadlines.</li><li>Move the script to producer review, then approved.</li></ol>
+   <p class="hub3-small">Each document is private to approved production members. Contributors can update documents they created; producers and administrators can manage the full writers room.</p>
+  </article>
+ </div>
+</section>
  <section class="hub3-view active" id="hub3-command"><div class="hub3-grid"><article class="hub3-card wide"><div class="hub3-card-head"><div><span class="hub3-kicker">EXECUTIVE OVERVIEW</span><h3>Episode command center</h3><p>Live status across the current production cycle.</p></div><button class="ph-btn" data-h3-refresh>Refresh</button></div><div id="h3CommandStats" class="hub3-stats"></div>
  <div class="hub3-command-actions" aria-label="Command center shortcuts">
   <button type="button" data-h3-go="review" data-h3-admin-only class="admin-only hidden"><b>Producer review desk</b><span>Preview, approve and request revisions</span></button><button type="button" data-h3-go="contributor"><b>Contributor work</b><span>Assignments and submissions</span></button>
