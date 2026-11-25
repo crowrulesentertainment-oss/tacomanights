@@ -405,3 +405,20 @@
 .h3-smart-owner{display:inline-block;margin-left:4px;padding:3px 5px;border-radius:4px;background:rgba(217,183,125,.13);color:#e4c58e;font-size:8px;letter-spacing:.06em}
 @media(max-width:800px){.h3-smart-candidates{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.h3-smart-assignment-card{padding:14px}.h3-smart-candidates{grid-template-columns:1fr}.h3-smart-task{display:grid}}
+
+
+/* Production Hub 11.0 — contributor capability profiles */
+.h3-capability-card{grid-column:1/-1;min-width:0;margin-top:4px;padding:19px;border:1px solid rgba(217,183,125,.23);border-radius:11px;background:linear-gradient(145deg,rgba(217,183,125,.055),rgba(4,8,14,.36))}
+.h3-capability-controls{display:grid;gap:7px;max-width:440px;margin:12px 0 16px}
+.h3-capability-controls label{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#c9d0da}
+.h3-capability-controls select{width:100%;min-height:42px;padding:9px 12px;border:1px solid rgba(180,194,211,.24);border-radius:7px;background:#101722;color:#f3f5f8}
+.h3-capability-group{margin:0 0 13px;padding:13px;border:1px solid rgba(180,194,211,.15);border-radius:8px;min-width:0}
+.h3-capability-group legend{padding:0 7px;color:#e4c58e;font:700 11px Manrope}
+.h3-capability-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.h3-capability-options label{display:flex;align-items:center;gap:8px;min-width:0;padding:8px;border-radius:6px;background:rgba(255,255,255,.025);color:#d8dee7;font-size:11px;line-height:1.35;cursor:pointer}
+.h3-capability-options input{accent-color:#d9b77d;flex:0 0 auto}
+.h3-capability-options span{overflow-wrap:anywhere}
+.h3-capability-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+#h3CapabilityMessage{font-size:11px;color:#d9bd8b}
+@media(max-width:760px){.h3-capability-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:460px){.h3-capability-card{padding:14px}.h3-capability-options{grid-template-columns:1fr}}
