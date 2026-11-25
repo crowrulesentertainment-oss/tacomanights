@@ -110,8 +110,17 @@ async function publishSlate(now:Date){
  const {start,end}=weekBounds(now),iso=isoWeek(now);
  const query=()=>db.from("tn_pickem_provider_events").select("provider_sport,provider_game_id,sport,league,home_team,away_team,starts_at,status,home_score,away_score,result").eq("provider","apisports").gte("starts_at",now.toISOString()).lt("starts_at",end.toISOString()).eq("result","pending");
  let {data:events,error}=await query();if(error)throw error;
- let selected=chooseSlate(events||[]),seasonYear=iso.year,weekNumber=iso.week,slug="tn-pickem-"+seasonYear+"-w"+String(weekNumber).padStart(2,"0");
- if(!selected.length){const nextIso=isoWeek(end);const {data:nextEvents,error:nextError}=await db.from("tn_pickem_provider_events").select("provider_sport,provider_game_id,sport,league,home_team,away_team,starts_at,status,home_score,away_score,result").gte("starts_at",end.toISOString()).lt("starts_at",new Date(end.getTime()+7*86400000).toISOString()).eq("result","pending");if(nextError)throw nextError;selected=chooseSlate(nextEvents||[]);if(!selected.length)return {published:false,selected:0,reason:"no_upcoming_games"};seasonYear=nextIso.year;weekNumber=nextIso.week;slug="tn-pickem-"+seasonYear+"-w"+String(weekNumber).padStart(2,"0");}
+ const eligible=(events||[]).filter((e:any)=>
+  (["nfl","cfb","basketball"].includes(e.sport))||
+  (e.sport==="hockey"&&e.league==="NHL")||
+  (e.sport==="baseball"&&e.league==="MLB")
+ );
+ let selected=chooseSlate(eligible),seasonYear=iso.year,weekNumber=iso.week,slug="tn-pickem-"+seasonYear+"-w"+String(weekNumber).padStart(2,"0");
+ if(!selected.length){const nextIso=isoWeek(end);const {data:nextEvents,error:nextError}=await db.from("tn_pickem_provider_events").select("provider_sport,provider_game_id,sport,league,home_team,away_team,starts_at,status,home_score,away_score,result").gte("starts_at",end.toISOString()).lt("starts_at",new Date(end.getTime()+7*86400000).toISOString()).eq("result","pending");if(nextError)throw nextError;selected=chooseSlate((nextEvents||[]).filter((e:any)=>
+   (["nfl","cfb","basketball"].includes(e.sport))||
+   (e.sport==="hockey"&&e.league==="NHL")||
+   (e.sport==="baseball"&&e.league==="MLB")
+  ));if(!selected.length)return {published:false,selected:0,reason:"no_upcoming_games"};seasonYear=nextIso.year;weekNumber=nextIso.week;slug="tn-pickem-"+seasonYear+"-w"+String(weekNumber).padStart(2,"0");}
  const {data:existing}=await db.from("tn_pickem_weeks").select("id,games,status").eq("slug",slug).maybeSingle();
  if(existing&&existing.status!=="open")return {published:false,selected:0,reason:"week_already_locked_or_completed"};
  const selectedGames=selected.map(toGame),started=(existing?.games||[]).filter((g:any)=>g.starts_at&&new Date(g.starts_at).getTime()<=now.getTime());
@@ -155,7 +164,7 @@ Deno.serve(async(req:Request)=>{
     if(lastSchedule!==today){const rows=await fetchSchedule(cfg,now);requests+=cfg.key==="football"?SOCCER_LEAGUES.size:3;received+=rows.length;upserted+=await upsertRows(rows);await setState(cfg.key,{last_schedule_sync_at:now.toISOString(),last_status:"schedule_ok",last_error:null});}
     const midnight=pacificMidnight(today).toISOString(),tomorrow=pacificMidnight(datePlus(today,1)).toISOString();
     const {count:activeCount}=await db.from("tn_pickem_provider_events").select("id",{count:"exact",head:true}).eq("provider","apisports").eq("provider_sport",cfg.key).gte("starts_at",midnight).lt("starts_at",tomorrow).eq("result","pending");
-    if((activeCount||0)>0){const raw=await fetchToday(cfg,now);requests++;received+=raw.length;const rows=raw.map((r:any)=>normalizeRow(r,cfg)).filter(Boolean);upserted+=await upsertRows(rows);await setState(cfg.key,{last_live_sync_at:now.toISOString(),last_status:"live_ok",last_error:null});}
+    if((activeCount||0)>0){const raw=await fetchToday(cfg,now);requests+=cfg.key==="football"?SOCCER_LEAGUES.size:1;received+=raw.length;const rows=raw.map((r:any)=>normalizeRow(r,cfg)).filter(Boolean);upserted+=await upsertRows(rows);await setState(cfg.key,{last_live_sync_at:now.toISOString(),last_status:"live_ok",last_error:null});}
    }catch(sportError){const message=sportError instanceof Error?sportError.message:"Provider sport sync failed";const planLimited=/free plans do not have access to this season/i.test(message);sportErrors.push({sport:cfg.key,message,planLimited});await setState(cfg.key,{last_status:planLimited?"plan_limited":"error",last_schedule_sync_at:planLimited?now.toISOString():null,last_error:message}).catch(()=>{});}
   }
   slate=await publishSlate(now);scored=await refreshWeekResults();
