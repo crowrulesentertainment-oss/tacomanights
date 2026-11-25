@@ -17,7 +17,7 @@ function options(list,empty=""){return (empty?'<option value="">'+esc(empty)+'</
 async function refresh(){
  const baseTargets=["h3EditingEpisode","h3ResearchEpisode","h3GuestEpisode","h3RecognitionEpisode","h3RecognitionMember"];
  try{await loadBase()}catch(error){console.error("Production Hub base data",error);baseTargets.forEach(id=>{const el=$("#"+id);if(el)el.innerHTML='<option value="">Could not load options — use Refresh to retry</option>'})}
- const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"],loadCommand],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList","h3QcDashboard"],async()=>{await loadEditing();await loadEpisodeQC()}],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk],["Contributor requests",["h3MyRequests","h3RequestReviewQueue"],loadRequests],["Collaboration center",["h3CollabGroups"],loadCollaboration]];
+ const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"],loadCommand],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList","h3QcDashboard","h3ReleaseDashboard"],async()=>{await loadEditing();await loadEpisodeQC();await loadReleaseControl()}],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk],["Contributor requests",["h3MyRequests","h3RequestReviewQueue"],loadRequests],["Collaboration center",["h3CollabGroups"],loadCollaboration]];
  await Promise.all(tasks.map(async([label,targets,fn])=>{try{await fn()}catch(error){console.error(label,error);const html='<p class="hub3-empty">Could not load '+label.toLowerCase()+': '+esc(error?.message||"Please try again.")+'</p>';targets.forEach(id=>set(id,html))}}));
  try{await loadGrowthCenter()}catch(error){console.error("Contributor Growth Center",error);set("h3GrowthGoals",'<p class="hub3-empty">Growth goals could not load: '+esc(error?.message||"Please retry.")+'</p>')}
  try{await loadCareerPathways()}catch(error){console.error("Career pathways",error);set("h3CareerCurrent",'<p class="hub3-empty">Career pathway information could not load: '+esc(error?.message||"Please retry.")+'</p>')}
@@ -340,6 +340,37 @@ async function saveEpisodeQC(form){
  try{const {error}=await db.from("tn_production_episode_qc").upsert(payload,{onConflict:"episode_id"});if(error)throw error;notice(form,"Quality review saved.");await logActivity("episode_quality_review_saved","Updated episode delivery and quality control");await loadEpisodeQC()}catch(e){notice(form,"Could not save quality review: "+(e.message||"Please try again."))}finally{button.disabled=false}
 }
 
+
+const releaseChecks=[["video_uploaded","Final video uploaded to YouTube"],["thumbnail_uploaded","Thumbnail uploaded and previewed"],["metadata_checked","Title, description, tags, and links checked"],["captions_checked","Captions and subtitles confirmed"],["end_screen","End screen, cards, and playlist added"],["visibility_checked","Visibility and scheduled time verified"],["premiere_chat","Premiere chat and moderation coverage assigned"],["promotion_ready","Social promotion and community announcement ready"]];
+let releaseRows=[];
+async function loadReleaseControl(){
+ const data=await rows("tn_production_release_control",db.from("tn_production_release_control").select("*").order("updated_at",{ascending:false}).limit(150));releaseRows=data;renderReleaseControl();
+}
+function renderReleaseControl(){
+ const select=$("#h3ReleaseEpisode"),form=$("#h3ReleaseForm"),editor=$("#h3ReleaseEditor"),dash=$("#h3ReleaseDashboard");
+ if(editor)editor.classList.toggle("hidden",!isAdmin);
+ if(select&&isAdmin){const old=select.value;select.innerHTML='<option value="">Choose episode…</option>'+qcEpisodes.map(e=>'<option value="'+esc(e.id)+'">'+esc((e.episode_number?'Episode '+e.episode_number+' · ':'')+e.title)+'</option>').join("");if(old)select.value=old}
+ if(form){const row=releaseRows.find(x=>x.episode_id===select?.value);const values=["youtube_title","youtube_description","youtube_tags","video_url","thumbnail_url","youtube_video_id","visibility","release_status","release_notes"];values.forEach(k=>{if(form.elements[k])form.elements[k].value=k==="youtube_tags"?(row?.[k]||[]).join(", "):(row?.[k]??(k==="visibility"?"private":k==="release_status"?"draft":""))});if(form.elements.scheduled_at)form.elements.scheduled_at.value=row?.scheduled_at?new Date(row.scheduled_at).toISOString().slice(0,16):"";$("#h3ReleaseChecks").innerHTML=releaseChecks.map(([key,label])=>'<label class="h3-release-check"><input type="checkbox" name="release_'+key+'" '+(row?.release_checklist?.[key]===true?"checked":"")+'><span>'+esc(label)+'</span></label>').join("")}
+ const active=qcEpisodes.filter(e=>!["published","archived","cancelled"].includes(String(e.status).toLowerCase()));
+ const cards=active.map(e=>{const r=releaseRows.find(x=>x.episode_id===e.id),checks=releaseChecks.filter(([k])=>r?.release_checklist?.[k]===true).length,qc=qcRows.find(x=>x.episode_id===e.id),edit=editingRowsCache.find(x=>x.episode_id===e.id),gate=qc?.qc_status==="approved"&&releaseChecks.every(([k])=>r?.release_checklist?.[k]===true)&&edit&&["approved","scheduled"].includes(edit.status);return '<article class="h3-release-card"><div class="h3-release-card-head"><div><span class="hub3-kicker">'+esc(e.episode_number||"EPISODE")+'</span><h4>'+esc(e.title)+'</h4></div><span class="h3-release-status">'+esc((r?.release_status||"not started").replaceAll("_"," "))+'</span></div><p>'+checks+'/'+releaseChecks.length+' release checks · QC '+esc(qc?.qc_status||"pending")+' · Edit '+esc(edit?.status||"pending")+'</p><div class="h3-release-progress"><span style="width:'+Math.round(checks/releaseChecks.length*100)+'%"></span></div><small>'+ (r?.scheduled_at?"Scheduled "+esc(when(r.scheduled_at)):r?.published_at?"Published "+esc(when(r.published_at)):"No release time set")+'</small><p class="h3-release-gate">'+(gate?"Technical, editing, and release checks complete":!qc||qc.qc_status!=="approved"?"Waiting for approved quality control":!edit||!["approved","scheduled"].includes(edit.status)?"Waiting for editing approval":checks!==releaseChecks.length?"Release checklist incomplete":"Ready for release status review")+'</p><button type="button" class="ph-btn" data-release-open="'+esc(e.id)+'" '+(!isAdmin?"disabled":"")+'>'+(isAdmin?"Manage release":"View status")+'</button></article>'}).join("");
+ if(dash)dash.innerHTML=cards||'<p class="hub3-empty">No active episodes available for release planning.</p>';
+}
+async function saveReleaseControl(form){
+ if(!isAdmin)return;const episode_id=form.elements.episode_id.value;if(!episode_id)return;
+ const release_checklist=Object.fromEntries(releaseChecks.map(([k])=>[k,form.elements["release_"+k].checked]));
+ const release_status=form.elements.release_status.value,qc=qcRows.find(x=>x.episode_id===episode_id),edit=editingRowsCache.find(x=>x.episode_id===episode_id);
+ const allChecks=releaseChecks.every(([k])=>release_checklist[k]===true),gate=qc?.qc_status==="approved"&&allChecks&&edit&&["approved","scheduled"].includes(edit.status);
+ const scheduled=form.elements.scheduled_at.value?new Date(form.elements.scheduled_at.value):null;
+ const video=safeHttps(form.elements.video_url.value.trim()),thumbnail=safeHttps(form.elements.thumbnail_url.value.trim());
+ if(["ready","scheduled","published"].includes(release_status)&&!gate){notice(form,"Cannot mark ready: require approved QC, approved editing, and all release checks.");return}
+ if(["scheduled","published"].includes(release_status)&&!scheduled&&release_status==="scheduled"){notice(form,"Add a scheduled release date and time.");return}
+ if(release_status==="published"&&(!form.elements.youtube_video_id.value.trim()||!video)){notice(form,"For a published record, add the YouTube video ID and final video URL.");return}
+ if(form.elements.video_url.value.trim()&&!video||form.elements.thumbnail_url.value.trim()&&!thumbnail){notice(form,"Video and thumbnail links must be valid HTTPS URLs.");return}
+ const payload={episode_id,youtube_title:form.elements.youtube_title.value.trim()||null,youtube_description:form.elements.youtube_description.value.trim()||null,youtube_tags:form.elements.youtube_tags.value.split(",").map(x=>x.trim()).filter(Boolean).slice(0,30),video_url:video||null,thumbnail_url:thumbnail||null,youtube_video_id:form.elements.youtube_video_id.value.trim()||null,visibility:form.elements.visibility.value,release_status,release_checklist,scheduled_at:scheduled&&!Number.isNaN(scheduled.getTime())?scheduled.toISOString():null,published_at:release_status==="published"?new Date().toISOString():null,release_notes:form.elements.release_notes.value.trim()||null,updated_by:user.id,updated_at:new Date().toISOString()};
+ const btn=form.querySelector('button[type="submit"]');btn.disabled=true;
+ try{const {error}=await db.from("tn_production_release_control").upsert(payload,{onConflict:"episode_id"});if(error)throw error;notice(form,"Release plan saved.");await logActivity("episode_release_plan_saved","Updated episode publishing control room");await loadReleaseControl()}catch(e){notice(form,"Could not save release plan: "+(e.message||"Please try again."))}finally{btn.disabled=false}
+}
+
 async function loadEditing(){
  const list=await rows("tn_production_editing",db.from("tn_production_editing").select("*,tn_production_episodes(episode_number,title,premiere_at)").order("updated_at",{ascending:false}).limit(100));
  editingRowsCache=list;
@@ -347,6 +378,7 @@ async function loadEditing(){
  const counts=stages.map(s=>[s,list.filter(x=>x.status===s).length]);
  set("h3EditingStats",[['In queue',list.filter(x=>!["approved","scheduled"].includes(x.status)).length],["Producer review",list.filter(x=>x.status==="review").length],["Revisions",list.filter(x=>x.status==="revisions").length],["Final cuts",list.filter(x=>x.status==="final_cut").length],["Approved",list.filter(x=>x.status==="approved"||x.status==="scheduled").length]].map(([l,n])=>'<div class="hub3-stat"><b>'+n+'</b><span>'+l+'</span></div>').join(""));
  renderEpisodeQC();
+ await loadReleaseControl();
  set("h3EditingList",list.map(x=>{
   const editor=members.find(m=>m.id===x.editor_id);
   const stageIndex=stages.indexOf(x.status);
@@ -838,6 +870,10 @@ async function init(){
  $("#h3ReadinessForm")?.addEventListener("submit",e=>{e.preventDefault();saveReadinessReview(e.currentTarget)});
  $("#h3CollabCreateForm")?.addEventListener("submit",e=>{e.preventDefault();createCollabGroup(e.currentTarget)});
  $("#h3QcForm")?.addEventListener("submit",e=>{e.preventDefault();saveEpisodeQC(e.currentTarget)});
+ $("#h3ReleaseForm")?.addEventListener("submit",e=>{e.preventDefault();saveReleaseControl(e.currentTarget)});
+ document.addEventListener("click",e=>{const b=e.target.closest("[data-release-open]");if(!b)return;const select=$("#h3ReleaseEpisode");if(select){select.value=b.dataset.releaseOpen;renderReleaseControl();$("#h3ReleaseEditor")?.scrollIntoView({behavior:"smooth",block:"center"})}});
+ document.addEventListener("change",e=>{if(e.target.id==="h3ReleaseEpisode")renderReleaseControl()});
+
  document.addEventListener("click",e=>{const b=e.target.closest("[data-qc-open]");if(!b)return;const select=$("#h3QcEpisode");if(select){select.value=b.dataset.qcOpen;renderEpisodeQC();$("#h3QcEditor")?.scrollIntoView({behavior:"smooth",block:"center"})}});
  document.addEventListener("change",e=>{if(e.target.id==="h3QcEpisode")renderEpisodeQC()});
 
