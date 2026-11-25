@@ -162,10 +162,54 @@ async function loadTraining(){
  set("h3TrainingList",list.map(x=>'<article class="hub3-row"><div><b>'+esc(x.title)+'</b><p>'+esc(x.description)+'</p><small>'+esc(x.category.replaceAll("_"," "))+'</small>'+(x.content?'<p>'+esc(x.content)+'</p>':"")+(safeHttps(x.resource_url)?'<p><a href="'+esc(safeHttps(x.resource_url))+'" target="_blank" rel="noopener noreferrer">Open learning resource ↗</a></p>':"")+'</div>'+(done.has(x.id)?status("completed"):'<button class="ph-btn" data-h3-complete="'+esc(x.id)+'">Mark complete</button>')+'</article>').join("")||'<p class="hub3-empty">Training resources will appear here as producers publish them.</p>');
 }
 async function loadAnalytics(){
- if(!isAdmin){set("h3AnalyticsStats",'<p class="hub3-empty">Production analytics are restricted to producers and administrators.</p>');return}
- const vals=await Promise.all([count("tn_production_episodes"),count("tn_production_assignments"),count("tn_production_uploads"),count("tn_production_uploads",[["status","approved"]]),count("tn_production_guests"),count("tn_production_feedback")]);
- set("h3AnalyticsStats",["Episodes","Assignments","Segment uploads","Approved segments","Guest records","Audience responses"].map((l,i)=>'<div class="hub3-stat"><b>'+vals[i]+'</b><span>'+l+'</span></div>').join(""));
- set("h3AnalyticsBreakdown",'<p class="hub3-small">Metrics reflect the records visible to your producer account. Upload approval rate: '+(vals[2]?Math.round(vals[3]/vals[2]*100):0)+'%.</p>');
+ if(!isAdmin){set("h3AnalyticsStats",'<p class="hub3-empty">Production analytics are restricted to producers and administrators.</p>');set("h3AnalyticsBreakdown","");return}
+ const [assignmentRows,uploadRows,editRows,activityRows,guestTotal,feedbackTotal]=await Promise.all([
+  rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,status,due_at,assignee_id,created_at").order("created_at",{ascending:false}).limit(500)),
+  rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,uploader_id,created_at,reviewed_at").order("created_at",{ascending:false}).limit(500)),
+  rows("tn_production_editing",db.from("tn_production_editing").select("id,status,editor_id,created_at,updated_at,approved_at").order("updated_at",{ascending:false}).limit(300)),
+  rows("tn_production_activity",db.from("tn_production_activity").select("id,actor_id,action,detail,created_at").order("created_at",{ascending:false}).limit(100)),
+  count("tn_production_guests"),count("tn_production_feedback")
+ ]);
+ const norm=v=>String(v||"").toLowerCase().replaceAll(" ","_");
+ const done=a=>["complete","completed","approved","published","done"].includes(norm(a.status));
+ const openAssignments=assignmentRows.filter(a=>!done(a)&&!["cancelled","rejected"].includes(norm(a.status)));
+ const overdue= openAssignments.filter(a=>a.due_at&&new Date(a.due_at).getTime()<Date.now());
+ const approvedUploads=uploadRows.filter(a=>norm(a.status)==="approved");
+ const pendingUploads=uploadRows.filter(a=>["submitted","pending_review","revision","revision_requested"].includes(norm(a.status)));
+ const reviewedUploads=uploadRows.filter(a=>a.reviewed_at&&a.created_at);
+ const reviewHours=reviewedUploads.map(a=>(new Date(a.reviewed_at)-new Date(a.created_at))/36e5).filter(n=>Number.isFinite(n)&&n>=0);
+ const avgReview=reviewHours.length?reviewHours.reduce((a,b)=>a+b,0)/reviewHours.length:null;
+ const activeEdits=editRows.filter(a=>!["approved","scheduled","published","complete","completed"].includes(norm(a.status)));
+ const weekAgo=Date.now()-7*864e5;
+ const weeklyActivity=activityRows.filter(a=>a.created_at&&new Date(a.created_at).getTime()>=weekAgo);
+ const publishedEpisodes=episodes.filter(e=>["published","complete","completed"].includes(norm(e.status))).length;
+ const episodeProgress=episodes.length?Math.round(publishedEpisodes/episodes.length*100):0;
+ const deliveryRate=assignmentRows.length?Math.round(assignmentRows.filter(done).length/assignmentRows.length*100):0;
+ const approvalRate=uploadRows.length?Math.round(approvedUploads.length/uploadRows.length*100):0;
+ const stat=(n,l,sub="")=>'<div class="hub3-stat"><b>'+n+'</b><span>'+l+'</span>'+(sub?'<small>'+sub+'</small>':"")+'</div>';
+ set("h3AnalyticsStats",[
+  stat(episodes.length,"Episodes in system",publishedEpisodes+" completed / published"),
+  stat(openAssignments.length,"Open assignments",overdue.length+" currently overdue"),
+  stat(deliveryRate+"%","Assignment completion",assignmentRows.length+" tracked assignments"),
+  stat(uploadRows.length,"Segment submissions",approvedUploads.length+" approved · "+pendingUploads.length+" awaiting action"),
+  stat(avgReview===null?"—":avgReview<24?avgReview.toFixed(1)+"h":(avgReview/24).toFixed(1)+"d","Average review turnaround",reviewedUploads.length+" uploads with review timestamps"),
+  stat(activeEdits.length,"Active editing jobs",editRows.length+" editing records"),
+  stat(weeklyActivity.length,"Activity · last 7 days",activityRows.length+" recent activity records loaded"),
+  stat(guestTotal,"Guest records",feedbackTotal+" audience responses")
+ ].join(""));
+ const memberName=id=>{const m=members.find(x=>x.id===id);return m?.display_name||m?.email||"Unassigned / team member"};
+ const byPerson=new Map();
+ assignmentRows.forEach(a=>{const k=a.assignee_id||"unassigned";if(!byPerson.has(k))byPerson.set(k,{name:memberName(a.assignee_id),assigned:0,done:0,late:0});const x=byPerson.get(k);x.assigned++;if(done(a))x.done++;if(!done(a)&&a.due_at&&new Date(a.due_at).getTime()<Date.now())x.late++});
+ const people=[...byPerson.values()].sort((a,b)=>b.assigned-a.assigned);
+ const bars=(value,total)=>'<span class="hub3-analytics-bar"><i style="width:'+Math.max(0,Math.min(100,total?value/total*100:0))+'%"></i></span>';
+ const peopleHtml=people.length?people.map(p=>'<div class="hub3-analytics-person"><div><b>'+esc(p.name)+'</b><small>'+p.done+'/'+p.assigned+' completed · '+p.late+' overdue</small></div>'+bars(p.done,p.assigned)+'</div>').join(""):'<p class="hub3-empty">Contributor delivery metrics will appear when assignments are created.</p>';
+ const stageCounts=new Map();editRows.forEach(x=>stageCounts.set(norm(x.status)||"unknown",(stageCounts.get(norm(x.status)||"unknown")||0)+1));
+ const stageHtml=stageCounts.size?[...stageCounts.entries()].sort((a,b)=>b[1]-a[1]).map(([s,n])=>'<div class="hub3-analytics-line"><span>'+esc(s.replaceAll("_"," "))+'</span><b>'+n+'</b></div>').join(""):'<p class="hub3-empty">No editing records yet.</p>';
+ const uploadStages=new Map();uploadRows.forEach(x=>uploadStages.set(norm(x.status)||"unknown",(uploadStages.get(norm(x.status)||"unknown")||0)+1));
+ const uploadHtml=uploadStages.size?[...uploadStages.entries()].sort((a,b)=>b[1]-a[1]).map(([s,n])=>'<div class="hub3-analytics-line"><span>'+esc(s.replaceAll("_"," "))+'</span><b>'+n+'</b></div>').join(""):'<p class="hub3-empty">No segment submissions yet.</p>';
+ const activityHtml=weeklyActivity.slice(0,8).map(a=>'<article class="hub3-activity"><div class="hub3-activity-top"><b>'+esc(memberName(a.actor_id))+' · '+esc(String(a.action||"Production update").replaceAll("_"," "))+'</b><time>'+when(a.created_at)+'</time></div>'+(a.detail?'<p>'+esc(a.detail)+'</p>':"")+'</article>').join("")||'<p class="hub3-empty">No recorded team activity in the last seven days.</p>';
+ const note=episodes.length||assignmentRows.length||uploadRows.length||editRows.length?'Figures use up to 500 assignments, 500 submissions, 300 editing records and 100 recent activity records visible to this producer account. Completion is based on current status; on-time completion is not calculated because assignments do not store a completion timestamp.':'No production records have been entered yet. As the team creates episodes, assigns work and submits segments, this dashboard will populate automatically.';
+ set("h3AnalyticsBreakdown",'<div class="hub3-analytics-grid"><section><h4>Contributor delivery</h4>'+peopleHtml+'</section><section><h4>Editing pipeline</h4>'+stageHtml+'</section><section><h4>Submission review queue</h4>'+uploadHtml+'</section><section><h4>Recent production activity</h4>'+activityHtml+'</section></div><p class="hub3-small hub3-analytics-footnote">'+note+' Episode completion rate: '+episodeProgress+'%. Upload approval rate: '+approvalRate+'%.</p>');
 }
 async function loadFeedback(){
  if(!isAdmin){set("h3FeedbackList",'<p class="hub3-empty">Audience submissions are private to producers and administrators. Use the public feedback form below the page hero to share a response.</p>');return}
