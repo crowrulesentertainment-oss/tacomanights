@@ -6,7 +6,7 @@ const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let index=0,timer=null,paused=reduced,player=null,ytReady=false,playerReady=false,videoId="XTSDHNf2DAA",currentLoadedVideoId="",videoRequested=false,videoActive=true;
 const stop=()=>{if(timer)clearTimeout(timer);timer=null;};
 const stopVideo=()=>{try{if(player&&player.stopVideo)player.stopVideo()}catch{}};
-const start=()=>{stop();if(!paused&&!document.hidden&&index!==2)timer=setTimeout(()=>show(index+1),15000);};
+const start=()=>{stop();if(!paused&&!document.hidden&&index!==2)timer=setTimeout(()=>show(index+1),5000);};
 const loadApi=()=>{
  if(window.YT&&window.YT.Player){ytReady=true;createPlayer();return}
  if(window.__tnHeroYTLoading)return;
