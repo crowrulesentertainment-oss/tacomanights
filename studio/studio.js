@@ -55,6 +55,7 @@ async function getHealth(){
  const standby=$("emergency-standby");if(standby)standby.disabled=!(h.ok&&h.connected&&h.sessionPaired);
  setText("engine-status","ENGINE: "+String(h.engine||"UNKNOWN").toUpperCase()+(h.connected?" CONNECTED":" OFFLINE"));
  setText("active-engine",h.engine||"—");
+ renderBroadcastMode(h.broadcastMode||"auto");
  setText("monitor-message",h.playout|| (h.connected?"BRIDGE READY":"ENGINE OFFLINE"));
  const engineSelect=$("engine-select");if(engineSelect&&h.engine)engineSelect.value=h.engine;
  return h;
@@ -75,6 +76,8 @@ function renderNetwork(h,queued){
  setText("network-status",status+" · "+queued+" QUEUED");
  const el=$("network-status");if(el){el.dataset.state=paired&&connected?"online":paired?"warning":h?.ok?"warning":"offline";el.title="Bridge: "+(h?.ok?"reachable":"unavailable")+"; Supabase session: "+(paired?"paired":"not paired")+"; encoder: "+(connected?"connected":"disconnected")+". YouTube output is verified separately in YouTube Studio.";}
 }
+function renderBroadcastMode(mode){const live=mode==="live";setText("broadcast-mode-badge",live?"LIVE EVENT MODE":"AUTOMATION MODE");setText("broadcast-mode-detail",live?"Automatic playout is paused. Switch your encoder to the live-event scene; the YouTube stream can remain running.":"Automatic playout is active. Approved, due queue items will play through the TN Network Playout source.");const auto=$("mode-auto"),liveButton=$("mode-live");if(auto){auto.disabled=!live;auto.textContent=live?"Resume automated programming":"Automated programming active"}if(liveButton){liveButton.disabled=live;liveButton.textContent=live?"Live-event mode active":"Enter live-event mode"}}
+async function setBroadcastMode(mode){if(!bridgeToken||!lastHealth?.ok||!lastHealth?.sessionPaired){setText("broadcast-mode-detail","Connect and pair the local bridge before changing broadcast mode.");return}const buttons=[$("mode-auto"),$("mode-live")].filter(Boolean);buttons.forEach(x=>x.disabled=true);try{const result=await api("/broadcast/mode",{mode});renderBroadcastMode(result.mode);setText("bridge-message",result.message);recordEvent("Broadcast mode changed to "+result.mode.toUpperCase()+".","control");await refresh()}catch(e){setText("broadcast-mode-detail","Could not change mode: "+e.message);buttons.forEach(x=>x.disabled=false)}}
 async function refresh(){
  if(refreshBusy)return;refreshBusy=true;
  try{
@@ -220,6 +223,8 @@ async function start(){
   finally{button.disabled=false}
  });
  $("connect-bridge")?.addEventListener("click",connectBridge);
+ $("mode-auto")?.addEventListener("click",()=>setBroadcastMode("auto"));
+ $("mode-live")?.addEventListener("click",()=>{if(!confirm("Pause automated playout for a live event? Switch the encoder to a separate live scene without the TN Network Playout browser source."))return;setBroadcastMode("live")});
  $("refresh-dashboard")?.addEventListener("click",()=>{refresh().catch(e=>setText("bridge-message",e.message));loadRundown();loadQueueSnapshot()});
  initChecklist();renderEventLog();
  $("reset-checklist")?.addEventListener("click",()=>{if(!confirm("Reset all pre-show checklist items?"))return;document.querySelectorAll("[data-check]").forEach(x=>x.checked=false);localStorage.removeItem(checklistKey());updateChecklist();recordEvent("Pre-show checklist reset.","checklist")});
