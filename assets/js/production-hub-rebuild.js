@@ -37,7 +37,7 @@ async function start(){
  user=session.user;$("#notice").textContent="Checking your production membership…";
  const profileRows=await query(db.from("tn_production_profiles").select("id,display_name,email,role").eq("id",user.id).limit(1));profile=profileRows[0];
  if(!profile||!["contributor","producer","admin"].includes(profile.role)){show("#pending",true);$("#notice").textContent="Membership approval is required.";return}
- admin=["producer","admin"].includes(profile.role);show("#workspace",true);$("#welcomeTitle").textContent="Welcome, "+(profile.display_name||"team member")+".";$("#roleLine").textContent=(admin?"Producer access":"Contributor access")+" · Tacoma Nights production";
+ admin=["producer","admin"].includes(profile.role);if(admin)document.querySelector("#statAssignments").previousElementSibling.textContent="TEAM ASSIGNMENTS";show("#workspace",true);$("#welcomeTitle").textContent="Welcome, "+(profile.display_name||"team member")+".";$("#roleLine").textContent=(admin?"Producer access":"Contributor access")+" · Tacoma Nights production";
  if(admin){show("#assignPanel",true);await fillAdminLists()}
  await refresh();
 }
