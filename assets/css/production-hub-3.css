@@ -280,3 +280,11 @@
 .hub3-month-event{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:4px 5px;border-radius:4px;background:rgba(130,158,194,.13);border-left:2px solid #829ec2;color:#dbe5f2;font-size:9px}
 .hub3-month-event.event-deadline{border-left-color:#e0a66e}.hub3-month-event.event-premiere{border-left-color:#d9b77d}.hub3-month-event.event-editing{border-left-color:#a78bd4}.hub3-month-event.event-submission{border-left-color:#78b6a0}
 @media(max-width:620px){.hub3-month-grid{gap:2px}.hub3-month-day{min-height:76px;padding:4px 3px}.hub3-month-weekday{font-size:8px;padding:6px 0}.hub3-month-day-number{font-size:10px;margin-bottom:4px}.hub3-month-event{font-size:8px;padding:3px 2px}.hub3-calendar-nav b{flex:1;min-width:120px;font-size:12px}.hub3-calendar-nav .ph-btn{padding:8px 10px}}
+
+/* Production Notifications 4.0 */
+.hub3-notification-toolbar{align-items:center;gap:10px;flex-wrap:wrap}
+.hub3-notification-filters{display:flex;gap:6px;flex-wrap:wrap}
+.hub3-notification-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+.hub3-notification-toolbar .ph-btn:disabled{opacity:.45;cursor:not-allowed}
+.hub3-row.unread{border-left:3px solid #d9b77d;background:rgba(217,183,125,.055)}
+@media(max-width:620px){.hub3-notification-actions{margin-left:0;width:100%}.hub3-notification-actions .ph-btn{flex:1}.hub3-notification-filters .ph-btn{padding:8px 10px;font-size:11px}}
