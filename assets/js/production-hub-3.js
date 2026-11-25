@@ -60,12 +60,10 @@ async function reviewContributorRequest(button){
  const note=card.querySelector("[data-request-note]")?.value.trim()||"",buttons=[...card.querySelectorAll("[data-request-review]")],statusEl=card.querySelector(".hub3-status");
  buttons.forEach(b=>b.disabled=true);statusEl.textContent="Saving decision…";
  try{
-  const {data:req,error}=await db.from("tn_production_requests").update({status:decision,review_note:note||null,reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",id).eq("status","pending").select("*").single();
+  const {data:reviewed,error}=await db.rpc("tn_production_review_request",{p_request_id:id,p_decision:decision,p_note:note||null});
   if(error)throw error;
-  if(decision==="approved"&&req.request_type==="assignment_status"){
-   const {error:assignmentError}=await db.from("tn_production_assignments").update({status:req.requested_status}).eq("id",req.assignment_id).eq("assignee_id",req.requester_id);
-   if(assignmentError)throw new Error("Request approved, but assignment status update failed: "+assignmentError.message);
-  }
+  const req=Array.isArray(reviewed)?reviewed[0]:reviewed;
+  if(!req)throw new Error("The request was not returned after review.");
   const label={assignment_status:"Assignment status",availability:"Availability",time_off:"Time-off"}[req.request_type]||"Contributor";
   const {error:notifyError}=await db.from("tn_notifications").insert({user_id:req.requester_id,title:decision==="approved"?"Production request approved":"Production request update",message:label+" request "+decision+". "+(note||""),href:"https://crowrulesentertainment-oss.github.io/tacomanights/production/"});
   if(notifyError)console.warn("Request notification",notifyError.message);
