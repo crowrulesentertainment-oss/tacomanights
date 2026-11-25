@@ -162,3 +162,22 @@
 .hub3-analytics-footnote{margin-top:16px;padding:12px;border-left:2px solid #d9b77d;background:rgba(217,183,125,.055);line-height:1.65}
 #h3AnalyticsStats .hub3-stat small{display:block;margin-top:5px;color:#9ba8b8;font-size:10px;line-height:1.4}
 @media(max-width:680px){.hub3-analytics-grid{grid-template-columns:1fr}.hub3-analytics-person{grid-template-columns:minmax(0,1fr) 90px}}
+
+/* Audience feedback command desk */
+.hub3-feedback-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:14px 0}
+.hub3-feedback-stats>div{padding:12px 10px;border:1px solid rgba(180,194,211,.14);border-radius:9px;background:rgba(5,10,16,.48)}
+.hub3-feedback-stats b,.hub3-feedback-stats span{display:block}
+.hub3-feedback-stats b{font-size:22px;color:#e8c994}.hub3-feedback-stats span{font-size:10px;color:#aab5c2;margin-top:3px}
+.hub3-feedback-controls{display:grid;grid-template-columns:minmax(160px,2fr) minmax(130px,1fr) minmax(130px,1fr) auto;gap:10px;align-items:end;margin:15px 0}
+.hub3-feedback-controls label,.hub3-feedback-actions label{display:grid;gap:5px;color:#aab5c2;font-size:11px}
+.hub3-feedback-controls input,.hub3-feedback-controls select,.hub3-feedback-actions select{width:100%;min-width:0;padding:10px;border:1px solid rgba(180,194,211,.22);border-radius:7px;background:#101923;color:#edf1f5}
+.hub3-feedback-result{font-size:11px;color:#aab5c2;padding:10px 0}
+.hub3-feedback-card{padding:16px;margin:12px 0;border:1px solid rgba(180,194,211,.15);border-radius:11px;background:rgba(5,10,16,.42)}
+.hub3-feedback-card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.hub3-feedback-card h4{margin:5px 0;font-size:15px}.hub3-feedback-card small{font-size:10px;color:#9ba8b8}
+.hub3-feedback-rating{color:#e5c58e;white-space:nowrap;font-size:13px}
+.hub3-feedback-message{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;color:#d8e0e9;margin:14px 0}
+.hub3-feedback-actions{display:flex;justify-content:space-between;align-items:end;gap:12px;padding-top:12px;border-top:1px solid rgba(180,194,211,.12)}
+.hub3-feedback-actions label{width:min(240px,100%)}
+@media(max-width:720px){.hub3-feedback-controls{grid-template-columns:1fr 1fr}.hub3-feedback-controls label:first-child{grid-column:1/-1}.hub3-feedback-result{grid-column:1/-1}.hub3-feedback-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:420px){.hub3-feedback-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.hub3-feedback-card-head{display:block}.hub3-feedback-rating{display:block;margin-top:8px}}
