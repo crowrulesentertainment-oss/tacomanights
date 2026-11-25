@@ -50,11 +50,13 @@ async function loadWeather(lat,lon,label,requestId){
   if(weather)weather.textContent=emoji+" "+Math.round(current.temperature_2m)+"°F";
   if(place)place.textContent=label||String(data.timezone||"Your area").replaceAll("_"," ");
   if(weatherNote)weatherNote.textContent=description+" · Feels like "+Math.round(current.apparent_temperature)+"°F · Wind "+Math.round(current.wind_speed_10m)+" mph · Humidity "+Math.round(current.relative_humidity_2m)+"%";
+  return true;
  }catch(error){
   if(requestId!==weatherRequest)return;
   console.warn("Tacoma Nights weather unavailable",error);
   if(weather)weather.textContent="Weather unavailable";
   if(weatherNote)weatherNote.textContent="Live weather could not be loaded. Please try again shortly.";
+  return false;
  }
 }
 async function approximateLocation(){
@@ -64,7 +66,8 @@ async function approximateLocation(){
   if(requestId!==weatherRequest)return;
   if(!data.success||!Number.isFinite(Number(data.latitude))||!Number.isFinite(Number(data.longitude)))throw new Error("Approximate location unavailable");
   const label=[data.city,data.region_code||data.region,data.country].filter(Boolean).join(", ");
-  await loadWeather(Number(data.latitude),Number(data.longitude),label||"Approximate local area",requestId);
+  const loaded=await loadWeather(Number(data.latitude),Number(data.longitude),label||"Approximate local area",requestId);
+  if(!loaded&&requestId===weatherRequest){const fallbackLoaded=await loadWeather(TACOMA.lat,TACOMA.lon,TACOMA.label+" · local fallback",requestId);if(fallbackLoaded&&weatherNote)weatherNote.textContent+=" · Nearby weather was unavailable; showing Tacoma conditions.";}
  }catch(error){
   if(requestId!==weatherRequest)return;
   console.info("Using Tacoma weather fallback",error);
@@ -94,11 +97,11 @@ function makeUuid(){
  if(window.crypto?.randomUUID)return window.crypto.randomUUID();
  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==="x"?r:(r&3|8)).toString(16)});
 }
-function getStoredUuid(storage,key){
- try{let value=storage.getItem(key);if(!value){value=makeUuid();storage.setItem(key,value)}return value}catch(error){console.info("Visitor storage unavailable; using a temporary session ID.",error);return makeUuid()}
+function getStoredUuid(storageName,key){
+ try{const storage=window[storageName];let value=storage.getItem(key);if(!value){value=makeUuid();storage.setItem(key,value)}return value}catch(error){console.info("Visitor storage unavailable; using a temporary session ID.",error);return makeUuid()}
 }
-const visitorId=getStoredUuid(window.localStorage,"tn-production-visitor-v1");
-const sessionId=getStoredUuid(window.sessionStorage,"tn-site-session-v1");
+const visitorId=getStoredUuid("localStorage","tn-production-visitor-v1");
+const sessionId=getStoredUuid("sessionStorage","tn-site-session-v1");
 let db=null;
 async function updateLiveVisitors(){
  if(!db)return;
