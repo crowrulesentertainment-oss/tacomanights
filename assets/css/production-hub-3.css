@@ -47,3 +47,14 @@
 @media(max-width:900px){.hub3-card,.hub3-card.wide{grid-column:span 6}.hub3-week{grid-template-columns:repeat(4,minmax(0,1fr))}.hub3-public-feedback{grid-template-columns:1fr}}
 @media(max-width:580px){.hub3-heading{align-items:flex-start;flex-direction:column}.hub3-card,.hub3-card.wide{grid-column:1/-1;padding:17px}.hub3-nav{top:54px}.hub3-week{grid-template-columns:repeat(2,minmax(0,1fr))}.hub3-row{flex-direction:column}.hub3-public-form{grid-template-columns:1fr}.hub3-public-form textarea{grid-column:1}.hub3-live{white-space:normal}}
 @media(prefers-reduced-motion:reduce){.hub3-view{animation:none}}
+
+/* Command center: shortcut rail and weekly production rhythm */
+.hub3-command-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0 22px}
+.hub3-command-actions button{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;padding:15px 16px;border:1px solid rgba(212,173,112,.2);border-radius:10px;background:linear-gradient(135deg,rgba(217,76,89,.12),rgba(17,23,34,.96));color:#f5f6f8;cursor:pointer;transition:transform .18s,border-color .18s}
+.hub3-command-actions button:hover{transform:translateY(-2px);border-color:rgba(212,173,112,.65)}
+.hub3-command-actions b{font-size:13px}.hub3-command-actions span{font-size:11px;color:#aeb8c6}
+.hub3-rhythm{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 20px}
+.hub3-rhythm div{padding:12px;border-radius:9px;background:#0c1119;border:1px solid rgba(180,194,211,.12);display:flex;flex-direction:column;gap:5px}
+.hub3-rhythm b{font-size:10px;letter-spacing:.12em;color:#e7c58e}.hub3-rhythm span{font-size:11px;line-height:1.45;color:#b5bfcc}
+@media(max-width:760px){.hub3-command-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.hub3-rhythm{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.hub3-command-actions{grid-template-columns:1fr}.hub3-command-actions button{padding:13px}}
