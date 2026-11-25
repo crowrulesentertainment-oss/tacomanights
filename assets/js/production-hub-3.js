@@ -1005,7 +1005,7 @@ async function init(){
  user=session.user;const {data:p,error}=await db.from("tn_production_profiles").select("id,display_name,email,role").eq("id",user.id).maybeSingle();if(error||!p||!["contributor","producer","admin"].includes(p.role))return;
  profile=p;isAdmin=["producer","admin"].includes(p.role);
  $("#h3HomepageVideoForm")?.addEventListener("submit",e=>{e.preventDefault();saveHomepageVideo(e.currentTarget)});if(isAdmin)loadHomepageVideo().catch(error=>{const status=$("#h3HomepageVideoStatus");if(status)status.textContent="Could not load homepage video settings: "+(error.message||"Please retry.")});
- document.querySelectorAll(".h3-pulse-traffic,.h3-pulse-records").forEach(el=>el.classList.toggle("hidden",!isAdmin));if(isAdmin)loadProductionVisits().catch(error=>{console.warn("Production visit analytics",error);const body=$("#h3VisitRecords");if(body)body.innerHTML='<tr><td colspan="4">'+esc(error.message||"Could not load visit records.")+'</td></tr>'});
+ document.querySelectorAll(".h3-pulse-traffic,.h3-pulse-records").forEach(el=>el.classList.toggle("hidden",!isAdmin));if(isAdmin)loadProductionVisits().catch(error=>{console.warn("Production visit analytics",error);const body=$("#h3VisitRecords");if(body)body.innerHTML='<tr><td colspan="4">'+esc(error.message||"Could not load visit records.")+'</td></tr>'});if(isAdmin)setInterval(()=>loadProductionVisits().catch(()=>{}),30000);
  const shell=$("#hub3Shell");shell?.classList.add("ready");
  document.querySelectorAll(".hub3-tab").forEach(b=>b.addEventListener("click",()=>tab(b.dataset.h3Tab)));
  $("#h3EpisodeStudioForm")?.addEventListener("submit",e=>{e.preventDefault();saveEpisodeStudioDocument()});
