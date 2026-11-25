@@ -105,7 +105,7 @@ async function loadEditing(){
 }
 let calendarEvents=[],calendarCursor=new Date();
 function calendarDate(value,opts={}){if(!value)return "Date to be confirmed";return new Date(value).toLocaleString("en-US",{timeZone:"America/Los_Angeles",...opts})}
-function calendarKey(date){return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Los_Angeles",year:"numeric",month:"2-digit",day:"2-digit"}).format(date)}
+function calendarKey(date){const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(date);const v=Object.fromEntries(p.map(x=>[x.type,x.value]));return v.year+"-"+v.month+"-"+v.day}
 function renderCalendar(){
  const type=$("#h3CalendarType")?.value||"all",view=$("#h3CalendarRange")?.value||"month",y=calendarCursor.getFullYear(),m=calendarCursor.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0);
  const ws=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth(),calendarCursor.getDate());ws.setDate(ws.getDate()-((ws.getDay()+6)%7));const we=new Date(ws);we.setDate(we.getDate()+6);
@@ -121,7 +121,7 @@ function renderCalendar(){
  set("h3CalendarList",out+'</div>');
 }
 async function loadCalendar(){
- const from=new Date(Date.now()-45*86400000).toISOString();
+ const from=new Date(Date.now()-180*86400000).toISOString();
  const [saved,assignments,guests,editing,uploads]=await Promise.all([
  rows("tn_production_calendar",db.from("tn_production_calendar").select("id,title,description,event_type,starts_at,ends_at,all_day").gte("starts_at",from).order("starts_at").limit(250)),
  rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,instructions,due_at,status,episode_id").not("due_at","is",null).gte("due_at",from).order("due_at").limit(250)),
@@ -405,8 +405,8 @@ async function init(){
  const shell=$("#hub3Shell");shell?.classList.add("ready");
  document.querySelectorAll(".hub3-tab").forEach(b=>b.addEventListener("click",()=>tab(b.dataset.h3Tab)));
  $("#h3CalendarRange")?.addEventListener("change",renderCalendar);
- $("#h3CalendarPrev")?.addEventListener("click",()=>{if($("#h3CalendarRange")?.value==="week")calendarCursor.setDate(calendarCursor.getDate()-7);else calendarCursor.setMonth(calendarCursor.getMonth()-1);renderCalendar()});
- $("#h3CalendarNext")?.addEventListener("click",()=>{if($("#h3CalendarRange")?.value==="week")calendarCursor.setDate(calendarCursor.getDate()+7);else calendarCursor.setMonth(calendarCursor.getMonth()+1);renderCalendar()});
+ $("#h3CalendarPrev")?.addEventListener("click",()=>{if($("#h3CalendarRange")?.value==="week")calendarCursor.setDate(calendarCursor.getDate()-7);else{calendarCursor.setDate(1);calendarCursor.setMonth(calendarCursor.getMonth()-1)}renderCalendar()});
+ $("#h3CalendarNext")?.addEventListener("click",()=>{if($("#h3CalendarRange")?.value==="week")calendarCursor.setDate(calendarCursor.getDate()+7);else{calendarCursor.setDate(1);calendarCursor.setMonth(calendarCursor.getMonth()+1)}renderCalendar()});
  $("#h3CalendarToday")?.addEventListener("click",()=>{calendarCursor=new Date();renderCalendar()});
  $("#h3CalendarType")?.addEventListener("change",renderCalendar);
  $("#h3CalendarRefresh")?.addEventListener("click",()=>loadCalendar().catch(e=>{set("h3CalendarList",'<p class="hub3-empty">Calendar refresh failed: '+esc(e.message||"Please try again.")+'</p>')}));
