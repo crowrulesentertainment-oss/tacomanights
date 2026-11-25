@@ -156,10 +156,46 @@ async function loadChat(){
  const list=await rows("tn_production_chat_messages",db.from("tn_production_chat_messages").select("id,display_name,message,created_at,user_id").order("created_at",{ascending:false}).limit(60));
  set("h3ChatMessages",list.reverse().map(x=>'<article class="hub3-chat-message"><b>'+esc(x.display_name)+'</b><p>'+esc(x.message)+'</p><small>'+when(x.created_at)+'</small></article>').join("")||'<p class="hub3-empty">No team messages yet.</p>');const updates=await rows("tn_production_updates",db.from("tn_production_updates").select("id,title,body,published_at").eq("visibility","team").order("published_at",{ascending:false}).limit(8));set("h3Announcements",updates.map(x=>'<div class="hub3-mini"><b>'+esc(x.title)+'</b><small>'+when(x.published_at)+'</small><p>'+esc(x.body)+'</p></div>').join("")||'<p class="hub3-empty">No team announcements yet.</p>');
 }
+let trainingRows=[],trainingProgressRows=[],trainingSearch="",trainingCategory="all";
+function renderTraining(){
+ const ownDone=new Set(trainingProgressRows.filter(x=>x.user_id===user.id).map(x=>x.resource_id));
+ const filtered=trainingRows.filter(x=>{
+  const hay=[x.title,x.category,x.description,x.content].join(" ").toLowerCase();
+  return (!trainingSearch||hay.includes(trainingSearch))&&(trainingCategory==="all"||x.category===trainingCategory);
+ });
+ const total=trainingRows.length,completed=trainingRows.filter(x=>ownDone.has(x.id)).length;
+ const percent=total?Math.round(completed/total*100):0;
+ const categories=[...new Set(trainingRows.map(x=>x.category))].sort();
+ const categorySelect=$("#h3TrainingCategory");
+ if(categorySelect){
+  const previous=trainingCategory;
+  categorySelect.innerHTML='<option value="all">All learning paths</option>'+categories.map(x=>'<option value="'+esc(x)+'">'+esc(x.replaceAll("_"," "))+'</option>').join("");
+  categorySelect.value=categories.includes(previous)||previous==="all"?previous:"all";
+ }
+ set("h3TrainingStats",[
+  ["Published lessons",total],
+  ["Completed by you",completed],
+  ["Still to complete",Math.max(0,total-completed)],
+  ["Your progress",percent+"%"]
+ ].map(([label,n])=>'<div class="hub3-stat"><b>'+n+'</b><span>'+label+'</span></div>').join(""));
+ const teamProgress=trainingProgressRows.length;
+ const teamMembers=new Set(trainingProgressRows.map(x=>x.user_id)).size;
+ set("h3TrainingTeamSummary",isAdmin?'<div class="hub3-training-team-summary"><b>TEAM LEARNING ACTIVITY</b><span>'+teamProgress+' recorded lesson completions across '+teamMembers+' team member'+(teamMembers===1?"":"s")+'.</span></div>':"");
+ const progressEl=$("#h3TrainingProgress");
+ if(progressEl)progressEl.innerHTML='<div class="hub3-training-progress-head"><b>Your learning path</b><span>'+completed+' / '+total+' lessons · '+percent+'%</span></div><div class="hub3-training-progress-track"><span style="width:'+percent+'%"></span></div>';
+ set("h3TrainingResultCount",filtered.length+" of "+total+" lessons shown");
+ set("h3TrainingList",filtered.map((x,i)=>{
+  const done=ownDone.has(x.id),url=safeHttps(x.resource_url);
+  return '<article class="hub3-training-card '+(done?"is-complete":"")+'"><div class="hub3-training-card-index">'+String(trainingRows.indexOf(x)+1).padStart(2,"0")+'</div><div class="hub3-training-card-body"><div class="hub3-training-card-meta"><span>'+esc(x.category.replaceAll("_"," "))+'</span>'+(done?'<span class="hub3-training-complete-label">COMPLETED</span>':'<span>LESSON '+(i+1)+'</span>')+'</div><h4>'+esc(x.title)+'</h4><p>'+esc(x.description)+'</p>'+(x.content?'<details class="hub3-training-details"><summary>Read lesson instructions</summary><div>'+esc(x.content)+'</div></details>':"")+(url?'<a class="hub3-training-resource" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Open learning resource ↗</a>':"")+'</div><div class="hub3-training-card-action">'+(done?'<span class="hub3-training-done">✓ Completed</span>':'<button class="ph-btn" data-h3-complete="'+esc(x.id)+'">Mark complete</button>')+'</div></article>';
+ }).join("")||'<p class="hub3-empty">'+(total?"No lessons match your search or category.":"Your training library is ready. Producers can publish onboarding guides and learning resources here.")+'</p>');
+}
 async function loadTraining(){
- const [list,progress]=await Promise.all([rows("tn_production_training",db.from("tn_production_training").select("id,title,category,description,resource_url,content").eq("is_published",true).order("sort_order")),rows("tn_production_training_progress",db.from("tn_production_training_progress").select("resource_id,completed_at").eq("user_id",user.id))]);
- const done=new Set(progress.map(x=>x.resource_id));
- set("h3TrainingList",list.map(x=>'<article class="hub3-row"><div><b>'+esc(x.title)+'</b><p>'+esc(x.description)+'</p><small>'+esc(x.category.replaceAll("_"," "))+'</small>'+(x.content?'<p>'+esc(x.content)+'</p>':"")+(safeHttps(x.resource_url)?'<p><a href="'+esc(safeHttps(x.resource_url))+'" target="_blank" rel="noopener noreferrer">Open learning resource ↗</a></p>':"")+'</div>'+(done.has(x.id)?status("completed"):'<button class="ph-btn" data-h3-complete="'+esc(x.id)+'">Mark complete</button>')+'</article>').join("")||'<p class="hub3-empty">Training resources will appear here as producers publish them.</p>');
+ const progressQuery=db.from("tn_production_training_progress").select("resource_id,user_id,completed_at");
+ const [list,progress]=await Promise.all([
+  rows("tn_production_training",db.from("tn_production_training").select("id,title,category,description,resource_url,content,sort_order").eq("is_published",true).order("sort_order").order("created_at")),
+  rows("tn_production_training_progress",isAdmin?progressQuery:progressQuery.eq("user_id",user.id))
+ ]);
+ trainingRows=list;trainingProgressRows=progress;renderTraining();
 }
 async function loadAnalytics(){
  if(!isAdmin){set("h3AnalyticsStats",'<p class="hub3-empty">Production analytics are restricted to producers and administrators.</p>');set("h3AnalyticsBreakdown","");return}
@@ -311,7 +347,7 @@ async function submit(form){
   if(type==="calendar"){result=await db.from("tn_production_calendar").insert({title:d.title,event_type:d.event_type,starts_at:new Date(d.starts_at).toISOString(),ends_at:d.ends_at?new Date(d.ends_at).toISOString():null,description:d.description||null,created_by:user.id});}
   if(type==="guest"){result=await db.from("tn_production_guests").insert({guest_name:d.guest_name,email:d.email||null,organization:d.organization||null,episode_id:d.episode_id||null,topic:d.topic||null,status:d.status,interview_at:d.interview_at?new Date(d.interview_at).toISOString():null,meeting_url:d.meeting_url||null,created_by:user.id});}
   if(type==="chat"){result=await db.from("tn_production_chat_messages").insert({user_id:user.id,display_name:profile.display_name||user.email,message:d.message.trim()});}
-  if(type==="training"){result=await db.from("tn_production_training").insert({title:d.title,category:d.category,description:d.description,resource_url:d.resource_url||null,content:d.content||null,is_published:true,created_by:user.id});}
+  if(type==="training"){const order=Number(d.sort_order||0);if(!Number.isInteger(order)||order<0)throw new Error("Display order must be a whole number of zero or greater.");result=await db.from("tn_production_training").insert({title:d.title.trim(),category:d.category,description:d.description.trim(),resource_url:d.resource_url||null,content:d.content||null,sort_order:order,is_published:true,created_by:user.id});}
   if(type==="recognition"){const recipient=members.find(m=>m.id===d.recipient_id);result=await db.from("tn_production_recognition").insert({recipient_id:d.recipient_id,recipient_name:recipient?.display_name||recipient?.email||"Team member",award_name:d.award_name,reason:d.reason,episode_id:d.episode_id||null,awarded_by:user.id});}
   if(!result)throw new Error("This form could not be matched to a production action.");
   if(result.error)throw result.error;
@@ -341,11 +377,11 @@ async function init(){
   const filter=e.target.closest("[data-h3-notification-filter]");if(filter){notificationFilter=filter.dataset.h3NotificationFilter;renderNotifications()}
   const readAll=e.target.closest("[data-h3-read-all]");if(readAll){readAll.disabled=true;const {error}=await db.from("tn_notifications").update({read_at:new Date().toISOString()}).eq("user_id",user.id).is("read_at",null);if(error){readAll.disabled=false;alert("Could not mark notifications as read: "+error.message)}else{await logActivity("notifications_read_all","Marked all notifications as read");await loadNotifications()}}
   const read=e.target.closest("[data-h3-read]");if(read){const {error}=await db.from("tn_notifications").update({read_at:new Date().toISOString()}).eq("id",read.dataset.h3Read).eq("user_id",user.id);if(!error){await logActivity("notification_read","Marked a notification as read");await loadNotifications()}}
-  const complete=e.target.closest("[data-h3-complete]");if(complete){const {error}=await db.from("tn_production_training_progress").upsert({resource_id:complete.dataset.h3Complete,user_id:user.id,completed_at:new Date().toISOString()},{onConflict:"resource_id,user_id"});if(!error){await logActivity("training_completed","Completed a training resource");loadTraining()}else alert(error.message)}
+  const complete=e.target.closest("[data-h3-complete]");if(complete){complete.disabled=true;const {error}=await db.from("tn_production_training_progress").upsert({resource_id:complete.dataset.h3Complete,user_id:user.id,completed_at:new Date().toISOString()},{onConflict:"resource_id,user_id"});if(!error){await logActivity("training_completed","Completed a training resource");await loadTraining()}else{complete.disabled=false;alert("Could not save training progress: "+error.message)}}
  });
  document.addEventListener("click",async e=>{const save=e.target.closest("[data-editing-save]");if(!save||!isAdmin)return;const id=save.dataset.editingSave;const row=save.closest("[data-editing-row]");const stage=row?.querySelector("[data-editing-stage]")?.value;if(!stage)return;save.disabled=true;const payload={status:stage,updated_by:user.id,updated_at:new Date().toISOString()};if(stage==="approved"){payload.approved_by=user.id;payload.approved_at=new Date().toISOString()}else{payload.approved_by=null;payload.approved_at=null}const {error}=await db.from("tn_production_editing").update(payload).eq("id",id);save.disabled=false;if(error){alert("Could not update editing stage: "+error.message);return}await logActivity("editing_stage_updated","Moved an episode edit to "+stage.replaceAll("_"," "));await refresh()});
- document.addEventListener("input",e=>{if(e.target.id==="h3RecognitionSearch"){const cursor=e.target.selectionStart;recognitionSearch=e.target.value.trim().toLowerCase();renderRecognition();const input=$("#h3RecognitionSearch");if(input){input.focus();try{input.setSelectionRange(cursor,cursor)}catch{}}}if(e.target.id==="h3FeedbackSearch"){const cursor=e.target.selectionStart;feedbackSearch=e.target.value.trim().toLowerCase();renderFeedback();const input=$("#h3FeedbackSearch");if(input){input.focus();try{input.setSelectionRange(cursor,cursor)}catch{}}}});
- document.addEventListener("change",async e=>{if(e.target.id==="h3RecognitionAwardFilter"){recognitionAwardFilter=e.target.value;renderRecognition()}if(e.target.id==="h3FeedbackStatus"){feedbackStatusFilter=e.target.value;renderFeedback()}if(e.target.id==="h3FeedbackCategory"){feedbackCategoryFilter=e.target.value;renderFeedback()}const field=e.target.closest("[data-h3-feedback]");if(field&&isAdmin){field.disabled=true;const {error}=await db.from("tn_production_feedback").update({status:field.value,reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",field.dataset.h3Feedback);if(error){field.disabled=false;alert("Could not update feedback status: "+error.message)}else{await logActivity("feedback_updated","Changed audience feedback status to "+field.value);await loadFeedback()}}const guest=e.target.closest("[data-h3-guest-status]");if(guest&&isAdmin){const {error}=await db.from("tn_production_guests").update({status:guest.value,updated_at:new Date().toISOString()}).eq("id",guest.dataset.h3GuestStatus);if(error)alert(error.message);else await logActivity("guest_status_updated","Changed guest booking status to "+guest.value)}});
+ document.addEventListener("input",e=>{if(e.target.id==="h3TrainingSearch"){const cursor=e.target.selectionStart;trainingSearch=e.target.value.trim().toLowerCase();renderTraining();const input=$("#h3TrainingSearch");if(input){input.focus();try{input.setSelectionRange(cursor,cursor)}catch{}}}if(e.target.id==="h3RecognitionSearch"){const cursor=e.target.selectionStart;recognitionSearch=e.target.value.trim().toLowerCase();renderRecognition();const input=$("#h3RecognitionSearch");if(input){input.focus();try{input.setSelectionRange(cursor,cursor)}catch{}}}if(e.target.id==="h3FeedbackSearch"){const cursor=e.target.selectionStart;feedbackSearch=e.target.value.trim().toLowerCase();renderFeedback();const input=$("#h3FeedbackSearch");if(input){input.focus();try{input.setSelectionRange(cursor,cursor)}catch{}}}});
+ document.addEventListener("change",async e=>{if(e.target.id==="h3TrainingCategory"){trainingCategory=e.target.value;renderTraining()}if(e.target.id==="h3RecognitionAwardFilter"){recognitionAwardFilter=e.target.value;renderRecognition()}if(e.target.id==="h3FeedbackStatus"){feedbackStatusFilter=e.target.value;renderFeedback()}if(e.target.id==="h3FeedbackCategory"){feedbackCategoryFilter=e.target.value;renderFeedback()}const field=e.target.closest("[data-h3-feedback]");if(field&&isAdmin){field.disabled=true;const {error}=await db.from("tn_production_feedback").update({status:field.value,reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",field.dataset.h3Feedback);if(error){field.disabled=false;alert("Could not update feedback status: "+error.message)}else{await logActivity("feedback_updated","Changed audience feedback status to "+field.value);await loadFeedback()}}const guest=e.target.closest("[data-h3-guest-status]");if(guest&&isAdmin){const {error}=await db.from("tn_production_guests").update({status:guest.value,updated_at:new Date().toISOString()}).eq("id",guest.dataset.h3GuestStatus);if(error)alert(error.message);else await logActivity("guest_status_updated","Changed guest booking status to "+guest.value)}});
  await refresh();
 }
 init().catch(e=>{console.error("Production Hub 3.0 could not initialize",e);["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"].forEach(id=>set(id,'<p class="hub3-empty">The production workspace could not initialize: '+esc(e?.message||"Please refresh and try again.")+'</p>'))});
