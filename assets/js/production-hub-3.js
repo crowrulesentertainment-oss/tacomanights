@@ -17,7 +17,7 @@ function options(list,empty=""){return (empty?'<option value="">'+esc(empty)+'</
 async function refresh(){
  const baseTargets=["h3EditingEpisode","h3ResearchEpisode","h3GuestEpisode","h3RecognitionEpisode","h3RecognitionMember"];
  try{await loadBase()}catch(error){console.error("Production Hub base data",error);baseTargets.forEach(id=>{const el=$("#"+id);if(el)el.innerHTML='<option value="">Could not load options — use Refresh to retry</option>'})}
- const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention","h3LiveDashboard","h3RemoteDashboard","h3CommsSummary","h3CommsInbox","h3CommsDeadlines"],async()=>{await loadCommand();await loadLiveOperations();await loadRemoteStudio();await loadProductionCommunications()}],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList","h3QcDashboard","h3ReleaseDashboard"],async()=>{await loadEditing();await loadEpisodeQC();await loadReleaseControl()}],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk],["Contributor requests",["h3MyRequests","h3RequestReviewQueue"],loadRequests],["Collaboration center",["h3CollabGroups"],loadCollaboration]];
+ const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention","h3LiveDashboard","h3RemoteDashboard","h3CommsSummary","h3CommsInbox","h3CommsDeadlines"],async()=>{await loadCommand();await loadLiveOperations();await loadRemoteStudio();await loadProductionCommunications()}],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList","h3QcDashboard","h3ReleaseDashboard","h3PipelineSummary","h3PipelineList"],async()=>{await loadEditing();await loadEpisodeQC();await loadReleaseControl();await loadProductionPipeline()}],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk],["Contributor requests",["h3MyRequests","h3RequestReviewQueue"],loadRequests],["Collaboration center",["h3CollabGroups"],loadCollaboration]];
  await Promise.all(tasks.map(async([label,targets,fn])=>{try{await fn()}catch(error){console.error(label,error);const html='<p class="hub3-empty">Could not load '+label.toLowerCase()+': '+esc(error?.message||"Please try again.")+'</p>';targets.forEach(id=>set(id,html))}}));
  try{await loadGrowthCenter()}catch(error){console.error("Contributor Growth Center",error);set("h3GrowthGoals",'<p class="hub3-empty">Growth goals could not load: '+esc(error?.message||"Please retry.")+'</p>')}
  try{await loadCareerPathways()}catch(error){console.error("Career pathways",error);set("h3CareerCurrent",'<p class="hub3-empty">Career pathway information could not load: '+esc(error?.message||"Please retry.")+'</p>')}
@@ -317,6 +317,49 @@ async function sendProductionNotice(form){
 }
 async function markProductionNoticeRead(id){
  const {error}=await db.from("tn_production_notifications").update({read_at:new Date().toISOString()}).eq("id",id).eq("recipient_id",user.id);if(error)throw error;await loadProductionCommunications();
+}
+
+
+let pipelineAssignments=[],pipelineUploads=[];
+const pipelineStages=["Contributor work","Submission review","Editing","Quality control","Release prep","Published"];
+function pipelineStage(episode){
+ const id=episode.id,assign=pipelineAssignments.filter(x=>x.episode_id===id),uploads=pipelineUploads.filter(x=>x.episode_id===id),edit=editingRowsCache.find(x=>x.episode_id===id),qc=qcRows.find(x=>x.episode_id===id),release=releaseRows.find(x=>x.episode_id===id);
+ const norm=v=>String(v||"").toLowerCase().replaceAll(" ","_");
+ const complete=s=>["complete","completed","approved","published","done","cancelled"].includes(norm(s));
+ const submitted=uploads.some(x=>["submitted","pending_review","revision","revision_requested","approved"].includes(norm(x.status)));
+ const allAssignedDone=assign.length>0&&assign.every(x=>complete(x.status));
+ const qcDone=qc?.qc_status==="approved"&&qcChecks.every(([k])=>qc.checklist?.[k]===true);
+ const releaseDone=release&&releaseChecks.every(([k])=>release.release_checklist?.[k]===true)&&!!release.youtube_title&&!!release.video_url&&!!release.youtube_video_id;
+ let stage=0,blocker="Contributor assignments are being prepared or completed.";
+ if(["published","archived"].includes(norm(episode.status))||norm(release?.release_status)==="published")stage=5;
+ else if(releaseDone&&qcDone&&["approved","scheduled"].includes(norm(edit?.status)))stage=4;
+ else if(qcDone&&["approved","scheduled"].includes(norm(edit?.status)))stage=4;
+ else if(edit&&["approved","scheduled"].includes(norm(edit.status)))stage=3;
+ else if(edit)stage=2;
+ else if(submitted)stage=1;
+ else if(allAssignedDone)stage=1;
+ const blockers=[];
+ if(stage<1&&!allAssignedDone)blockers.push(assign.length?assign.filter(x=>!complete(x.status)).length+" assignment(s) still open":"No contributor assignments recorded");
+ if(stage===1&&!uploads.length)blockers.push("Waiting for contributor segment uploads");
+ if(stage===1&&uploads.some(x=>["submitted","pending_review","revision","revision_requested"].includes(norm(x.status))))blockers.push("Producer review is still required");
+ if(stage===2)blockers.push("Editing must reach final cut and producer approval");
+ if(stage===3)blockers.push(qc?.qc_status==="approved"?"Editing approval is still required":"Quality-control checklist and approval are outstanding");
+ if(stage===4&&!releaseDone)blockers.push("Release metadata, final video, and checklist need completion");
+ if(stage===5)blockers.push("Episode marked published");
+ return {episode,stage,blocker:blockers[0]||"All recorded workflow gates are complete.",blockers,assignments:assign.length,uploads:uploads.length,edit,qc,release};
+}
+async function loadProductionPipeline(){
+ const [a,u]=await Promise.all([
+ rows("tn_production_assignments",db.from("tn_production_assignments").select("id,episode_id,status,due_at").limit(1000)),
+ rows("tn_production_uploads",db.from("tn_production_uploads").select("id,episode_id,status,created_at").order("created_at",{ascending:false}).limit(1000))
+ ]);
+ pipelineAssignments=a;pipelineUploads=u;renderProductionPipeline();
+}
+function renderProductionPipeline(){
+ const active=qcEpisodes.filter(e=>!["cancelled"].includes(String(e.status).toLowerCase())).map(pipelineStage);
+ const summary=$("#h3PipelineSummary"),list=$("#h3PipelineList");
+ if(summary)summary.innerHTML=pipelineStages.map((s,i)=>'<div><b>'+active.filter(x=>x.stage===i).length+'</b><span>'+esc(s)+'</span></div>').join("");
+ if(list)list.innerHTML=active.map(x=>'<article class="h3-pipeline-card"><div class="h3-pipeline-title"><div><span class="hub3-kicker">'+esc(x.episode.episode_number||"EPISODE")+'</span><h4>'+esc(x.episode.title)+'</h4></div><span class="h3-pipeline-stage">'+esc(pipelineStages[x.stage])+'</span></div><div class="h3-pipeline-track">'+pipelineStages.map((s,i)=>'<span class="'+(i<=x.stage?"done":"")+'"></span>').join("")+'</div><div class="h3-pipeline-foot"><span>'+x.assignments+' assignments · '+x.uploads+' submissions</span><b>'+Math.round(x.stage/(pipelineStages.length-1)*100)+'% workflow</b></div><p class="'+(x.stage===5?"complete":"")+'">'+esc(x.blocker)+'</p></article>').join("")||'<p class="hub3-empty">No episodes are available to track yet. Create an episode to start the workflow.</p>';
 }
 
 async function loadCommand(){
@@ -970,6 +1013,7 @@ async function init(){
  $("#h3RemoteForm")?.addEventListener("submit",e=>{e.preventDefault();saveRemoteStudio(e.currentTarget)});
  $("#h3CommsForm")?.addEventListener("submit",e=>{e.preventDefault();sendProductionNotice(e.currentTarget)});
  $("#h3CommsRefresh")?.addEventListener("click",()=>loadProductionCommunications().catch(e=>set("h3CommsInbox",'<p class="hub3-empty">'+esc(e.message)+'</p>')));
+ $("#h3PipelineRefresh")?.addEventListener("click",()=>loadProductionPipeline().catch(e=>set("h3PipelineList",'<p class="hub3-empty">'+esc(e.message)+'</p>')));
  document.addEventListener("click",e=>{const b=e.target.closest("[data-notice-read]");if(b)markProductionNoticeRead(b.dataset.noticeRead).catch(err=>console.error("Notification read",err))});
  document.addEventListener("click",e=>{const b=e.target.closest("[data-remote-open]");if(!b)return;const select=$("#h3RemoteEpisode");if(select){select.value=b.dataset.remoteOpen;renderRemoteStudio();$("#h3RemoteEditor")?.scrollIntoView({behavior:"smooth",block:"center"})}});
  document.addEventListener("change",e=>{if(e.target.id==="h3RemoteEpisode")renderRemoteStudio()});
