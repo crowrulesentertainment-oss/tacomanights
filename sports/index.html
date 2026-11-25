@@ -85,9 +85,12 @@ function renderGames(week,db){
   const sport=g.sport||g.league||"FEATURED MATCHUP";
   const matchup=(g.away||"Away team")+" @ "+(g.home||"Home team");
   const kickoff=g.starts_at?date(g.starts_at):"";
-  return '<article class="pe-game"><div class="pe-game-top"><span>'+esc(sport)+'</span><span>'+esc(kickoff)+'</span></div><h3 class="pe-matchup">'+esc(matchup)+'</h3><div class="pe-options"><label class="pe-choice"><input required type="radio" name="pick-'+esc(id)+'" value="away"> '+esc(g.away||"Away")+'</label><label class="pe-choice"><input required type="radio" name="pick-'+esc(id)+'" value="home"> '+esc(g.home||"Home")+'</label></div></article>';
+  const locked=!!(g.starts_at&&new Date(g.starts_at).getTime()<=Date.now())||!!(g.result&&g.result!=="pending");
+  const timing=locked?"LOCKED · GAME STARTED":kickoff;
+  const tieOption=g.allow_tie?'<label class="pe-choice"><input type="radio" name="pick-'+esc(id)+'" value="tie"'+(locked?' disabled':'')+'> DRAW / TIE</label>':'';
+  return '<article class="pe-game"><div class="pe-game-top"><span>'+esc(sport)+'</span><span>'+esc(timing)+'</span></div><h3 class="pe-matchup">'+esc(matchup)+'</h3><div class="pe-options"><label class="pe-choice"><input '+(locked?'disabled':'required')+' type="radio" name="pick-'+esc(id)+'" value="away"> '+esc(g.away||"Away")+'</label><label class="pe-choice"><input '+(locked?'disabled':'required')+' type="radio" name="pick-'+esc(id)+'" value="home"> '+esc(g.home||"Home")+'</label>'+tieOption+'</div></article>';
  }).join("");
- content.innerHTML='<form class="pe-form" id="pickem-form"><div><label class="pe-label" for="pickem-name">Your nickname</label><input class="pe-input" id="pickem-name" name="nickname" minlength="2" maxlength="24" required autocomplete="nickname" placeholder="Choose a name for the leaderboard"><p class="pe-note">2–24 characters. Your nickname and score are public; your browser token and picks are not.</p></div><div class="pe-game-list">'+cards+'</div><div><button class="pe-submit" type="submit">SUBMIT MY WEEKLY PICKS ↗</button><p class="pe-note" style="margin-top:10px">Deadline: '+esc(date(week.lock_at))+'</p><p class="pe-message" id="pickem-message" role="status"></p></div></form>';
+ content.innerHTML='<form class="pe-form" id="pickem-form"><div><label class="pe-label" for="pickem-name">Your nickname</label><input class="pe-input" id="pickem-name" name="nickname" minlength="2" maxlength="24" required autocomplete="nickname" placeholder="Choose a name for the leaderboard"><p class="pe-note">2–24 characters. Your nickname and score are public; your browser token and picks are not.</p></div><div class="pe-game-list">'+cards+'</div><div><button class="pe-submit" type="submit">SUBMIT MY WEEKLY PICKS ↗</button><p class="pe-note" style="margin-top:10px">Each matchup locks individually at its listed kickoff time.</p><p class="pe-message" id="pickem-message" role="status"></p></div></form>';
  const form=document.getElementById("pickem-form");
  form.addEventListener("submit",async e=>{
   e.preventDefault();
@@ -95,10 +98,14 @@ function renderGames(week,db){
   const picks={};
   for(let i=0;i<games.length;i++){
    const id=String(games[i].id||("game-"+i));
+   const game=games[i];
+   if(game.starts_at&&new Date(game.starts_at).getTime()<=Date.now())continue;
+   if(game.result&&game.result!=="pending")continue;
    const selected=form.querySelector('input[name="pick-'+CSS.escape(id)+'"]:checked');
-   if(!selected){msg.textContent="Please make a pick for every matchup.";return}
+   if(!selected){msg.textContent="Please make a pick for every matchup that has not started.";return}
    picks[id]=selected.value;
   }
+  if(!Object.keys(picks).length){msg.textContent="All matchups have started. Picks are locked.";return}
   btn.disabled=true;msg.textContent="Submitting your picks…";
   try{
    const {error}=await db.rpc("tn_pickem_submit",{p_week_slug:week.slug,p_display_name:form.elements.nickname.value.trim(),p_picks:picks,p_entry_token:getToken()});
@@ -107,12 +114,22 @@ function renderGames(week,db){
    btn.textContent="PICKS SAVED ✓";
   }catch(err){msg.textContent=err.message||"We couldn't save your picks. Please try again.";btn.disabled=false}
  });
+ await renderSeasonBoard(week,db);
+}
+async function renderSeasonBoard(week,db){
+ const target=document.getElementById("season-board");
+ if(!target)return;
+ const season=Number(week.season_year||new Date().getFullYear());
+ const {data,error}=await db.from("tn_pickem_season_leaderboard").select("display_name,points,correct_picks,weeks_played").eq("season_year",season).order("points",{ascending:false}).order("weeks_played",{ascending:false}).limit(100);
+ if(error||!data?.length){target.innerHTML='<div class="pe-empty">Season standings will appear after the first weekly results are scored.</div>';return}
+ target.innerHTML='<div class="pe-section" style="margin-top:24px"><p class="pe-kicker">SEASON '+season+'</p><h2>Season leaderboard</h2><div class="pe-table-wrap"><table class="pe-table"><thead><tr><th>Rank</th><th>Player</th><th>Points</th><th>Weeks</th></tr></thead><tbody>'+data.map((e,i)=>'<tr><td class="pe-rank">#'+(i+1)+'</td><td>'+esc(e.display_name)+'</td><td>'+Number(e.points||0)+'</td><td>'+Number(e.weeks_played||0)+'</td></tr>').join("")+'</tbody></table></div></div>';
 }
 async function renderBoard(week,db){
  const {data,error}=await db.from("tn_pickem_leaderboard").select("display_name,points,updated_at").eq("week_id",week.id).order("points",{ascending:false}).order("updated_at",{ascending:true}).limit(100);
  if(error){showError("The leaderboard is temporarily unavailable.");return}
- if(!data?.length){showError("The weekly picks are locked. Scores will appear here when the results have been entered.");return}
- content.innerHTML='<p class="pe-muted">Final or current standings for '+esc(week.title)+'.</p><div class="pe-table-wrap"><table class="pe-table"><thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead><tbody>'+data.map((e,i)=>'<tr><td class="pe-rank">#'+(i+1)+'</td><td>'+esc(e.display_name)+'</td><td>'+Number(e.points||0)+'</td></tr>').join("")+'</tbody></table></div>';
+ const weekly=data?.length?'<div class="pe-table-wrap"><table class="pe-table"><thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead><tbody>'+data.map((e,i)=>'<tr><td class="pe-rank">#'+(i+1)+'</td><td>'+esc(e.display_name)+'</td><td>'+Number(e.points||0)+'</td></tr>').join("")+'</tbody></table></div>':'<div class="pe-empty">The weekly picks are locked. Scores will appear here when the results have been entered.</div>';
+ content.innerHTML='<p class="pe-muted">Final or current standings for '+esc(week.title)+'.</p>'+weekly+'<div id="season-board"></div>';
+ await renderSeasonBoard(week,db);
 }
 async function init(){
  if(!host?.createClient||!config.supabaseUrl||!config.supabaseAnonKey){showError("The Pick'em board is not connected yet. Please check back soon.");status.textContent="OFFLINE";return}
