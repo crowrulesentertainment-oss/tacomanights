@@ -17,7 +17,7 @@ function options(list,empty=""){return (empty?'<option value="">'+esc(empty)+'</
 async function refresh(){
  const baseTargets=["h3EditingEpisode","h3ResearchEpisode","h3GuestEpisode","h3RecognitionEpisode","h3RecognitionMember"];
  try{await loadBase()}catch(error){console.error("Production Hub base data",error);baseTargets.forEach(id=>{const el=$("#"+id);if(el)el.innerHTML='<option value="">Could not load options — use Refresh to retry</option>'})}
- const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention","h3LiveDashboard","h3RemoteDashboard","h3CommsSummary","h3CommsInbox","h3CommsDeadlines"],async()=>{await loadCommand();await loadLiveOperations();await loadRemoteStudio();await loadProductionCommunications()}],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList","h3QcDashboard","h3ReleaseDashboard"],async()=>{await loadEditing();await loadEpisodeQC();await loadReleaseControl()}],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk],["Contributor requests",["h3MyRequests","h3RequestReviewQueue"],loadRequests],["Collaboration center",["h3CollabGroups"],loadCollaboration]];
+ const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention","h3LiveDashboard","h3RemoteDashboard","h3CommsSummary","h3CommsInbox","h3CommsDeadlines"],async()=>{await loadCommand();await loadLiveOperations();await loadRemoteStudio();await loadProductionCommunications()}],["Contributor workspace",["h3ContributorStats","h3ContributorNext","h3MyAssignments","h3MyUploads","h3ContributorUpdates"],loadContributor],["Editing room",["h3EditingStats","h3EditingList","h3QcDashboard","h3ReleaseDashboard"],async()=>{await loadEditing();await loadEpisodeQC();await loadReleaseControl()}],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity],["Producer review desk",["h3ReviewQueue"],loadReviewDesk],["Contributor requests",["h3MyRequests","h3RequestReviewQueue"],loadRequests],["Collaboration center",["h3CollabGroups"],loadCollaboration],["Episode Studio",["h3StudioMessage"],loadEpisodeStudio]];
  await Promise.all(tasks.map(async([label,targets,fn])=>{try{await fn()}catch(error){console.error(label,error);const html='<p class="hub3-empty">Could not load '+label.toLowerCase()+': '+esc(error?.message||"Please try again.")+'</p>';targets.forEach(id=>set(id,html))}}));
  try{await loadGrowthCenter()}catch(error){console.error("Contributor Growth Center",error);set("h3GrowthGoals",'<p class="hub3-empty">Growth goals could not load: '+esc(error?.message||"Please retry.")+'</p>')}
  try{await loadCareerPathways()}catch(error){console.error("Career pathways",error);set("h3CareerCurrent",'<p class="hub3-empty">Career pathway information could not load: '+esc(error?.message||"Please retry.")+'</p>')}
@@ -934,6 +934,53 @@ async function submit(form){
   form.reset();notice(form,"Saved successfully.");await logActivity(type==="chat"?"team_message":"created_"+type,type==="chat"?"Posted a team message":(d.title||d.guest_name||d.award_name||"Production record"));await refresh();
  }catch(e){notice(form,"Could not save: "+(e.message||"Please try again."))}
 }
+async function loadEpisodeStudio(){
+ const select=$("#h3StudioEpisode");if(!select)return;
+ const current=select.value;
+ select.innerHTML=options(episodes,"Choose an episode…");
+ if(current&&episodes.some(x=>x.id===current))select.value=current;
+ if(!select.value&&episodes.length)select.value=episodes[0].id;
+ await loadEpisodeStudioDocument();
+}
+async function loadEpisodeStudioDocument(){
+ const episodeId=$("#h3StudioEpisode")?.value,type=$("#h3StudioType")?.value||"outline",message=$("#h3StudioMessage");
+ if(!episodeId){if(message)message.textContent="Create or select an episode to begin.";return}
+ if(message)message.textContent="Loading document…";
+ try{
+  const {data,error}=await db.from("tn_production_episode_documents").select("id,episode_id,document_type,title,content,status,created_by,updated_at").eq("episode_id",episodeId).eq("document_type",type).maybeSingle();
+  if(error)throw error;
+  $("#h3StudioTitle").value=data?.title||"";
+  $("#h3StudioContent").value=data?.content||"";
+  $("#h3StudioStatus").value=data?.status||"draft";
+  if(message)message.textContent=data?(data.created_by===user.id||isAdmin?"Loaded · last saved "+when(data.updated_at):"Read-only · this document belongs to another contributor"):"New document · not saved yet";
+  const editable=!data||data.created_by===user.id||isAdmin;
+  ["h3StudioTitle","h3StudioContent","h3StudioStatus"].forEach(id=>{const el=$("#"+id);if(el)el.disabled=!editable});
+  const save=$("#h3EpisodeStudioForm")?.querySelector('button[type="submit"]');if(save)save.disabled=!editable;
+ }catch(error){if(message)message.textContent="Could not load document: "+error.message}
+}
+async function saveEpisodeStudioDocument(){
+ const episodeId=$("#h3StudioEpisode")?.value,type=$("#h3StudioType")?.value||"outline",message=$("#h3StudioMessage");
+ if(!episodeId){if(message)message.textContent="Choose an episode first.";return}
+ const payload={episode_id:episodeId,document_type:type,title:$("#h3StudioTitle").value.trim(),content:$("#h3StudioContent").value,status:$("#h3StudioStatus").value,updated_by:user.id,updated_at:new Date().toISOString()};
+ if(!payload.title)payload.title=(episodes.find(x=>x.id===episodeId)?.title||"Episode")+" · "+type.replaceAll("_"," ");
+ if(message)message.textContent="Saving…";
+ try{
+  const {data:existing,error:readError}=await db.from("tn_production_episode_documents").select("id,created_by").eq("episode_id",episodeId).eq("document_type",type).maybeSingle();
+  if(readError)throw readError;
+  let result;
+  if(existing){if(existing.created_by!==user.id&&!isAdmin)throw new Error("Only the document creator or production leadership can edit this document.");result=await db.from("tn_production_episode_documents").update(payload).eq("id",existing.id)}
+  else result=await db.from("tn_production_episode_documents").insert({...payload,created_by:user.id});
+  if(result.error)throw result.error;
+  if(message)message.textContent="Saved successfully · "+new Date().toLocaleString();
+  await logActivity("episode_document_saved","Saved "+type.replaceAll("_"," ")+" for "+(episodes.find(x=>x.id===episodeId)?.episode_number||"episode"));
+ }catch(error){if(message)message.textContent="Save failed: "+error.message}
+}
+function exportEpisodeStudioDocument(){
+ const title=$("#h3StudioTitle")?.value.trim()||"Tacoma Nights episode document",content=$("#h3StudioContent")?.value||"";
+ if(!content.trim()){const m=$("#h3StudioMessage");if(m)m.textContent="Add some content before exporting.";return}
+ const blob=new Blob([title+"\n\n"+content],{type:"text/plain;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=title.replace(/[^a-z0-9_-]+/gi,"-").replace(/-+/g,"-")+".txt";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
 async function init(){
  if(!window.supabase?.createClient||!cfg.supabaseUrl||!cfg.supabaseAnonKey){const st=$("#h3PublicFeedbackForm .hub3-status");if(st)st.textContent="The feedback service is temporarily unavailable. Please try again later.";return;}
  db=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
@@ -944,6 +991,10 @@ async function init(){
  profile=p;isAdmin=["producer","admin"].includes(p.role);
  const shell=$("#hub3Shell");shell?.classList.add("ready");
  document.querySelectorAll(".hub3-tab").forEach(b=>b.addEventListener("click",()=>tab(b.dataset.h3Tab)));
+ $("#h3EpisodeStudioForm")?.addEventListener("submit",e=>{e.preventDefault();saveEpisodeStudioDocument()});
+ $("#h3StudioEpisode")?.addEventListener("change",loadEpisodeStudioDocument);
+ $("#h3StudioType")?.addEventListener("change",loadEpisodeStudioDocument);
+ $("#h3StudioExport")?.addEventListener("click",exportEpisodeStudioDocument);
  $("#h3CalendarRange")?.addEventListener("change",renderCalendar);
  $("#h3CalendarPrev")?.addEventListener("click",()=>{if($("#h3CalendarRange")?.value==="week")calendarCursor.setDate(calendarCursor.getDate()-7);else{calendarCursor.setDate(1);calendarCursor.setMonth(calendarCursor.getMonth()-1)}renderCalendar()});
  $("#h3CalendarNext")?.addEventListener("click",()=>{if($("#h3CalendarRange")?.value==="week")calendarCursor.setDate(calendarCursor.getDate()+7);else{calendarCursor.setDate(1);calendarCursor.setMonth(calendarCursor.getMonth()+1)}renderCalendar()});
