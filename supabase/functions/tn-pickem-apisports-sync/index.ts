@@ -14,9 +14,11 @@ const SPORTS: SportConfig[] = [
 ];
 const SOCCER_LEAGUES=new Set(["2","39","61","78","135","140","253"]);
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{"content-type":"application/json","cache-control":"no-store"}});
-const utcDate=(d:Date)=>d.toISOString().slice(0,10);
-const isoWeek=(date:Date)=>{const d=new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth(),date.getUTCDate()));const day=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-day);const year=d.getUTCFullYear();const yearStart=new Date(Date.UTC(year,0,1));return {year,week:Math.ceil((((d.getTime()-yearStart.getTime())/86400000)+1)/7)};};
-const weekBounds=(date:Date)=>{const start=new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth(),date.getUTCDate()));const day=start.getUTCDay()||7;start.setUTCDate(start.getUTCDate()-day+1);const end=new Date(start);end.setUTCDate(end.getUTCDate()+7);return {start,end};};
+const calendarDate=(d:Date)=>{const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);const get=(k:string)=>p.find(x=>x.type===k)?.value||"00";return get("year")+"-"+get("month")+"-"+get("day");};
+const datePlus=(date:string,days:number)=>{const d=new Date(date+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);};
+const pacificMidnight=(date:string)=>{const guess=new Date(date+"T00:00:00Z");const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",timeZoneName:"shortOffset"}).formatToParts(guess);const zone=parts.find(x=>x.type==="timeZoneName")?.value||"GMT-8";const match=zone.match(/GMT([+-])(\d{1,2})(?::(\d{2}))?/);const minutes=match?(Number(match[2])*60+Number(match[3]||0))*(match[1]==="-"?-1:1):-480;return new Date(guess.getTime()-minutes*60000);};
+const isoWeek=(date:Date)=>{const [y,m,d]=calendarDate(date).split("-").map(Number);const dayDate=new Date(Date.UTC(y,m-1,d));const day=dayDate.getUTCDay()||7;dayDate.setUTCDate(dayDate.getUTCDate()+4-day);const year=dayDate.getUTCFullYear();const yearStart=new Date(Date.UTC(year,0,1));return {year,week:Math.ceil((((dayDate.getTime()-yearStart.getTime())/86400000)+1)/7)};};
+const weekBounds=(date:Date)=>{const [y,m,d]=calendarDate(date).split("-").map(Number);const startDay=new Date(Date.UTC(y,m-1,d));const weekday=startDay.getUTCDay()||7;startDay.setUTCDate(startDay.getUTCDate()-weekday+1);const startDate=startDay.toISOString().slice(0,10),endDate=datePlus(startDate,7);return {start:pacificMidnight(startDate),end:pacificMidnight(endDate),startDate,endDate};};
 const str=(v:unknown)=>typeof v==="string"||typeof v==="number"?String(v):"";
 const obj=(v:any)=>v&&typeof v==="object"?v:{};
 const first=(...values:unknown[])=>values.find(v=>v!==undefined&&v!==null&&v!=="");
@@ -57,11 +59,11 @@ async function getState(key:string){const {data}=await db.from("tn_pickem_provid
 async function setState(key:string,patch:Record<string,unknown>){const {error}=await db.from("tn_pickem_provider_state").upsert({provider:"apisports",provider_sport:key,...patch,updated_at:new Date().toISOString()},{onConflict:"provider,provider_sport"});if(error)throw error;}
 async function fetchSchedule(cfg:SportConfig,now:Date){
  const rows:any[]=[];
- if(cfg.key==="football"){const toDate=new Date(now);toDate.setUTCDate(toDate.getUTCDate()+6);const data=await apiGet(cfg,{from:utcDate(now),to:utcDate(toDate),timezone:"America/Los_Angeles"});for(const item of data){const n=normalizeRow(item,cfg);if(n&&SOCCER_LEAGUES.has(String(n.league_id)))rows.push(n);}}
- else{for(let i=0;i<7;i++){const d=new Date(now);d.setUTCDate(d.getUTCDate()+i);const data=await apiGet(cfg,{date:utcDate(d)});for(const item of data){const n=normalizeRow(item,cfg);if(n)rows.push(n);}}}
+ if(cfg.key==="football"){const data=await apiGet(cfg,{from:calendarDate(now),to:datePlus(calendarDate(now),6),timezone:"America/Los_Angeles"});for(const item of data){const n=normalizeRow(item,cfg);if(n&&SOCCER_LEAGUES.has(String(n.league_id)))rows.push(n);}}
+ else{for(let i=0;i<7;i++){const data=await apiGet(cfg,{date:datePlus(calendarDate(now),i),timezone:"America/Los_Angeles"});for(const item of data){const n=normalizeRow(item,cfg);if(n)rows.push(n);}}}
  return rows;
 }
-async function fetchToday(cfg:SportConfig,now:Date){return cfg.key==="football"?await apiGet(cfg,{live:"all"}):await apiGet(cfg,{date:utcDate(now)});}
+async function fetchToday(cfg:SportConfig,now:Date){return cfg.key==="football"?await apiGet(cfg,{live:"all",timezone:"America/Los_Angeles"}):await apiGet(cfg,{date:calendarDate(now),timezone:"America/Los_Angeles"});}
 function chooseSlate(events:any[]){
  const groups=new Map<string,any[]>();
  for(const e of events){const s=e.sport==="cfb"?"cfb":e.sport;const list=groups.get(s)||[];list.push(e);groups.set(s,list);}
@@ -73,7 +75,7 @@ function chooseSlate(events:any[]){
 }
 function toGame(e:any){return {id:e.provider_sport+":"+e.provider_game_id,provider_sport:e.provider_sport,provider_game_id:e.provider_game_id,sport:String(e.sport).toUpperCase(),league:e.league,home:e.home_team,away:e.away_team,starts_at:e.starts_at,status:e.status,home_score:e.home_score,away_score:e.away_score,result:e.result,allow_tie:allowTie(e.sport)};}
 async function publishSlate(now:Date){
- const {start,end}=weekBounds(now),iso=isoWeek(start);
+ const {start,end}=weekBounds(now),iso=isoWeek(now);
  const query=()=>db.from("tn_pickem_provider_events").select("provider_sport,provider_game_id,sport,league,home_team,away_team,starts_at,status,home_score,away_score,result").eq("provider","apisports").gte("starts_at",now.toISOString()).lt("starts_at",end.toISOString()).eq("result","pending");
  let {data:events,error}=await query();if(error)throw error;
  let selected=chooseSlate(events||[]),seasonYear=iso.year,weekNumber=iso.week,slug="tn-pickem-"+seasonYear+"-w"+String(weekNumber).padStart(2,"0");
@@ -99,7 +101,7 @@ async function refreshWeekResults(){
   const eventMap=new Map((events||[]).map((e:any)=>[e.provider_sport+":"+e.provider_game_id,e]));
   const updated=games.map((g:any)=>{const e=eventMap.get(g.provider_sport+":"+g.provider_game_id);return e?{...g,status:e.status,home_score:e.home_score,away_score:e.away_score,result:e.result}:g;});
   const {error:updateError}=await db.from("tn_pickem_weeks").update({games:updated,updated_at:new Date().toISOString()}).eq("id",week.id);if(updateError)throw updateError;
-  await db.rpc("tn_pickem_reconcile_week",{p_week_slug:week.slug});scored++;
+  const {error:scoreError}=await db.rpc("tn_pickem_reconcile_week",{p_week_slug:week.slug});if(scoreError)throw new Error("Pick'em scoring failed: "+scoreError.message);scored++;
  }
  return scored;
 }
@@ -115,9 +117,9 @@ Deno.serve(async(req:Request)=>{
  const started=Date.now(),now=new Date();let requests=0,received=0,upserted=0,slate:any=null,scored=0;
  try{
   for(const cfg of SPORTS){
-   const state=await getState(cfg.key),today=utcDate(now),lastSchedule=state?.last_schedule_sync_at?utcDate(new Date(state.last_schedule_sync_at)):"";
+   const state=await getState(cfg.key),today=calendarDate(now),lastSchedule=state?.last_schedule_sync_at?calendarDate(new Date(state.last_schedule_sync_at)):"";
    if(lastSchedule!==today){const rows=await fetchSchedule(cfg,now);requests+=cfg.key==="football"?1:7;received+=rows.length;upserted+=await upsertRows(rows);await setState(cfg.key,{last_schedule_sync_at:now.toISOString(),last_status:"schedule_ok",last_error:null});}
-   const midnight=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())).toISOString(),tomorrow=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()+1)).toISOString();
+   const midnight=pacificMidnight(today).toISOString(),tomorrow=pacificMidnight(datePlus(today,1)).toISOString();
    const {count:activeCount}=await db.from("tn_pickem_provider_events").select("id",{count:"exact",head:true}).eq("provider","apisports").eq("provider_sport",cfg.key).gte("starts_at",midnight).lt("starts_at",tomorrow).eq("result","pending");
    if((activeCount||0)>0){const raw=await fetchToday(cfg,now);requests++;received+=raw.length;const rows=raw.map((r:any)=>normalizeRow(r,cfg)).filter(Boolean);upserted+=await upsertRows(rows);await setState(cfg.key,{last_live_sync_at:now.toISOString(),last_status:"live_ok",last_error:null});}
   }
