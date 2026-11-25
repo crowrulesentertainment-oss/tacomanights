@@ -1,0 +1,13 @@
+create index if not exists tn_calendar_episode_idx on public.tn_production_calendar(episode_id);
+create index if not exists tn_calendar_created_by_idx on public.tn_production_calendar(created_by);
+create index if not exists tn_editing_editor_idx on public.tn_production_editing(editor_id);
+create index if not exists tn_editing_approved_by_idx on public.tn_production_editing(approved_by);
+create index if not exists tn_editing_updated_by_idx on public.tn_production_editing(updated_by);
+create index if not exists tn_guests_created_by_idx on public.tn_production_guests(created_by);
+create index if not exists tn_feedback_episode_idx on public.tn_production_feedback(episode_id);
+create index if not exists tn_feedback_reviewed_by_idx on public.tn_production_feedback(reviewed_by);
+create index if not exists tn_recognition_episode_idx on public.tn_production_recognition(episode_id);
+create index if not exists tn_recognition_awarded_by_idx on public.tn_production_recognition(awarded_by);
+create index if not exists tn_research_created_by_idx on public.tn_production_research(created_by);
+create index if not exists tn_training_created_by_idx on public.tn_production_training(created_by);
+create index if not exists tn_training_progress_user_idx on public.tn_production_training_progress(user_id);
