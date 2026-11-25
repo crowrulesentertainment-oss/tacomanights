@@ -26,6 +26,21 @@ async function loadBase(){
  if(isAdmin){members=await rows("tn_production_profiles",db.from("tn_production_profiles").select("id,display_name,email,role").in("role",["contributor","producer","admin"]).order("display_name"));$("#h3RecognitionMember").innerHTML=members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");const editor=$("#h3EditingEditor");if(editor)editor.innerHTML='<option value="">Assign to me</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+' · '+esc(m.role)+'</option>').join("")}
  document.querySelectorAll(".hub3-form button.admin-only").forEach(b=>b.classList.toggle("hidden",!isAdmin));document.querySelectorAll(".hub3-form[data-admin-only]").forEach(form=>form.classList.toggle("hidden",!isAdmin));document.querySelectorAll("[data-h3-admin-only]").forEach(el=>el.classList.toggle("hidden",!isAdmin));
 }
+
+async function loadHostAvailability(){
+ const target=$("#h3HostAvailability");if(!target||!isAdmin)return;
+ try{
+  const [slots,hosts]=await Promise.all([
+   rows("tacoma_nights_host_availability",db.from("tacoma_nights_host_availability").select("id,host_id,weekday,start_time,end_time,timezone,notes").order("weekday").order("start_time").limit(300)),
+   rows("tacoma_nights_remote_hosts",db.from("tacoma_nights_remote_hosts").select("id,name,on_air_name,role,team_status").limit(300))
+  ]);
+  const names=new Map(hosts.map(h=>[h.id,h.on_air_name||h.name||"Remote host"]));
+  const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const time=v=>{if(!v)return"";const [hh,mm]=String(v).split(":");const d=new Date();d.setHours(Number(hh),Number(mm||0),0,0);return d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})};
+  target.innerHTML=slots.length?slots.map(x=>'<article class="h3-availability-row"><div><b>'+esc(names.get(x.host_id)||"Host profile")+'</b><span class="pill">'+esc(days[Number(x.weekday)]||"Day not set")+'</span></div><div><strong>'+esc(time(x.start_time))+' – '+esc(time(x.end_time))+'</strong><small>'+esc(x.timezone||"America/Los_Angeles")+'</small>'+(x.notes?'<small>'+esc(x.notes)+'</small>':"")+'</div></article>').join(""):'<p class="hub3-empty">No recurring host availability has been entered yet. This section will populate when availability is added through the existing host administration workflow.</p>';
+ }catch(error){target.innerHTML='<p class="hub3-empty">Host availability could not be loaded: '+esc(error.message||"Please retry.")+'</p>'}
+}
+
 async function loadCommand(){
  const [assignmentRows,uploadRows,editRows,researchRows]=await Promise.all([
   rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,status,due_at,assignee_id,tn_production_episodes(episode_number,title)").order("due_at").limit(300)),
@@ -64,6 +79,7 @@ async function loadCommand(){
   activeAssignments.forEach(a=>{const id=a.assignee_id||"unassigned";if(!byPerson.has(id))byPerson.set(id,{total:0,overdue:0,dueSoon:0,name:id==="unassigned"?"Unassigned":(members.find(m=>m.id===id)?.display_name||members.find(m=>m.id===id)?.email||"Team member")});const x=byPerson.get(id);x.total++;if(a.due_at&&new Date(a.due_at).getTime()<now.getTime())x.overdue++;else if(a.due_at&&new Date(a.due_at).getTime()<=soon)x.dueSoon++});
   const workload=[...byPerson.values()].sort((a,b)=>b.overdue-a.overdue||b.total-a.total).slice(0,10);
   set("h3Workload",workload.map(x=>'<article class="hub3-workload-item"><div><b>'+esc(x.name)+'</b><small>'+x.total+' open assignment'+(x.total===1?"":"s")+'</small></div><span class="'+(x.overdue?"hub3-overdue":"")+'">'+x.overdue+' overdue</span><small>'+x.dueSoon+' due within 48h</small></article>').join("")||'<p class="hub3-empty">No active contributor assignments yet.</p>');
+  await loadHostAvailability();
  }else set("h3Workload",'<p class="hub3-empty">Team workload is available to producers and administrators.</p>');
 }
 async function loadContributor(){
@@ -459,6 +475,7 @@ async function init(){
  $("#h3CalendarToday")?.addEventListener("click",()=>{calendarCursor=new Date();renderCalendar()});
  $("#h3CalendarType")?.addEventListener("change",renderCalendar);
  $("#h3CalendarRefresh")?.addEventListener("click",()=>loadCalendar().catch(e=>{set("h3CalendarList",'<p class="hub3-empty">Calendar refresh failed: '+esc(e.message||"Please try again.")+'</p>')}));
+ $("#h3AvailabilityRefresh")?.addEventListener("click",loadHostAvailability);
 
  document.querySelectorAll("[data-h3-go]").forEach(b=>b.addEventListener("click",()=>{tab(b.dataset.h3Go);document.querySelector(".hub3-nav")?.scrollIntoView({behavior:"smooth",block:"start"})}));
  document.querySelectorAll("[data-h3-legacy]").forEach(b=>b.addEventListener("click",()=>{const target=document.getElementById(b.dataset.h3Legacy);if(!target)return;document.querySelectorAll(".ph-view").forEach(v=>v.classList.remove("active"));target.classList.add("active");document.querySelectorAll(".ph-tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===b.dataset.h3Legacy.replace("view-","")));target.scrollIntoView({behavior:"smooth",block:"start"})}));
