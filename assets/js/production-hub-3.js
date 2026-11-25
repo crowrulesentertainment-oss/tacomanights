@@ -27,52 +27,61 @@ async function loadBase(){
  document.querySelectorAll(".hub3-form button.admin-only").forEach(b=>b.classList.toggle("hidden",!isAdmin));document.querySelectorAll(".hub3-form[data-admin-only]").forEach(form=>form.classList.toggle("hidden",!isAdmin));
 }
 async function loadCommand(){
- const [open,assigned,uploads,edits,research]=await Promise.all([count("tn_production_episodes",[["status","planning"]]).catch(()=>0),count("tn_production_assignments",[["status","assigned"]]).catch(()=>0),count("tn_production_uploads",[["status","submitted"]]).catch(()=>0),count("tn_production_editing",[["status","review"]]).catch(()=>0),count("tn_production_research",[["status","ready"]]).catch(()=>0)]);
- set("h3CommandStats",[['Open planning',open],['Assignments',assigned],['Awaiting review',uploads],['Edits in review',edits],['Research ready',research]].map(([l,n])=>'<div class="hub3-stat"><b>'+n+'</b><span>'+l+'</span></div>').join(""));
- const upcoming=episodes.filter(e=>!["published","archived"].includes(e.status)).slice(0,6);
- set("h3EpisodeCommand",upcoming.map(e=>'<article class="hub3-row"><div><b>'+esc(e.episode_number)+' · '+esc(e.title)+'</b><p>'+esc(e.topic||"Topic to be confirmed")+'</p><small>Premiere: '+when(e.premiere_at)+'</small></div>'+status(e.status)+'</article>').join("")||'<p class="hub3-empty">No active episodes yet. Create an episode in the existing Episodes workspace.</p>');
- const [assignments,reviewItems]=await Promise.all([rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,status,due_at").not("status","in",'("complete","cancelled")').order("due_at").limit(20)).catch(()=>[]),rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,created_at,producer_note").in("status",["submitted","revision"]).order("created_at").limit(12)).catch(()=>[])]);
+ const [assignmentRows,uploadRows,editRows,researchRows]=await Promise.all([
+  rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,status,due_at").order("due_at").limit(200)),
+  rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,created_at,producer_note").order("created_at",{ascending:false}).limit(200)),
+  rows("tn_production_editing",db.from("tn_production_editing").select("id,status").limit(200)),
+  rows("tn_production_research",db.from("tn_production_research").select("id,status").limit(200))
+ ]);
+ const activeEpisodes=episodes.filter(e=>!["published","archived","cancelled"].includes(String(e.status||"").toLowerCase()));
+ const activeAssignments=assignmentRows.filter(a=>!["complete","completed","cancelled"].includes(String(a.status||"").toLowerCase()));
+ const waitingUploads=uploadRows.filter(a=>["submitted","revision","revision_requested","pending_review"].includes(String(a.status||"").toLowerCase()));
+ const reviewEdits=editRows.filter(a=>["review","producer_review","revisions"].includes(String(a.status||"").toLowerCase()));
+ const readyResearch=researchRows.filter(a=>["ready","approved","complete","completed"].includes(String(a.status||"").toLowerCase()));
+ set("h3CommandStats",[['Active episodes',activeEpisodes.length],['Open assignments',activeAssignments.length],['Uploads to review',waitingUploads.length],['Edits needing review',reviewEdits.length],['Research ready',readyResearch.length]].map(([l,n])=>'<div class="hub3-stat"><b>'+n+'</b><span>'+l+'</span></div>').join(""));
+ const upcoming=activeEpisodes.slice(0,6);
+ set("h3EpisodeCommand",upcoming.map(e=>'<article class="hub3-row"><div><b>'+esc(e.episode_number)+' · '+esc(e.title)+'</b><p>'+esc(e.topic||"Topic to be confirmed")+'</p><small>Premiere: '+when(e.premiere_at)+'</small></div>'+status(e.status)+'</article>').join("")||'<p class="hub3-empty">No active episodes yet. Create an episode in the Episodes workspace below.</p>');
  const now=Date.now();
- const overdue=assignments.filter(a=>a.due_at&&new Date(a.due_at).getTime()<now);
- const activeAssignments=assignments.filter(a=>!a.due_at||new Date(a.due_at).getTime()>=now);
- set("h3Timeline",activeAssignments.slice(0,8).map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b><small>Due '+when(a.due_at)+'</small></div>').join("")||'<p class="hub3-empty">No upcoming assignment deadlines.</p>');
- const reviewMarkup=reviewItems.map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b><small>'+ (a.status==="submitted"?"Awaiting producer review":"Revision requested")+' · '+when(a.created_at)+'</small>'+(a.producer_note?'<p>'+esc(a.producer_note)+'</p>':"")+'</div>');
- const overdueMarkup=overdue.map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b><small>Overdue assignment · '+when(a.due_at)+'</small></div>');
+ const overdue=activeAssignments.filter(a=>a.due_at&&new Date(a.due_at).getTime()<now);
+ const upcomingAssignments=activeAssignments.filter(a=>!a.due_at||new Date(a.due_at).getTime()>=now).slice(0,8);
+ set("h3Timeline",upcomingAssignments.map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b><small>Due '+when(a.due_at)+'</small></div>').join("")||'<p class="hub3-empty">No upcoming assignment deadlines.</p>');
+ const reviewMarkup=waitingUploads.slice(0,10).map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b><small>'+ (["submitted","pending_review"].includes(String(a.status||"").toLowerCase())?"Awaiting producer review":"Revision requested")+' · '+when(a.created_at)+'</small>'+(a.producer_note?'<p>'+esc(a.producer_note)+'</p>':"")+'</div>');
+ const overdueMarkup=overdue.slice(0,10).map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b><small>Overdue assignment · '+when(a.due_at)+'</small></div>');
  const attention=[...reviewMarkup,...overdueMarkup];
- set("h3NeedsAttention",attention.join("")||'<p class="hub3-empty">You’re all caught up. No submissions are awaiting review and no assignments are overdue.</p>');
+ set("h3NeedsAttention",attention.join("")||'<p class="hub3-empty">No submissions are awaiting review and no assignments are overdue.</p>');
 }
 async function loadContributor(){
- const [assignments,uploads]=await Promise.all([rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,instructions,status,due_at,tn_production_episodes(episode_number,title)").eq("assignee_id",user.id).order("due_at")).catch(()=>[]),rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,producer_note,created_at").eq("uploader_id",user.id).order("created_at",{ascending:false}).limit(12)).catch(()=>[])]);
+ const [assignments,uploads]=await Promise.all([rows("tn_production_assignments",db.from("tn_production_assignments").select("id,title,instructions,status,due_at,tn_production_episodes(episode_number,title)").eq("assignee_id",user.id).order("due_at")),rows("tn_production_uploads",db.from("tn_production_uploads").select("id,title,status,producer_note,created_at").eq("uploader_id",user.id).order("created_at",{ascending:false}).limit(12))]);
  set("h3MyAssignments",assignments.map(a=>'<article class="hub3-row"><div><b>'+esc(a.title)+'</b><p>'+esc(a.tn_production_episodes?.episode_number||"Episode")+" · "+esc(a.tn_production_episodes?.title||"")+'</p><p>'+esc(a.instructions||"No additional instructions.")+'</p><small>Due '+when(a.due_at)+'</small></div>'+status(a.status)+'</article>').join("")||'<p class="hub3-empty">You do not have any assignments yet.</p>');
  set("h3MyUploads",uploads.map(a=>'<div class="hub3-mini"><b>'+esc(a.title)+'</b>'+status(a.status)+(a.producer_note?'<small>'+esc(a.producer_note)+'</small>':"")+'</div>').join("")||'<p class="hub3-empty">Your uploaded segments will appear here.</p>');
 }
 async function loadEditing(){
- const list=await rows("tn_production_editing",db.from("tn_production_editing").select("*,tn_production_episodes(episode_number,title,premiere_at)").order("updated_at",{ascending:false})).catch(()=>[]);
+ const list=await rows("tn_production_editing",db.from("tn_production_editing").select("*,tn_production_episodes(episode_number,title,premiere_at)").order("updated_at",{ascending:false}));
  set("h3EditingList",list.map(x=>'<article class="hub3-row"><div><b>'+esc(x.tn_production_episodes?.episode_number||"Episode")+' · '+esc(x.tn_production_episodes?.title||"")+'</b><p>Editor: '+(x.editor_id===user.id?"You":esc(members.find(m=>m.id===x.editor_id)?.display_name||"Not assigned"))+' · '+esc(x.version_label||"No version label")+'</p><small>Target: '+when(x.target_ready_at)+' · Updated '+when(x.updated_at)+'</small><p>'+esc(x.notes||"")+'</p></div>'+status(x.status)+'</article>').join("")||'<p class="hub3-empty">No editing records yet. Producers can create the first status from the panel.</p>');
 }
 async function loadCalendar(){
- const list=await rows("tn_production_calendar",db.from("tn_production_calendar").select("id,title,description,event_type,starts_at,ends_at,all_day").gte("starts_at",new Date(Date.now()-86400000).toISOString()).order("starts_at").limit(40)).catch(()=>[]);
+ const list=await rows("tn_production_calendar",db.from("tn_production_calendar").select("id,title,description,event_type,starts_at,ends_at,all_day").gte("starts_at",new Date(Date.now()-86400000).toISOString()).order("starts_at").limit(40));
  set("h3CalendarList",list.map(x=>'<article class="hub3-row"><div><b>'+esc(x.title)+'</b><p>'+esc(x.description||"")+'</p><small>'+when(x.starts_at)+' '+(x.ends_at?"— "+when(x.ends_at):"")+'</small></div>'+status(x.event_type)+'</article>').join("")||'<p class="hub3-empty">No scheduled production events. The weekly rhythm above is your default workflow.</p>');
 }
 async function loadResearch(){
- const list=await rows("tn_production_research",db.from("tn_production_research").select("id,title,category,summary,source_url,source_name,status,created_at,created_by").order("created_at",{ascending:false}).limit(60)).catch(()=>[]);
+ const list=await rows("tn_production_research",db.from("tn_production_research").select("id,title,category,summary,source_url,source_name,status,created_at,created_by").order("created_at",{ascending:false}).limit(60));
  set("h3ResearchList",list.map(x=>'<article class="hub3-row"><div><b>'+esc(x.title)+'</b><p>'+esc(x.category)+' · '+esc(x.summary)+'</p><small>'+esc(x.source_name||"Source not named")+' · '+when(x.created_at)+'</small>'+(safeHttps(x.source_url)?'<p><a href="'+esc(safeHttps(x.source_url))+'" target="_blank" rel="noopener noreferrer">Open source ↗</a></p>':"")+'</div>'+status(x.status)+'</article>').join("")||'<p class="hub3-empty">The research desk is ready for its first source or story brief.</p>');
 }
 async function loadNotifications(){
- const list=await rows("tn_notifications",db.from("tn_notifications").select("id,title,message,href,read_at,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(50)).catch(()=>[]);
+ const list=await rows("tn_notifications",db.from("tn_notifications").select("id,title,message,href,read_at,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(50));
  set("h3NotificationList",list.map(x=>'<article class="hub3-row '+(x.read_at?"":"unread")+'"><div><b>'+esc(x.title)+'</b><p>'+esc(x.message)+'</p><small>'+when(x.created_at)+'</small>'+(safeHttps(x.href)?'<p><a href="'+esc(safeHttps(x.href))+'">Open related item ↗</a></p>':"")+'</div>'+(x.read_at?status("read"):'<button class="ph-btn" data-h3-read="'+esc(x.id)+'">Mark read</button>')+'</article>').join("")||'<p class="hub3-empty">You are all caught up. New production notifications will appear here.</p>');
 }
 async function loadGuests(){
  if(!isAdmin){set("h3GuestList",'<p class="hub3-empty">Guest contact details are restricted to producers and administrators.</p>');return}
- const list=await rows("tn_production_guests",db.from("tn_production_guests").select("id,guest_name,email,organization,topic,status,interview_at,meeting_url").order("created_at",{ascending:false}).limit(60)).catch(()=>[]);
+ const list=await rows("tn_production_guests",db.from("tn_production_guests").select("id,guest_name,email,organization,topic,status,interview_at,meeting_url").order("created_at",{ascending:false}).limit(60));
  set("h3GuestList",list.map(x=>'<article class="hub3-row"><div><b>'+esc(x.guest_name)+'</b><p>'+esc(x.organization||"Independent guest")+' · '+esc(x.email||"No email")+'</p><p>'+esc(x.topic||"Topic to be confirmed")+'</p><small>'+when(x.interview_at)+'</small>'+(safeHttps(x.meeting_url)?'<p><a href="'+esc(safeHttps(x.meeting_url))+'" target="_blank" rel="noopener noreferrer">Meeting link ↗</a></p>':"")+'</div><select data-h3-guest-status="'+esc(x.id)+'">'+["prospect","invited","confirmed","scheduled","completed","declined","cancelled"].map(s=>'<option value="'+s+'" '+(x.status===s?"selected":"")+'>'+s.replaceAll("_"," ")+'</option>').join("")+'</select></article>').join("")||'<p class="hub3-empty">No guest bookings yet. Add your first guest.</p>');
 }
 async function loadChat(){
- const list=await rows("tn_production_chat_messages",db.from("tn_production_chat_messages").select("id,display_name,message,created_at,user_id").order("created_at",{ascending:false}).limit(60)).catch(()=>[]);
- set("h3ChatMessages",list.reverse().map(x=>'<article class="hub3-chat-message"><b>'+esc(x.display_name)+'</b><p>'+esc(x.message)+'</p><small>'+when(x.created_at)+'</small></article>').join("")||'<p class="hub3-empty">No team messages yet.</p>');const updates=await rows("tn_production_updates",db.from("tn_production_updates").select("id,title,body,published_at").eq("visibility","team").order("published_at",{ascending:false}).limit(8)).catch(()=>[]);set("h3Announcements",updates.map(x=>'<div class="hub3-mini"><b>'+esc(x.title)+'</b><small>'+when(x.published_at)+'</small><p>'+esc(x.body)+'</p></div>').join("")||'<p class="hub3-empty">No team announcements yet.</p>');
+ const list=await rows("tn_production_chat_messages",db.from("tn_production_chat_messages").select("id,display_name,message,created_at,user_id").order("created_at",{ascending:false}).limit(60));
+ set("h3ChatMessages",list.reverse().map(x=>'<article class="hub3-chat-message"><b>'+esc(x.display_name)+'</b><p>'+esc(x.message)+'</p><small>'+when(x.created_at)+'</small></article>').join("")||'<p class="hub3-empty">No team messages yet.</p>');const updates=await rows("tn_production_updates",db.from("tn_production_updates").select("id,title,body,published_at").eq("visibility","team").order("published_at",{ascending:false}).limit(8));set("h3Announcements",updates.map(x=>'<div class="hub3-mini"><b>'+esc(x.title)+'</b><small>'+when(x.published_at)+'</small><p>'+esc(x.body)+'</p></div>').join("")||'<p class="hub3-empty">No team announcements yet.</p>');
 }
 async function loadTraining(){
- const [list,progress]=await Promise.all([rows("tn_production_training",db.from("tn_production_training").select("id,title,category,description,resource_url,content").eq("is_published",true).order("sort_order")).catch(()=>[]),rows("tn_production_training_progress",db.from("tn_production_training_progress").select("resource_id,completed_at").eq("user_id",user.id)).catch(()=>[])]);
+ const [list,progress]=await Promise.all([rows("tn_production_training",db.from("tn_production_training").select("id,title,category,description,resource_url,content").eq("is_published",true).order("sort_order")),rows("tn_production_training_progress",db.from("tn_production_training_progress").select("resource_id,completed_at").eq("user_id",user.id))]);
  const done=new Set(progress.map(x=>x.resource_id));
  set("h3TrainingList",list.map(x=>'<article class="hub3-row"><div><b>'+esc(x.title)+'</b><p>'+esc(x.description)+'</p><small>'+esc(x.category.replaceAll("_"," "))+'</small>'+(x.content?'<p>'+esc(x.content)+'</p>':"")+(safeHttps(x.resource_url)?'<p><a href="'+esc(safeHttps(x.resource_url))+'" target="_blank" rel="noopener noreferrer">Open learning resource ↗</a></p>':"")+'</div>'+(done.has(x.id)?status("completed"):'<button class="ph-btn" data-h3-complete="'+esc(x.id)+'">Mark complete</button>')+'</article>').join("")||'<p class="hub3-empty">Training resources will appear here as producers publish them.</p>');
 }
@@ -84,11 +93,11 @@ async function loadAnalytics(){
 }
 async function loadFeedback(){
  if(!isAdmin){set("h3FeedbackList",'<p class="hub3-empty">Audience submissions are private to producers and administrators. Use the public feedback form below the page hero to share a response.</p>');return}
- const list=await rows("tn_production_feedback",db.from("tn_production_feedback").select("id,submitter_name,submitter_email,category,rating,message,status,created_at").order("created_at",{ascending:false}).limit(80)).catch(()=>[]);
+ const list=await rows("tn_production_feedback",db.from("tn_production_feedback").select("id,submitter_name,submitter_email,category,rating,message,status,created_at").order("created_at",{ascending:false}).limit(80));
  set("h3FeedbackList",list.map(x=>'<article class="hub3-row"><div><b>'+esc(x.submitter_name||"Community member")+'</b><p>'+esc(x.category.replaceAll("_"," "))+' · '+(x.rating?("★".repeat(x.rating)):"No rating")+'</p><p>'+esc(x.message)+'</p><small>'+esc(x.submitter_email||"No email")+' · '+when(x.created_at)+'</small></div><select data-h3-feedback="'+esc(x.id)+'"><option value="pending" '+(x.status==="pending"?"selected":"")+'>Pending</option><option value="reviewing" '+(x.status==="reviewing"?"selected":"")+'>Reviewing</option><option value="considered" '+(x.status==="considered"?"selected":"")+'>Considered</option><option value="featured" '+(x.status==="featured"?"selected":"")+'>Featured</option><option value="closed" '+(x.status==="closed"?"selected":"")+'>Closed</option></select></article>').join("")||'<p class="hub3-empty">No audience feedback has been received yet.</p>');
 }
 async function loadRecognition(){
- const list=await rows("tn_production_recognition",db.from("tn_production_recognition").select("id,recipient_name,award_name,reason,awarded_at").order("awarded_at",{ascending:false}).limit(60)).catch(()=>[]);
+ const list=await rows("tn_production_recognition",db.from("tn_production_recognition").select("id,recipient_name,award_name,reason,awarded_at").order("awarded_at",{ascending:false}).limit(60));
  set("h3RecognitionList",list.map(x=>'<article class="hub3-row recognition"><div><b>'+esc(x.recipient_name)+'</b><p>'+esc(x.reason)+'</p><small>'+when(x.awarded_at)+'</small></div><span class="hub3-award">'+esc(x.award_name)+'</span></article>').join("")||'<p class="hub3-empty">The recognition wall is ready for its first shout-out.</p>');
 }
 async function submit(form){
