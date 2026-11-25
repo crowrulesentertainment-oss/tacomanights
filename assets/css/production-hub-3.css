@@ -58,3 +58,6 @@
 .hub3-rhythm b{font-size:10px;letter-spacing:.12em;color:#e7c58e}.hub3-rhythm span{font-size:11px;line-height:1.45;color:#b5bfcc}
 @media(max-width:760px){.hub3-command-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.hub3-rhythm{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:420px){.hub3-command-actions{grid-template-columns:1fr}.hub3-command-actions button{padding:13px}}
+
+.hub3-cycle-note{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:8px 0 16px;padding:13px 16px;border:1px solid rgba(212,173,112,.3);border-left:3px solid #d4ad70;border-radius:9px;background:rgba(212,173,112,.07)}
+.hub3-cycle-note b{font-size:10px;letter-spacing:.14em;color:#e7c58e}.hub3-cycle-note span{font-size:12px;line-height:1.5;color:#d0d7e1}
