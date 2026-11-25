@@ -160,8 +160,10 @@ function renderCommunication(){
  const unread=notificationRows.filter(x=>!x.read_at).length;
  set("h3CommunicationStats",[["Team messages",chatRows.length],["Announcements",teamUpdateRows.length],["Unread notifications",unread]].map(([label,n])=>'<div class="hub3-stat"><b>'+n+'</b><span>'+label+'</span></div>').join(""));
  const showMessages=chatFilter!=="announcements",showUpdates=chatFilter!=="messages";
- set("h3ChatMessages",showMessages?(messages.map(x=>'<article class="hub3-chat-message '+(x.user_id===user.id?"mine":"")+'"><div class="hub3-chat-meta"><b>'+esc(x.display_name||"Team member")+'</b><time>'+when(x.created_at)+'</time></div><p>'+esc(x.message)+'</p></article>').join("")||'<p class="hub3-empty">'+(chatRows.length?"No messages match your search.":"No team messages yet. Start the conversation.")+'</p>':"");
- set("h3Announcements",showUpdates?(updates.map(x=>'<article class="hub3-mini"><b>'+esc(x.title)+'</b><small>'+when(x.published_at)+'</small><p>'+esc(x.body)+'</p></article>').join("")||'<p class="hub3-empty">'+(teamUpdateRows.length?"No announcements match your search.":"No team announcements have been posted yet.")+'</p>':"");
+ let messageHtml="",announcementHtml="";
+ if(showMessages)messageHtml=messages.map(x=>'<article class="hub3-chat-message '+(x.user_id===user.id?"mine":"")+'"><div class="hub3-chat-meta"><b>'+esc(x.display_name||"Team member")+'</b><time>'+when(x.created_at)+'</time></div><p>'+esc(x.message)+'</p></article>').join("")||'<p class="hub3-empty">'+(chatRows.length?"No messages match your search.":"No team messages yet. Start the conversation.")+'</p>';
+ if(showUpdates)announcementHtml=updates.map(x=>'<article class="hub3-mini"><b>'+esc(x.title)+'</b><small>'+when(x.published_at)+'</small><p>'+esc(x.body)+'</p></article>').join("")||'<p class="hub3-empty">'+(teamUpdateRows.length?"No announcements match your search.":"No team announcements have been posted yet.")+'</p>';
+ set("h3ChatMessages",messageHtml);set("h3Announcements",announcementHtml);
  const filter=$("#h3CommunicationFilter");if(filter)filter.value=chatFilter;
 }
 async function loadChat(){
