@@ -77,7 +77,7 @@ const date=s=>{if(!s)return "";const d=new Date(s);return Number.isNaN(d.getTime
 const tokenKey="tn-pickem-entry-token-v1";
 function getToken(){let t=localStorage.getItem(tokenKey);if(!t){t=crypto.randomUUID();localStorage.setItem(tokenKey,t)}return t}
 function showError(message){content.innerHTML='<div class="pe-empty">'+esc(message)+'</div>'}
-function renderGames(week,db){
+async function renderGames(week,db){
  const games=Array.isArray(week.games)?week.games:[];
  if(!games.length){showError("The next weekly slate is being prepared. Check back soon for the next set of matchups.");return}
  const cards=games.map((g,i)=>{
