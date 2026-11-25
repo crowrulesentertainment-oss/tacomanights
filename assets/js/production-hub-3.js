@@ -17,7 +17,7 @@ function options(list,empty=""){return (empty?'<option value="">'+esc(empty)+'</
 async function refresh(){
  const baseTargets=["h3EditingEpisode","h3ResearchEpisode","h3GuestEpisode","h3RecognitionEpisode","h3RecognitionMember"];
  try{await loadBase()}catch(error){console.error("Production Hub base data",error);baseTargets.forEach(id=>{const el=$("#"+id);if(el)el.innerHTML='<option value="">Could not load options — use Refresh to retry</option>'})}
- const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"],loadCommand],["Contributor workspace",["h3MyAssignments","h3MyUploads"],loadContributor],["Editing room",["h3EditingList"],loadEditing],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition]];
+ const tasks=[["Command center",["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"],loadCommand],["Contributor workspace",["h3MyAssignments","h3MyUploads"],loadContributor],["Editing room",["h3EditingList"],loadEditing],["Production calendar",["h3CalendarList"],loadCalendar],["Research desk",["h3ResearchList"],loadResearch],["Notifications",["h3NotificationList"],loadNotifications],["Guest bookings",["h3GuestList"],loadGuests],["Communication center",["h3ChatMessages","h3Announcements"],loadChat],["Training center",["h3TrainingList"],loadTraining],["Production analytics",["h3AnalyticsStats","h3AnalyticsBreakdown"],loadAnalytics],["Audience feedback",["h3FeedbackList"],loadFeedback],["Crew recognition",["h3RecognitionList"],loadRecognition],["Recent activity",["h3ActivityFeed"],loadActivity]];
  await Promise.all(tasks.map(async([label,targets,fn])=>{try{await fn()}catch(error){console.error(label,error);const html='<p class="hub3-empty">Could not load '+label.toLowerCase()+': '+esc(error?.message||"Please try again.")+'</p>';targets.forEach(id=>set(id,html))}}));
 }
 async function loadBase(){
@@ -96,6 +96,14 @@ async function loadFeedback(){
  const list=await rows("tn_production_feedback",db.from("tn_production_feedback").select("id,submitter_name,submitter_email,category,rating,message,status,created_at").order("created_at",{ascending:false}).limit(80));
  set("h3FeedbackList",list.map(x=>'<article class="hub3-row"><div><b>'+esc(x.submitter_name||"Community member")+'</b><p>'+esc(x.category.replaceAll("_"," "))+' · '+(x.rating?("★".repeat(x.rating)):"No rating")+'</p><p>'+esc(x.message)+'</p><small>'+esc(x.submitter_email||"No email")+' · '+when(x.created_at)+'</small></div><select data-h3-feedback="'+esc(x.id)+'"><option value="pending" '+(x.status==="pending"?"selected":"")+'>Pending</option><option value="reviewing" '+(x.status==="reviewing"?"selected":"")+'>Reviewing</option><option value="considered" '+(x.status==="considered"?"selected":"")+'>Considered</option><option value="featured" '+(x.status==="featured"?"selected":"")+'>Featured</option><option value="closed" '+(x.status==="closed"?"selected":"")+'>Closed</option></select></article>').join("")||'<p class="hub3-empty">No audience feedback has been received yet.</p>');
 }
+async function loadActivity(){
+  if(!isAdmin){set("h3ActivityFeed",'<p class="hub3-empty">The production activity log is restricted to producers and administrators.</p>');return}
+  const list=await rows("tn_production_activity",db.from("tn_production_activity").select("id,actor_id,action,detail,created_at").order("created_at",{ascending:false}).limit(30));
+  set("h3ActivityFeed",list.map(x=>'<article class="hub3-activity"><div class="hub3-activity-top"><b>'+esc(members.find(m=>m.id===x.actor_id)?.display_name||"Production team")+'</b><time>'+when(x.created_at)+'</time></div><p>'+esc(x.action.replaceAll("_"," "))+(x.detail?' · '+esc(x.detail):"")+'</p></article>').join("")||'<p class="hub3-empty">No production activity has been recorded yet.</p>');
+}
+async function logActivity(action,detail){
+  try{const {error}=await db.from("tn_production_activity").insert({actor_id:user.id,action,detail:detail||null});if(error)console.warn("Production activity log",error.message)}catch(error){console.warn("Production activity log",error)}
+}
 async function loadRecognition(){
  const list=await rows("tn_production_recognition",db.from("tn_production_recognition").select("id,recipient_name,award_name,reason,awarded_at").order("awarded_at",{ascending:false}).limit(60));
  set("h3RecognitionList",list.map(x=>'<article class="hub3-row recognition"><div><b>'+esc(x.recipient_name)+'</b><p>'+esc(x.reason)+'</p><small>'+when(x.awarded_at)+'</small></div><span class="hub3-award">'+esc(x.award_name)+'</span></article>').join("")||'<p class="hub3-empty">The recognition wall is ready for its first shout-out.</p>');
@@ -117,7 +125,7 @@ async function submit(form){
   if(type==="recognition"){const recipient=members.find(m=>m.id===d.recipient_id);result=await db.from("tn_production_recognition").insert({recipient_id:d.recipient_id,recipient_name:recipient?.display_name||recipient?.email||"Team member",award_name:d.award_name,reason:d.reason,episode_id:d.episode_id||null,awarded_by:user.id});}
   if(!result)throw new Error("This form could not be matched to a production action.");
   if(result.error)throw result.error;
-  form.reset();notice(form,"Saved successfully.");await refresh();
+  form.reset();notice(form,"Saved successfully.");await logActivity(type==="chat"?"team_message":"created_"+type,type==="chat"?"Posted a team message":(d.title||d.guest_name||d.award_name||"Production record"));await refresh();
  }catch(e){notice(form,"Could not save: "+(e.message||"Please try again."))}
 }
 async function init(){
@@ -135,10 +143,10 @@ async function init(){
  document.querySelectorAll(".hub3-form").forEach(f=>f.addEventListener("submit",e=>{e.preventDefault();submit(f)}));
  document.querySelector("[data-h3-refresh]")?.addEventListener("click",refresh);
  document.addEventListener("click",async e=>{
-  const read=e.target.closest("[data-h3-read]");if(read){const {error}=await db.from("tn_notifications").update({read_at:new Date().toISOString()}).eq("id",read.dataset.h3Read).eq("user_id",user.id);if(!error)loadNotifications()}
-  const complete=e.target.closest("[data-h3-complete]");if(complete){const {error}=await db.from("tn_production_training_progress").upsert({resource_id:complete.dataset.h3Complete,user_id:user.id,completed_at:new Date().toISOString()},{onConflict:"resource_id,user_id"});if(!error)loadTraining();else alert(error.message)}
+  const read=e.target.closest("[data-h3-read]");if(read){const {error}=await db.from("tn_notifications").update({read_at:new Date().toISOString()}).eq("id",read.dataset.h3Read).eq("user_id",user.id);if(!error){await logActivity("notification_read","Marked a notification as read");loadNotifications()}}
+  const complete=e.target.closest("[data-h3-complete]");if(complete){const {error}=await db.from("tn_production_training_progress").upsert({resource_id:complete.dataset.h3Complete,user_id:user.id,completed_at:new Date().toISOString()},{onConflict:"resource_id,user_id"});if(!error){await logActivity("training_completed","Completed a training resource");loadTraining()}else alert(error.message)}
  });
- document.addEventListener("change",async e=>{const field=e.target.closest("[data-h3-feedback]");if(field&&isAdmin){const {error}=await db.from("tn_production_feedback").update({status:field.value,reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",field.dataset.h3Feedback);if(error)alert(error.message)}const guest=e.target.closest("[data-h3-guest-status]");if(guest&&isAdmin){const {error}=await db.from("tn_production_guests").update({status:guest.value,updated_at:new Date().toISOString()}).eq("id",guest.dataset.h3GuestStatus);if(error)alert(error.message)}});
+ document.addEventListener("change",async e=>{const field=e.target.closest("[data-h3-feedback]");if(field&&isAdmin){const {error}=await db.from("tn_production_feedback").update({status:field.value,reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq("id",field.dataset.h3Feedback);if(error)alert(error.message);else await logActivity("feedback_updated","Changed audience feedback status to "+field.value)}const guest=e.target.closest("[data-h3-guest-status]");if(guest&&isAdmin){const {error}=await db.from("tn_production_guests").update({status:guest.value,updated_at:new Date().toISOString()}).eq("id",guest.dataset.h3GuestStatus);if(error)alert(error.message);else await logActivity("guest_status_updated","Changed guest booking status to "+guest.value)}});
  await refresh();
 }
 init().catch(e=>{console.error("Production Hub 3.0 could not initialize",e);["h3CommandStats","h3EpisodeCommand","h3Timeline","h3NeedsAttention"].forEach(id=>set(id,'<p class="hub3-empty">The production workspace could not initialize: '+esc(e?.message||"Please refresh and try again.")+'</p>'))});
