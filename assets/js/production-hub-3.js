@@ -24,9 +24,25 @@ async function refresh(){
 }
 async function loadBase(){
  episodes=await rows("tn_production_episodes",db.from("tn_production_episodes").select("id,episode_number,title,topic,premiere_at,status").order("premiere_at",{ascending:true}));
- $("#h3EditingEpisode").innerHTML=options(episodes,"Choose episode…");$("#h3ResearchEpisode").innerHTML=options(episodes,"General research / idea vault");const researchOwner=$("#h3ResearchOwner");if(researchOwner&&isAdmin)researchOwner.innerHTML='<option value="">Unassigned</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");$("#h3GuestEpisode").innerHTML=options(episodes,"Not assigned yet");$("#h3RecognitionEpisode").innerHTML=options(episodes,"General contribution");
- if(isAdmin){members=await rows("tn_production_profiles",db.from("tn_production_profiles").select("id,display_name,email,role,requested_role,application_note,skills,segment_interests").in("role",["contributor","producer","admin"]).order("display_name"));$("#h3RecognitionMember").innerHTML=members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");const editor=$("#h3EditingEditor");if(editor)editor.innerHTML='<option value="">Assign to me</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+' · '+esc(m.role)+'</option>').join("")}
- document.querySelectorAll(".hub3-form button.admin-only").forEach(b=>b.classList.toggle("hidden",!isAdmin));document.querySelectorAll(".hub3-form[data-admin-only]").forEach(form=>form.classList.toggle("hidden",!isAdmin));document.querySelectorAll("[data-h3-admin-only]").forEach(el=>el.classList.toggle("hidden",!isAdmin));
+ if(isAdmin){
+  members=await rows("tn_production_profiles",db.from("tn_production_profiles").select("id,display_name,email,role,requested_role,application_note,skills,segment_interests").in("role",["contributor","producer","admin"]).order("display_name"));
+ }
+ const episodeOptions=[
+  ["h3EditingEpisode","Choose episode…"],
+  ["h3ResearchEpisode","General research / idea vault"],
+  ["h3GuestEpisode","Not assigned yet"],
+  ["h3RecognitionEpisode","General contribution"]
+ ];
+ episodeOptions.forEach(([id,empty])=>{const el=$("#"+id);if(el)el.innerHTML=options(episodes,empty)});
+ if(isAdmin){
+  const memberOptions=members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+'</option>').join("");
+  const researchOwner=$("#h3ResearchOwner");if(researchOwner)researchOwner.innerHTML='<option value="">Unassigned</option>'+memberOptions;
+  const recognitionMember=$("#h3RecognitionMember");if(recognitionMember)recognitionMember.innerHTML=memberOptions;
+  const editor=$("#h3EditingEditor");if(editor)editor.innerHTML='<option value="">Assign to me</option>'+members.map(m=>'<option value="'+esc(m.id)+'">'+esc(m.display_name||m.email||"Team member")+' · '+esc(m.role)+'</option>').join("");
+ }
+ document.querySelectorAll(".hub3-form button.admin-only").forEach(b=>b.classList.toggle("hidden",!isAdmin));
+ document.querySelectorAll(".hub3-form[data-admin-only]").forEach(form=>form.classList.toggle("hidden",!isAdmin));
+ document.querySelectorAll("[data-h3-admin-only]").forEach(el=>el.classList.toggle("hidden",!isAdmin));
 }
 
 
