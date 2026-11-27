@@ -14,3 +14,6 @@
 .tn-cms-section-body{max-width:850px;color:#b7c1ce;line-height:1.8;margin:18px 0 25px}
 @media(max-width:680px){.tn2-cms-hero-slide{min-height:590px}.tn-cms-announcement{align-items:flex-start;flex-direction:column;padding:18px 20px}.tn2-cms-hero-slide .tn2-hero-slide-content{padding-top:70px;padding-bottom:80px}}
 @media(prefers-reduced-motion:reduce){.tn2-cms-hero-bg{transform:none}}
+
+.tn-cms-widgets .tn2-subscriber-grid{margin:0}
+.tn-cms-widgets .tn2-host-count{margin:22px 0 0}
