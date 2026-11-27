@@ -4,7 +4,7 @@ let slides=[],dots=[],index=0,timer=null,paused=window.matchMedia("(prefers-redu
 const pause=root.querySelector("[data-hero-pause]"),stop=()=>{if(timer)clearTimeout(timer);timer=null;};
 const start=()=>{stop();if(!paused&&!document.hidden&&slides.length>1)timer=setTimeout(()=>show(index+1),6000);};
 function show(next){if(!slides.length)return;index=(next+slides.length)%slides.length;slides.forEach((el,i)=>{const active=i===index;el.classList.toggle("is-active",active);el.classList.toggle("is-hidden",!active&&i===0);el.setAttribute("aria-hidden",String(!active));});dots.forEach((el,i)=>el.setAttribute("aria-current",String(i===index)));start();}
-function refresh(){slides=[...root.querySelectorAll("[data-hero-slide]")];dots=[...root.querySelectorAll("[data-hero-dot]")];index=0;show(0);if(pause){pause.textContent=paused?"PLAY":"PAUSE";pause.setAttribute("aria-pressed",String(paused));}}
+function refresh(){slides=[...root.querySelectorAll("[data-hero-slide]")];dots=[...root.querySelectorAll("[data-hero-dot]")];dots.forEach((el,i)=>el.addEventListener("click",()=>show(i)));index=0;show(0);if(pause){pause.textContent=paused?"PLAY":"PAUSE";pause.setAttribute("aria-pressed",String(paused));}}
 root.querySelector("[data-hero-prev]")?.addEventListener("click",()=>show(index-1));
 root.querySelector("[data-hero-next]")?.addEventListener("click",()=>show(index+1));
 root.querySelector("[data-hero-pause]")?.addEventListener("click",()=>{paused=!paused;if(pause){pause.textContent=paused?"PLAY":"PAUSE";pause.setAttribute("aria-pressed",String(paused));}if(paused)stop();else start();});
