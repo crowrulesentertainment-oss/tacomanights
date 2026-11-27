@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080a0e">
 <meta name="description" content="Tacoma Nights Control Room 2.0 — manage website content, homepage media, publishing and community operations.">
-<title>CONTROL ROOM 2.2 | Tacoma Nights</title>
+<title>CONTROL ROOM 2.3 | Tacoma Nights</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/v3.css">
@@ -62,6 +62,38 @@ body{overflow-x:hidden}
 @media(min-width:1500px){.cr2 .cr2-formgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){#main>.page-body>.wrap{padding:12px 12px 32px}.cr2 .cr2-formgrid{grid-template-columns:1fr}.cr2 .cr2-wide{grid-column:auto}.cr2 .cr2-nav{top:0;overflow-x:auto;flex-wrap:nowrap;white-space:nowrap}.cr2 .cr2-nav a{flex:0 0 auto}}
 
+
+/* Control Room 2.3 — organized card system */
+.cr2 .cr2-grid{align-items:stretch;grid-template-columns:repeat(auto-fit,minmax(min(290px,100%),1fr));gap:18px}
+.cr2 .cr2-panel{min-width:0;box-sizing:border-box;box-shadow:0 12px 32px rgba(0,0,0,.16)}
+.cr2 .cr2-grid>.cr2-panel,.cr2 .cr2-grid>a.cr2-panel{margin:0;height:100%;display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-decoration:none;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+.cr2 .cr2-grid>a.cr2-panel:hover{transform:translateY(-3px);border-color:var(--cr-red);background:linear-gradient(145deg,#1b2431,#101722)}
+.cr2 .cr2-grid>a.cr2-panel h3{color:#f3f5f8;margin:2px 0 0;font-size:17px}
+.cr2 .cr2-grid>a.cr2-panel p{margin:0;line-height:1.55}
+.cr2 .cr2-grid>.cr2-panel .cr2-stat{font-size:clamp(28px,3vw,38px);line-height:1.1;margin:5px 0 2px}
+.cr2 #cr2-overview .cr2-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cr2 #cr2-overview .cr2-panel{position:relative;overflow:hidden;min-height:138px;justify-content:center;padding:22px 24px;border-color:#354052}
+.cr2 #cr2-overview .cr2-panel:after{content:"";position:absolute;width:90px;height:90px;border:1px solid rgba(217,184,121,.16);border-radius:50%;right:-25px;bottom:-38px;box-shadow:0 0 0 14px rgba(217,184,121,.035),0 0 0 28px rgba(217,184,121,.025)}
+.cr2 #cr2-workspaces{margin:34px 0}
+.cr2 #cr2-workspaces>.cr2-grid{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:16px;margin-top:18px}
+.cr2 #cr2-workspaces>a.cr2-panel{min-height:142px;padding:22px;position:relative}
+.cr2 #cr2-workspaces>a.cr2-panel:before{content:"";width:34px;height:3px;background:var(--cr-red);border-radius:3px;margin-bottom:8px}
+.cr2 .cr2-list{grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));align-items:stretch;gap:14px}
+.cr2 .cr2-item{min-width:0;display:flex;flex-direction:column;gap:5px;padding:17px 18px;border-color:#354052;background:linear-gradient(145deg,#141d29,#0d131c);box-shadow:0 8px 22px rgba(0,0,0,.12)}
+.cr2 .cr2-item h3{font-size:16px;line-height:1.35;overflow-wrap:anywhere}
+.cr2 .cr2-item p{line-height:1.5;overflow-wrap:anywhere}
+.cr2 .cr2-item .cr2-actions{margin-top:auto;padding-top:8px}
+.cr2 section[id]{margin-bottom:28px}
+.cr2 section[id]>.cr2-kicker{margin-bottom:7px}
+.cr2 section[id]>.cr2-grid{margin-top:18px}
+.cr2 .cr2-formgrid{gap:8px 18px}
+.cr2 form.cr2-panel{height:auto;align-self:stretch}
+.cr2 .cr2-actions{gap:10px}
+.cr2 .cr2-nav a{background:#111822}
+@media(max-width:850px){.cr2 #cr2-overview .cr2-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.cr2 #cr2-overview .cr2-grid{grid-template-columns:1fr}.cr2 .cr2-list{grid-template-columns:1fr}.cr2 .cr2-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.cr2 .cr2-grid>a.cr2-panel{transition:none}}
+
 </style>
 </head>
 <body data-root="../">
@@ -72,7 +104,7 @@ body{overflow-x:hidden}
 <div class="notice">Your existing account, network role checks and Supabase row-level security remain in force. No service-role key is used in this browser.</div>
 <p class="notice" data-control-status role="status">Verifying access…</p>
 <div class="control-shell" data-control-room hidden><div class="cr2">
-<div class="cr2-head"><div><div class="cr2-kicker">CrowRules Entertainment · Tacoma Nights</div><h2>Network Control Room <span class="cr2-pill">2.2 · FULL SCREEN</span></h2><p class="cr2-lede">Manage the information that powers the public network without editing page source files.</p></div><a class="button glass" href="../">View public website ↗</a></div>
+<div class="cr2-head"><div><div class="cr2-kicker">CrowRules Entertainment · Tacoma Nights</div><h2>Network Control Room <span class="cr2-pill">2.3 · ORGANIZED CARDS</span></h2><p class="cr2-lede">Manage the information that powers the public network without editing page source files.</p></div><a class="button glass" href="../">View public website ↗</a></div>
 <nav class="cr2-nav"><a href="#cr2-overview">Overview</a><a href="#cr2-content">Content library</a><a href="#cr2-homepage">Homepage media</a><a href="#cr2-home-cms">Homepage CMS</a><a href="#cr2-settings">Site settings</a><a href="#cr2-workspaces">Workspaces</a></nav>
 <section id="cr2-overview"><div class="cr2-grid">
 <article class="cr2-panel"><div class="cr2-kicker">Publishing</div><div class="cr2-stat" data-cr2-content-count>—</div><div class="cr2-muted">Content records</div></article>
