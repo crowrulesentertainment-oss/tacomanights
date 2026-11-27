@@ -75,7 +75,7 @@ async function loadVideo(table){
 function wirePageEditor(){
  const f=$("[data-cr2-page-form]");if(!f)return;
  f.addEventListener("submit",async e=>{
-  e.preventDefault();const b=f.querySelector('button[type="submit"]'),status=f.querySelector('[role="status]');b.disabled=true;say(status,"Saving page text…");
+  e.preventDefault();const b=f.querySelector('button[type="submit"]'),status=f.querySelector('[role="status"]');b.disabled=true;say(status,"Saving page text…");
   const d=Object.fromEntries(new FormData(f));let path=d.page_path.trim();
   if(!path.startsWith("/"))path="/"+path;
   if(!path.endsWith("/"))path+="/";
@@ -85,7 +85,7 @@ function wirePageEditor(){
   const r=await db.from("tacoma_nights_site_settings").upsert({setting_key:key,setting_value:d.setting_value,updated_at:new Date().toISOString()},{onConflict:"setting_key"});
   b.disabled=false;if(r.error){say(status,"Save blocked: "+r.error.message);return}
   say(status,"Page text saved. Visitors will see it after the page refreshes.");
-  const current=location.pathname.replace(/index\\.html$/,"").replace(/\\/{2,}/g,"/");
+  const current=location.pathname.replace(/index\.html$/,"").replace(/\/{2,}/g,"/");
   if(current===path){try{document.querySelectorAll(selector).forEach(el=>{if(!/^(SCRIPT|STYLE|INPUT|TEXTAREA|SELECT)$/i.test(el.tagName))el.textContent=d.setting_value})}catch{}}
   await loadSettings();
  });
