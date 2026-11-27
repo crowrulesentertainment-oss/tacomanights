@@ -46,7 +46,11 @@ body.production-hq{margin:0;background:radial-gradient(ellipse at 70% 0%,rgba(12
 .production-hq .ph-tabs{position:sticky;top:65px;z-index:30;display:flex;gap:7px;overflow-x:auto;margin:18px 0;padding:9px;border:1px solid var(--hq-line);border-radius:10px;background:rgba(7,10,15,.97);backdrop-filter:blur(16px)}
 .production-hq .ph-tab{flex:0 0 auto;padding:11px 15px;border:1px solid transparent;border-radius:6px;background:transparent;color:#bdc7d4;font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer}
 .production-hq .ph-tab.active{background:linear-gradient(135deg,#d84d5c,#a62d3d);color:#fff}
-.production-hq .hq-secondary-tab{display:none!important}
+.production-hq .hq-secondary-tab{display:inline-flex!important;opacity:.82}
+.production-hq .hq-secondary-tab:hover{opacity:1}
+.production-hq .ph-tabs{scrollbar-width:thin;scrollbar-color:#8b3b48 #101722}
+.production-hq .ph-tab[aria-selected="true"]{box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
+.production-hq .ph-tab[aria-selected="false"]:hover{background:rgba(255,255,255,.07);color:#fff}
 .production-hq .ph-view{animation:hqEnter .2s ease}
 @keyframes hqEnter{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
 .production-hq .ph-item{padding:15px;border:1px solid rgba(190,205,222,.13);border-radius:9px;background:rgba(255,255,255,.025)}
