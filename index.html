@@ -78,6 +78,25 @@
 @media(max-width:720px){.tn2-hero-people-slide{min-height:590px}.tn2-hero-people-slide .tn2-people-photo{background-position:55% center}.tn2-hero-people-slide .tn2-people-shade{background:linear-gradient(90deg,rgba(5,7,11,.95),rgba(5,7,11,.7)),linear-gradient(0deg,rgba(5,7,11,.65),transparent)}.tn2-hero-people-slide .tn2-hero-slide-content{padding-top:65px;padding-bottom:78px}.tn2-hero-people-slide h2{font-size:clamp(35px,9vw,52px)}}
 @media(prefers-reduced-motion:reduce){.tn2-hero-people-slide .tn2-people-photo{animation:none}}
 </style>
+
+<style>
+.tn2-hero-weekly-slide{position:absolute;inset:0;min-height:520px;overflow:hidden;background:#080a10}
+.tn2-hero-weekly-slide .tn2-weekly-photo{position:absolute;inset:0;background-image:url("https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=2400&q=90");background-size:cover;background-position:center 46%;filter:saturate(.88) contrast(1.16) brightness(.58);transform:scale(1.025);animation:tn2-weekly-drift 25s ease-in-out infinite alternate}
+.tn2-hero-weekly-slide .tn2-weekly-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,7,13,.97) 0%,rgba(4,7,13,.84) 39%,rgba(4,7,13,.25) 100%),linear-gradient(0deg,rgba(4,7,13,.72),transparent 72%)}
+.tn2-hero-weekly-slide .tn2-hero-slide-content{position:relative;z-index:2;padding-top:clamp(54px,8vw,100px);padding-bottom:clamp(54px,8vw,100px);max-width:1320px}
+.tn2-hero-weekly-slide .tn2-eyebrow{color:#ef555b}
+.tn2-hero-weekly-slide h2{font-size:clamp(43px,6vw,82px);line-height:.92;letter-spacing:-.055em;max-width:980px;text-transform:uppercase}
+.tn2-hero-weekly-slide h2 span{color:#f04b52;text-shadow:0 0 28px #ed303866}
+.tn2-hero-weekly-slide .tn2-hero-lede{font-size:clamp(18px,2vw,25px);font-weight:800;color:#fff}
+.tn2-hero-weekly-slide .tn2-hero-copy{max-width:700px;color:#e0e3e9}
+.tn2-weekly-tag{display:inline-flex;align-items:center;gap:10px;margin:14px 0 18px;padding:10px 15px;border:1px solid #f04b5288;background:#080a10df;color:#fff;font:800 11px Manrope;letter-spacing:.15em;text-transform:uppercase}
+.tn2-weekly-tag:before{content:"";width:8px;height:8px;border-radius:50%;background:#f04b52;box-shadow:0 0 14px #f04b52}
+.tn2-hero-weekly-slide .tn2-btn-red{background:linear-gradient(110deg,#9d1824,#e33a43);border-color:#ff9297}
+.tn2-weekly-note{font-size:10px;letter-spacing:.18em;color:#f18b90;margin-top:20px;font-weight:800}
+@keyframes tn2-weekly-drift{from{transform:scale(1.025) translateX(0)}to{transform:scale(1.09) translateX(-1.1%)}}
+@media(max-width:720px){.tn2-hero-weekly-slide{min-height:590px}.tn2-hero-weekly-slide .tn2-weekly-photo{background-position:58% center}.tn2-hero-weekly-slide .tn2-weekly-shade{background:linear-gradient(90deg,rgba(4,7,13,.96),rgba(4,7,13,.72)),linear-gradient(0deg,rgba(4,7,13,.7),transparent)}.tn2-hero-weekly-slide .tn2-hero-slide-content{padding-top:65px;padding-bottom:78px}.tn2-hero-weekly-slide h2{font-size:clamp(36px,9vw,54px)}}
+@media(prefers-reduced-motion:reduce){.tn2-hero-weekly-slide .tn2-weekly-photo{animation:none}}
+</style>
 </head>
 <body data-root="./"><a class="skip-link" href="#main">Skip to content</a><div id="site-header"></div><main id="main">
 <section class="tn2-hero tn2-hero-carousel" data-hero-carousel aria-label="Tacoma Nights featured stories"><div class="tn2-wrap tn2-hero-content" data-hero-slide="0"><p class="tn2-eyebrow">TACOMA · PIERCE COUNTY · THE SOUTH SOUND</p><h1>THE CITY<br><span>HAS A VOICE.</span></h1><p class="tn2-hero-lede">Real conversations. Local voices. A city with stories to tell.</p><p class="tn2-hero-copy">A cinematic community television experience from CrowRules Entertainment — rooted in Tacoma, connected to the Pacific Northwest, and open to perspectives everywhere.</p><div class="tn2-actions"><a class="tn2-btn tn2-btn-red" href="./live/">Watch the network ↗</a><a class="tn2-btn tn2-btn-outline" href="./people-perspective/">Share your perspective</a><a class="tn2-btn tn2-btn-outline" href="./production/">2027 Production Update ↗</a></div><div class="tn2-meta"><span>ONE COMPANY. ONE UNIVERSE.</span><span>BUILT IN TACOMA · OPEN TO EVERY VOICE</span></div></div><div class="tn2-raven-mark" role="img" aria-label="Photorealistic common raven perched on a wooden post"></div><div class="tn2-wrap" style="position:absolute;bottom:20px;right:24px;text-align:right;color:#ffffff88;font-size:9px;letter-spacing:.18em">253 / PACIFIC NORTHWEST / EVERYWHERE</div>
@@ -151,7 +170,21 @@
   <p class="tn2-people-note">YOUR STORY MATTERS. YOUR VOICE BELONGS HERE.</p>
  </div>
 </div>
-<div class="tn2-hero-controls" aria-label="Hero slides"><button type="button" class="tn2-hero-arrow" data-hero-prev aria-label="Previous slide">‹</button><div class="tn2-hero-dots"><button type="button" data-hero-dot="0" aria-label="Show slide 1" aria-current="true"></button><button type="button" data-hero-dot="1" aria-label="Show slide 2: The Teenager Perspective" aria-current="false"></button><button type="button" data-hero-dot="2" aria-label="Show slide 3: CrowRules community" aria-current="false"></button><button type="button" data-hero-dot="3" aria-label="Show slide 4: My educational future" aria-current="false"></button><button type="button" data-hero-dot="4" aria-label="Show slide 5: Apply to be a remote host" aria-current="false"></button><button type="button" data-hero-dot="5" aria-label="Show slide 6: The Cool Perspective" aria-current="false"><button type="button" data-hero-dot="6" aria-label="Show slide 7: The People’s Perspective" aria-current="false"></button></div><button type="button" class="tn2-hero-arrow" data-hero-next aria-label="Next slide">›</button><button type="button" class="tn2-hero-pause" data-hero-pause aria-pressed="false">PAUSE</button></div></section>
+<div class="tn2-hero-slide tn2-hero-weekly-slide" data-hero-slide="7" aria-hidden="true">
+ <div class="tn2-weekly-photo" role="img" aria-label="A dramatic stadium football match under bright lights"></div>
+ <div class="tn2-weekly-shade"></div>
+ <div class="tn2-hero-slide-content tn2-wrap">
+  <p class="tn2-eyebrow">TACOMA NIGHTS · SPORTS & CULTURE</p>
+  <h2>THE WEEK<br><span>STARTS HERE.</span></h2>
+  <p class="tn2-hero-lede">The Weekly Lineup — Beyond the Scoreboard.</p>
+  <p class="tn2-hero-copy">From the biggest games to the stories behind the scores, The Weekly Lineup brings you sports, matchups, predictions, conversations and perspectives from around the sporting world.</p>
+  <div class="tn2-weekly-tag">FOOTBALL · BASKETBALL · BASEBALL · MORE</div>
+  <div class="tn2-actions"><a class="tn2-btn tn2-btn-red" href="./sports/weekly-lineup.html">EXPLORE THE WEEKLY LINEUP ↗</a><a class="tn2-btn tn2-btn-outline" href="./shows/">EXPLORE TACOMA NIGHTS</a></div>
+  <p class="tn2-weekly-note">THE MATCHUPS. THE MOMENTS. THE CONVERSATION.</p>
+ </div>
+</div>
+
+<div class="tn2-hero-controls" aria-label="Hero slides"><button type="button" class="tn2-hero-arrow" data-hero-prev aria-label="Previous slide">‹</button><div class="tn2-hero-dots"><button type="button" data-hero-dot="0" aria-label="Show slide 1" aria-current="true"></button><button type="button" data-hero-dot="1" aria-label="Show slide 2: The Teenager Perspective" aria-current="false"></button><button type="button" data-hero-dot="2" aria-label="Show slide 3: CrowRules community" aria-current="false"></button><button type="button" data-hero-dot="3" aria-label="Show slide 4: My educational future" aria-current="false"></button><button type="button" data-hero-dot="4" aria-label="Show slide 5: Apply to be a remote host" aria-current="false"></button><button type="button" data-hero-dot="5" aria-label="Show slide 6: The Cool Perspective" aria-current="false"></button><button type="button" data-hero-dot="6" aria-label="Show slide 7: The People’s Perspective" aria-current="false"></button><button type="button" data-hero-dot="7" aria-label="Show slide 8: The Weekly Lineup" aria-current="false"></button></div><button type="button" class="tn2-hero-arrow" data-hero-next aria-label="Next slide">›</button><button type="button" class="tn2-hero-pause" data-hero-pause aria-pressed="false">PAUSE</button></div></section>
 <div class="tn2-ticker">THE CITY HAS A VOICE <span>✳</span> REAL PEOPLE. REAL STORIES. <span>✳</span> BUILT IN TACOMA <span>✳</span> ONE NETWORK · MANY PERSPECTIVES</div>
 <section class="tn-visitor-bar" aria-label="Visitor local time, weather and page views">
  <div class="tn-visitor-wrap">
