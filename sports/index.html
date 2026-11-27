@@ -54,6 +54,45 @@
 @media(max-width:480px){.pe-hero{min-height:600px;padding:34px 20px}.pe-pills{gap:7px}.pe-pill{font-size:.67rem;padding:7px 9px}.pe-section{padding:20px 16px}.pe-table{min-width:360px}}
 @media(prefers-reduced-motion:reduce){.pe-choice,.pe-action-primary,.pe-action-secondary{transition:none}.pe-action-primary:hover{transform:none}}
 
+
+/* Pick'em challenge: focused entry and matchup experience */
+.pe-form{display:grid;grid-template-columns:minmax(220px,.72fr) minmax(0,1.8fr);gap:18px;align-items:start;margin-top:28px}
+.pe-entry-panel{position:sticky;top:22px;grid-row:1/3;padding:22px;border:1px solid #ffffff24;border-top:3px solid #d72d3a;background:linear-gradient(155deg,#1a202a,#0b0e14);box-shadow:0 14px 34px #0005}
+.pe-step{display:block;color:#e8bd70;font:800 .68rem "DM Sans",sans-serif;letter-spacing:.2em;text-transform:uppercase}
+.pe-entry-icon{display:grid;place-items:center;width:48px;height:48px;margin:18px 0;border:1px solid #e3343f88;background:#d72d3a1c;color:#f16b73;font:900 1.35rem "Barlow Condensed"}
+.pe-entry-panel .pe-input{max-width:none;box-sizing:border-box}
+.pe-entry-divider{height:1px;background:#ffffff1c;margin:22px 0 16px}
+.pe-entry-promise{display:block;color:#f5f5f5;font:800 1.15rem "Barlow Condensed";text-transform:uppercase;letter-spacing:.04em}
+.pe-picks-area{min-width:0}
+.pe-picks-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 14px}
+.pe-picks-heading h3{margin:5px 0 3px;color:#fff;font:800 clamp(1.8rem,3vw,2.5rem)/1 "Barlow Condensed";text-transform:uppercase}
+.pe-pick-count{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;width:68px;height:68px;border:1px solid #ffffff28;background:#ffffff08}
+.pe-pick-count strong{color:#fff;font:900 1.8rem/.95 "Barlow Condensed"}
+.pe-pick-count span{margin-top:6px;color:#e8bd70;font:800 .55rem "DM Sans";letter-spacing:.12em}
+.pe-game-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:0}
+.pe-game{position:relative;min-width:0;padding:16px;border-radius:3px;background:linear-gradient(145deg,#141a23,#080b10);transition:border-color .18s,transform .18s}
+.pe-game:hover{border-color:#ffffff48;transform:translateY(-2px)}
+.pe-game-top{align-items:center;font-size:.64rem}
+.pe-game-top span:first-child{color:#e8bd70}
+.pe-matchup{font:800 1.35rem/1.1 "Barlow Condensed";letter-spacing:.02em;text-transform:uppercase;margin:13px 0}
+.pe-options{grid-template-columns:1fr;gap:7px}
+.pe-choice{justify-content:flex-start;min-height:46px;padding:10px 12px;border-radius:3px;font-size:.86rem;text-align:left}
+.pe-choice input{width:16px;height:16px;flex:0 0 auto}
+.pe-choice:has(input:checked){border-color:#e3343f;background:linear-gradient(90deg,#6e1822,#31131a);box-shadow:inset 3px 0 #e3343f}
+.pe-choice:has(input:disabled){opacity:.42;cursor:not-allowed}
+.pe-submit-area{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 20px;border:1px solid #ffffff22;background:linear-gradient(100deg,#191e27,#0b0e13)}
+.pe-submit-area>div:first-child strong{font:800 1.35rem "Barlow Condensed";text-transform:uppercase}
+.pe-submit-action{text-align:right;min-width:min(100%,270px)}
+.pe-submit{min-width:230px;border-radius:3px;padding:16px 22px;background:#d72d3a}
+.pe-submit:hover:not(:disabled){background:#f04450}
+.pe-message{margin:8px 0 0}
+.pe-game:focus-within{border-color:#e8bd70}
+.pe-table-wrap{border:1px solid #ffffff18}
+.pe-board{box-shadow:0 12px 30px #0003}
+@media(max-width:900px){.pe-form{grid-template-columns:minmax(190px,.7fr) minmax(0,1.8fr)}.pe-entry-panel{position:static}.pe-game-list{grid-template-columns:1fr}}
+@media(max-width:680px){.pe-form{grid-template-columns:1fr}.pe-entry-panel{grid-row:auto}.pe-submit-area{grid-column:auto;align-items:stretch;flex-direction:column}.pe-submit-action{text-align:left}.pe-submit{width:100%;min-width:0}.pe-picks-heading h3{font-size:2rem}.pe-game-list{grid-template-columns:1fr}.pe-game{padding:15px}}
+@media(prefers-reduced-motion:reduce){.pe-game{transition:none}.pe-game:hover{transform:none}}
+
 </style>
 </head>
 <body data-root="../">
@@ -131,7 +170,7 @@ async function renderGames(week,db){
   const tieOption=g.allow_tie?'<label class="pe-choice"><input type="radio" name="pick-'+esc(id)+'" value="tie"'+(locked?' disabled':'')+'> DRAW / TIE</label>':'';
   return '<article class="pe-game"><div class="pe-game-top"><span>'+esc(sport)+'</span><span>'+esc(timing)+'</span></div><h3 class="pe-matchup">'+esc(matchup)+'</h3><div class="pe-options"><label class="pe-choice"><input '+(locked?'disabled':'required')+' type="radio" name="pick-'+esc(id)+'" value="away"> '+esc(g.away||"Away")+'</label><label class="pe-choice"><input '+(locked?'disabled':'required')+' type="radio" name="pick-'+esc(id)+'" value="home"> '+esc(g.home||"Home")+'</label>'+tieOption+'</div></article>';
  }).join("");
- content.innerHTML='<form class="pe-form" id="pickem-form"><div><label class="pe-label" for="pickem-name">Your nickname</label><input class="pe-input" id="pickem-name" name="nickname" minlength="2" maxlength="24" required autocomplete="nickname" placeholder="Choose a name for the leaderboard"><p class="pe-note">2–24 characters. Your nickname and score are public; your browser token and picks are not.</p></div><div class="pe-game-list">'+cards+'</div><div><button class="pe-submit" type="submit">SUBMIT MY WEEKLY PICKS ↗</button><p class="pe-note" style="margin-top:10px">Each matchup locks individually at its listed kickoff time.</p><p class="pe-message" id="pickem-message" role="status"></p></div></form><div id="season-board"></div><div id="weekly-boards" aria-live="polite"></div>';
+ content.innerHTML='<form class="pe-form" id="pickem-form"><aside class="pe-entry-panel"><span class="pe-step">YOUR ENTRY</span><div class="pe-entry-icon" aria-hidden="true">01</div><label class="pe-label" for="pickem-name">Choose your nickname</label><input class="pe-input" id="pickem-name" name="nickname" minlength="2" maxlength="24" required autocomplete="nickname" placeholder="Your leaderboard name"><p class="pe-note">2–24 characters. Your nickname and score are public; your browser token and picks are not.</p><div class="pe-entry-divider"></div><strong class="pe-entry-promise">No account. No cost. Just sports.</strong><p class="pe-note">Your picks are saved securely and tied to this browser.</p></aside><div class="pe-picks-area"><div class="pe-picks-heading"><div><span class="pe-step">MAKE YOUR CALLS</span><h3>Pick the winners.</h3><p class="pe-note">Choose one team in every matchup that is still open.</p></div><div class="pe-pick-count"><strong>'+games.length+'</strong><span>MATCHUPS</span></div></div><div class="pe-game-list">'+cards+'</div></div><div class="pe-submit-area"><div><strong>Ready to lock in your picks?</strong><p class="pe-note">You can update your entry before each game starts.</p></div><div class="pe-submit-action"><button class="pe-submit" type="submit">SUBMIT MY PICKS <span aria-hidden="true">↗</span></button><p class="pe-message" id="pickem-message" role="status"></p></div></div></form><div id="season-board"></div><div id="weekly-boards" aria-live="polite"></div>';
  const form=document.getElementById("pickem-form");
  form.addEventListener("submit",async e=>{
   e.preventDefault();
