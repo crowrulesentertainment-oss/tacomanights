@@ -4,8 +4,36 @@ const header=$("#site-header"),clock=document.createElement("div");
 clock.className="hq-clock";clock.setAttribute("aria-live","off");
 function tick(){const d=new Date();clock.innerHTML='<span>PRODUCTION · PACIFIC</span><b>'+new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",hour:"numeric",minute:"2-digit"}).format(d)+'</b><small>'+new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",weekday:"short",month:"short",day:"numeric"}).format(d)+'</small>'}
 if(header){header.append(clock);tick();setInterval(tick,30000)}
-function openTab(name){const tab=$('.ph-tab[data-tab="'+name+'"]');if(!tab)return;tab.click();const target=$("#view-"+name);if(target){target.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});}}
-$$("[data-hq-open]").forEach(button=>button.addEventListener("click",()=>openTab(button.dataset.hqOpen)));
+function openTab(name){const tab=$('.ph-tab[data-tab="'+name+'"]');if(!tab||tab.classList.contains("hidden"))return;tab.click();const target=$("#view-"+name);if(target){target.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});}}
+const weekSelect=$("#hqWeekSelect"),weekContext=$("#hqWeekContext");
+function syncWeekOptions(){
+ if(!weekSelect)return;
+ const source=$("#uploadEpisode");if(!source||source.options.length<2)return;
+ const previous=weekSelect.value;
+ weekSelect.innerHTML='<option value="">Choose a weekly episode…</option>'+[...source.options].slice(1).map(o=>'<option value="'+o.value+'">'+o.textContent+'</option>').join("");
+ if(previous&&[...weekSelect.options].some(o=>o.value===previous))weekSelect.value=previous;
+ else if(source.options[1])weekSelect.value=source.options[1].value;
+ updateWeekContext();
+}
+function updateWeekContext(){
+ const option=weekSelect?.selectedOptions?.[0];if(weekContext)weekContext.textContent=option&&option.value?"Selected production: "+option.textContent:"Choose an episode to open its production workspace.";
+}
+function applyWeek(){
+ const id=weekSelect?.value;if(!id)return false;
+ ["uploadEpisode","assignmentEpisode","h3StudioEpisode"].forEach(key=>{const el=$("#"+key);if(el&&[...el.options].some(o=>o.value===id))el.value=id;});
+ updateWeekContext();return true;
+}
+weekSelect?.addEventListener("change",applyWeek);
+$("[data-hq-open]").forEach(button=>button.addEventListener("click",()=>{
+ const action=button.dataset.hqOpen;
+ if(!applyWeek()){if(weekContext)weekContext.textContent="Create or load an episode first, then choose its week here.";openTab("episodes");return;}
+ openTab(action);
+}));
+const episodeList=$("#episodeList");
+if(episodeList)new MutationObserver(syncWeekOptions).observe(episodeList,{childList:true,subtree:true});
+const uploadEpisode=$("#uploadEpisode");
+if(uploadEpisode)new MutationObserver(syncWeekOptions).observe(uploadEpisode,{childList:true});
+syncWeekOptions();
 const app=$("#appPanel"),welcome=$("#hqMemberWelcome"),member=$("#memberName"),role=$("#memberRole");
 function syncAccess(){const signedIn=app&&!app.classList.contains("hidden");if(!signedIn)return;const name=member?.textContent?.trim()||"TEAM MEMBER";if(welcome)welcome.textContent=name.toUpperCase();const producer=["admin","producer"].includes((role?.textContent||"").trim().toLowerCase());$$(".hq-producer-only").forEach(el=>el.classList.toggle("hidden",!producer));}
 if(app){new MutationObserver(syncAccess).observe(app,{attributes:true,attributeFilter:["class"]});const observer=new MutationObserver(syncAccess);if(member)observer.observe(member,{childList:true,characterData:true,subtree:true});if(role)observer.observe(role,{childList:true,characterData:true,subtree:true});syncAccess();}
