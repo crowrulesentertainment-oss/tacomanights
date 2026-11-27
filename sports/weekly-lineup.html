@@ -4,21 +4,67 @@
 <meta name="description" content="The Weekly Lineup: Beyond the Scoreboard with Kenneth WarnerShook of Soda & Sports United. Tacoma Nights sports talk, Washington teams, national headlines and fan perspectives.">
 <title>The Weekly Lineup: Beyond the Scoreboard | Tacoma Nights</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/v3.css"><script src="../assets/js/config.js"></script><script defer src="../assets/js/v3.js"></script>
 <style>
-.wl{background:#090b12;color:#f5f5f6;padding:38px 0 80px}.wl .wrap{width:min(1120px,calc(100% - 36px));margin:auto}.wl-hero{position:relative;overflow:hidden;padding:clamp(32px,7vw,72px);border:1px solid #a68be744;border-radius:22px;background:radial-gradient(ellipse at 88% 10%,#754bb755,transparent 43%),linear-gradient(120deg,#171727,#0a0d15 70%)}.wl-kicker{font-size:.72rem;font-weight:900;letter-spacing:.19em;text-transform:uppercase;color:#c6aaff}.wl h1{font:900 clamp(2.5rem,7vw,5.2rem)/.98 Manrope,sans-serif;letter-spacing:-.065em;margin:15px 0}.wl h1 span{color:#c3a4ff}.wl p{line-height:1.75;color:#bdc3ce}.wl-hero .lead{font-size:1.08rem;max-width:700px}.wl-tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}.wl-tag{border:1px solid #ffffff28;border-radius:999px;padding:7px 12px;color:#e5dafa;font-size:.75rem;font-weight:800}.wl-panel{margin-top:24px;border:1px solid #ffffff1c;border-radius:17px;background:linear-gradient(145deg,#171b26,#0f121a);padding:clamp(20px,4vw,32px)}.wl-panel h2{font:800 clamp(1.4rem,4vw,2rem) Manrope;margin:0 0 10px}.wl-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:18px}.wl-card{border:1px solid #ffffff18;border-radius:13px;padding:18px;background:#090d15}.wl-card small{font-size:.68rem;font-weight:900;letter-spacing:.13em;color:#c2a6fa}.wl-card h3{font:800 1.05rem Manrope;margin:9px 0}.wl-card p{font-size:.9rem;margin:0}.wl-host{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;align-items:center}.wl-monogram{display:grid;place-items:center;min-height:220px;border-radius:15px;background:radial-gradient(circle,#654a9b,#1b1730 65%,#0c1019);border:1px solid #a78be755;text-align:center}.wl-monogram strong{font:900 clamp(3rem,8vw,5rem) Manrope;color:#e0d2ff}.wl-monogram span{display:block;font-size:.8rem;color:#d0c2ed;letter-spacing:.18em}.wl-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.wl-btn{display:inline-flex;padding:12px 16px;border-radius:9px;background:#7654b5;color:white;font-weight:900;text-decoration:none}.wl-btn.alt{background:#ffffff10;border:1px solid #ffffff2c}.wl-note{font-size:.83rem;color:#969eac}.wl-pickem{background:radial-gradient(ellipse at 90% 0%,#9f253a44,transparent 50%),linear-gradient(145deg,#24131b,#10131b)}.wl-back{display:inline-block;margin-top:22px;color:#d2baff;font-weight:800;text-decoration:none}
-@media(max-width:700px){.wl-grid,.wl-host{grid-template-columns:1fr}.wl-monogram{min-height:150px}.wl-hero{border-radius:15px}}
+:root{--wl-red:#b92f3d;--wl-gold:#d0aa72;--wl-ink:#080a0e;--wl-panel:#141a23;--wl-muted:#aeb8c4}
+.wl{background:var(--wl-ink);color:#f5f5f6;padding:0 0 82px}
+.wl .wrap{width:min(1160px,calc(100% - 42px));margin:auto}
+.wl-hero{position:relative;isolation:isolate;min-height:590px;display:flex;align-items:center;overflow:hidden;background:#080b12;border-bottom:1px solid #d0aa7244}
+.wl-hero:before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(3,7,12,.97) 0%,rgba(3,7,12,.86) 43%,rgba(3,7,12,.22) 100%),url("https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=2200&q=88") center 48%/cover no-repeat}
+.wl-hero:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#080a0e 0%,transparent 36%),linear-gradient(90deg,transparent 68%,rgba(185,47,61,.17))}
+.wl-hero-inner{width:min(1160px,calc(100% - 42px));margin:auto;padding:95px 0 90px}
+.wl-kicker{font:800 10px Manrope,sans-serif;letter-spacing:.23em;text-transform:uppercase;color:var(--wl-gold)}
+.wl-hero h1{max-width:950px;font:900 clamp(52px,8.5vw,104px)/.87 "Barlow Condensed",sans-serif;letter-spacing:-.025em;text-transform:uppercase;margin:20px 0 22px}
+.wl-hero h1 span{color:var(--wl-red);text-shadow:0 5px 28px #0009}
+.wl p{line-height:1.75;color:#c4cbd4}
+.wl-hero .lead{font-size:clamp(15px,1.7vw,19px);max-width:680px;color:#e0e3e9}
+.wl-tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}
+.wl-tag{border:1px solid #ffffff38;background:#080a0dbb;border-radius:2px;padding:8px 12px;color:#f0e5d3;font:800 9px Manrope;letter-spacing:.12em}
+.wl-links{display:flex;flex-wrap:wrap;gap:11px;margin-top:26px}
+.wl-btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 19px;border:1px solid var(--wl-red);background:var(--wl-red);color:#fff;font:900 10px Manrope;letter-spacing:.12em;text-decoration:none;text-transform:uppercase;transition:transform .2s,filter .2s}
+.wl-btn:hover{filter:brightness(1.15);transform:translateY(-2px)}
+.wl-btn.alt{background:#080a0dbb;border-color:#ffffff66}
+.wl-section{padding:70px 0}
+.wl-section.alt{background:#0d1219;border-block:1px solid #ffffff14}
+.wl-heading{max-width:760px;margin-bottom:28px}
+.wl-heading h2,.wl-panel h2{font:800 clamp(34px,5vw,54px)/.98 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.005em;margin:9px 0 12px}
+.wl-heading h2 span,.wl-panel h2 span{color:var(--wl-gold)}
+.wl-heading>p:last-child{max-width:700px;color:var(--wl-muted)}
+.wl-panel{margin-top:24px;padding:clamp(23px,4vw,38px);border:1px solid #ffffff20;background:linear-gradient(145deg,#171d27,#0e131b);border-radius:5px;box-shadow:0 18px 50px #0003}
+.wl-host{display:grid;grid-template-columns:1.15fr .85fr;gap:30px;align-items:center}
+.wl-host h2{font:800 clamp(34px,5vw,52px) Manrope,sans-serif;text-transform:none;letter-spacing:-.045em}
+.wl-host-art{position:relative;min-height:280px;overflow:hidden;border:1px solid #d0aa7266;background:linear-gradient(0deg,#080a0eaa,transparent 65%),url("https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1000&q=85") center/cover}
+.wl-host-art:after{content:"SSU";position:absolute;inset:auto 0 16px;text-align:center;font:900 clamp(62px,9vw,100px) "Barlow Condensed";color:#fff;text-shadow:0 4px 25px #000;letter-spacing:.06em}
+.wl-host-art span{position:absolute;z-index:1;bottom:12px;left:0;right:0;text-align:center;color:#f0d9b4;font:800 9px Manrope;letter-spacing:.22em;transform:translateY(24px)}
+.wl-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px}
+.wl-card{position:relative;min-height:180px;padding:23px 21px;background:linear-gradient(145deg,#171f2a,#0b1017);border:1px solid #ffffff20;border-top:2px solid var(--wl-red);transition:transform .2s,border-color .2s}
+.wl-card:hover{transform:translateY(-3px);border-color:#d0aa7288}
+.wl-card small{font:800 9px Manrope;letter-spacing:.15em;color:var(--wl-gold)}
+.wl-card h3{font:800 25px "Barlow Condensed",sans-serif;text-transform:uppercase;margin:12px 0 7px}
+.wl-card p{font-size:13px;color:#aeb8c4;margin:0}
+.wl-pickem{position:relative;overflow:hidden;background:linear-gradient(90deg,#171016ed,#171016d9),url("https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1800&q=85") center/cover;border:1px solid #b92f3d88}
+.wl-pickem h2{font-size:clamp(40px,6vw,66px)}
+.wl-pickem .wl-kicker{color:#ef8d93}
+.wl-note{font-size:11px;color:#929daa!important}
+.wl-back{display:inline-block;margin-top:28px;color:var(--wl-gold);font:800 10px Manrope;letter-spacing:.14em;text-decoration:none;text-transform:uppercase}
+.wl-back:hover{color:white}
+@media(max-width:760px){.wl-hero{min-height:560px}.wl-hero-inner{padding:76px 0}.wl-hero:before{background-position:58% center}.wl-host{grid-template-columns:1fr}.wl-host-art{min-height:220px}.wl-grid{grid-template-columns:1fr 1fr}.wl-section{padding:54px 0}}
+@media(max-width:480px){.wl .wrap,.wl-hero-inner{width:calc(100% - 30px)}.wl-grid{grid-template-columns:1fr}.wl-hero h1{font-size:clamp(48px,15vw,70px)}.wl-links{align-items:stretch}.wl-btn{width:100%}.wl-tags{gap:7px}}
+@media(prefers-reduced-motion:reduce){.wl-btn,.wl-card{transition:none}}
 </style></head>
 <body data-root="../"><a class="skip-link" href="#main">Skip to content</a><div id="site-header"></div>
-<main id="main" class="wl"><div class="wrap">
-<section class="wl-hero"><p class="wl-kicker">TACOMA NIGHTS SPORTS · SODA & SPORTS UNITED</p>
+<main id="main" class="wl">
+<section class="wl-hero"><div class="wl-hero-inner">
+<p class="wl-kicker">TACOMA NIGHTS · A CROWRULES ENTERTAINMENT SPORTS FEATURE</p>
 <h1>THE WEEKLY LINEUP:<br><span>BEYOND THE SCOREBOARD.</span></h1>
 <p class="lead">Sports are bigger than the final score. Join Kenneth WarnerShook for the headlines, opinions, rivalries, people and community stories shaping sports in Washington and across the country.</p>
 <div class="wl-tags"><span class="wl-tag">HOSTED BY KENNETH WARNERSHOOK</span><span class="wl-tag">SODA & SPORTS UNITED</span><span class="wl-tag">10–15 MINUTES · WEEKLY FEATURE</span></div>
-<div class="wl-links"><a class="wl-btn" href="#pickem">PLAY THE FREE PICK'EM ↗</a><a class="wl-btn alt" href="https://sodasportsunited.com" target="_blank" rel="noopener noreferrer">SODA & SPORTS UNITED ↗</a></div></section>
-<section class="wl-panel wl-host"><div><p class="wl-kicker">MEET THE CONTRIBUTOR</p><h2>Kenneth WarnerShook</h2><p>Kenneth brings the perspective of a passionate Pacific Northwest sports fan to The Weekly Lineup. Through Soda & Sports United, he is building an independent sports-media voice centered on Washington teams, authentic fan perspectives and community connections.</p><p>The segment is a collaboration between two independent creative brands. Tacoma Nights handles the show's production and editing, with contributor and SSU recognition. The segment may also be shared through SSU platforms following its Tacoma Nights premiere, with appropriate credit.</p><a class="wl-btn" href="https://sodasportsunited.com" target="_blank" rel="noopener noreferrer">VISIT SODA & SPORTS UNITED ↗</a></div><div class="wl-monogram"><div><strong>SSU</strong><span>SPORTS · COMMUNITY · CONNECTIONS</span></div></div></section>
-<section class="wl-panel"><p class="wl-kicker">WHAT'S IN THE LINEUP</p><h2>More than the scoreboard.</h2><p>Each edition follows the stories worth talking about, with room for analysis, respectful debate and the fan perspective.</p><div class="wl-grid">
+<div class="wl-links"><a class="wl-btn" href="#pickem">PLAY THE FREE PICK'EM ↗</a><a class="wl-btn alt" href="https://sodasportsunited.com" target="_blank" rel="noopener noreferrer">SODA & SPORTS UNITED ↗</a></div>
+</div></section>
+<div class="wrap">
+<section class="wl-panel wl-host"><div><p class="wl-kicker">MEET THE CONTRIBUTOR</p><h2>Kenneth WarnerShook</h2><p>Kenneth brings the perspective of a passionate Pacific Northwest sports fan to The Weekly Lineup. Through Soda & Sports United, he is building an independent sports-media voice centered on Washington teams, authentic fan perspectives and community connections.</p><p>The segment is a collaboration between two independent creative brands. Tacoma Nights handles the show's production and editing, with contributor and SSU recognition. The segment may also be shared through SSU platforms following its Tacoma Nights premiere, with appropriate credit.</p><div class="wl-links"><a class="wl-btn" href="https://sodasportsunited.com" target="_blank" rel="noopener noreferrer">VISIT SODA & SPORTS UNITED ↗</a></div></div><div class="wl-host-art" role="img" aria-label="Athlete training outdoors, representing sports and community"><span>SPORTS · COMMUNITY · CONNECTIONS</span></div></section>
+<section class="wl-section"><div class="wl-heading"><p class="wl-kicker">WHAT'S IN THE LINEUP</p><h2>More than the <span>scoreboard.</span></h2><p>Each edition follows the stories worth talking about, with room for analysis, respectful debate and the fan perspective.</p></div><div class="wl-grid">
 <article class="wl-card"><small>01 · WASHINGTON & THE PNW</small><h3>Home Team Report</h3><p>Seahawks, Mariners, Kraken, Sounders, Huskies, Cougars and other teams connected to the region.</p></article>
 <article class="wl-card"><small>02 · NATIONAL SPORTS</small><h3>Around the Leagues</h3><p>Major headlines, league-wide conversations, standout performances and stories from beyond the Northwest.</p></article>
 <article class="wl-card"><small>03 · ANALYSIS & OPINION</small><h3>Beyond the Scoreboard</h3><p>Kenneth's perspective, questions fans are asking, what to watch next and why the story matters.</p></article>
@@ -26,12 +72,12 @@
 <article class="wl-card"><small>05 · THE WEEK AHEAD</small><h3>What's Coming Up</h3><p>Key matchups, schedules, storylines and the moments fans should keep an eye on.</p></article>
 <article class="wl-card"><small>06 · FAN CONVERSATION</small><h3>Your Voice in the Lineup</h3><p>Bring a question, share a respectful take or send a topic suggestion for a future segment.</p></article>
 </div></section>
-<section class="wl-panel"><p class="wl-kicker">HOW THE SEGMENT GETS MADE</p><h2>A weekly sports conversation.</h2><div class="wl-grid">
-<article class="wl-card"><small>RESEARCH</small><h3>Build the rundown</h3><p>Choose the week's biggest sports stories, verify details and identify the conversations worth having.</p></article>
-<article class="wl-card"><small>RECORD</small><h3>Bring the perspective</h3><p>Kenneth records the segment with clear separation between verified reporting, analysis and personal opinion.</p></article>
-<article class="wl-card"><small>PRODUCTION</small><h3>Premiere on Tacoma Nights</h3><p>The finished segment is edited and featured as part of Tacoma Nights, with SSU credit and collaboration links.</p></article>
+<section class="wl-section alt"><div class="wl-heading"><p class="wl-kicker">HOW THE SEGMENT GETS MADE</p><h2>A weekly sports <span>conversation.</span></h2><p>From the first story pitch to the final edit, every edition is built around the week's most interesting conversations.</p></div><div class="wl-grid">
+<article class="wl-card"><small>01 · RESEARCH</small><h3>Build the Rundown</h3><p>Choose the week's biggest sports stories, verify details and identify the conversations worth having.</p></article>
+<article class="wl-card"><small>02 · RECORD</small><h3>Bring the Perspective</h3><p>Kenneth records the segment with clear separation between verified reporting, analysis and personal opinion.</p></article>
+<article class="wl-card"><small>03 · PRODUCTION</small><h3>Premiere on Tacoma Nights</h3><p>The finished segment is edited and featured as part of Tacoma Nights, with SSU credit and collaboration links.</p></article>
 </div><p class="wl-note">Segment length is generally planned for approximately 10–15 minutes, with flexibility for the week's subject. Specific episode dates and video releases will be announced through Tacoma Nights.</p></section>
-<section id="pickem" class="wl-panel wl-pickem"><p class="wl-kicker">TACOMA NIGHTS COMMUNITY CHALLENGE</p><h2>Make your picks. Own the week.</h2><p>Put your sports knowledge to the test with the free weekly Pick'em Challenge. No Tacoma Nights membership, account, email address or payment required. Pick the winners, submit a nickname and see how you stack up on the leaderboard.</p><div class="wl-links"><a class="wl-btn" href="./index.html">OPEN THE WEEKLY PICK'EM ↗</a><a class="wl-btn alt" href="./index.html">VIEW SPORTS & STANDINGS</a></div><p class="wl-note">Fan predictions for entertainment only. No cash wagering or purchase required.</p></section>
-<section class="wl-panel"><p class="wl-kicker">SEND US YOUR TAKE</p><h2>What should make the lineup?</h2><p>Have a sports question, a Washington or national story tip, a community sports event or a topic Kenneth should tackle? Send it to the Tacoma Nights production team for consideration.</p><div class="wl-links"><a class="wl-btn" href="mailto:crowrulesentertainment@gmail.com?subject=The%20Weekly%20Lineup%20-%20Topic%20Suggestion">SEND A TOPIC SUGGESTION ↗</a><a class="wl-btn alt" href="https://sodasportsunited.com" target="_blank" rel="noopener noreferrer">FOLLOW SSU ↗</a></div></section>
+<section id="pickem" class="wl-panel wl-pickem"><p class="wl-kicker">TACOMA NIGHTS COMMUNITY CHALLENGE</p><h2>Make your picks.<br>Own the week.</h2><p>Put your sports knowledge to the test with the free weekly Pick'em Challenge. No Tacoma Nights membership, account, email address or payment required. Pick the winners, submit a nickname and see how you stack up on the leaderboard.</p><div class="wl-links"><a class="wl-btn" href="./index.html">OPEN THE WEEKLY PICK'EM ↗</a><a class="wl-btn alt" href="./index.html">VIEW SPORTS & STANDINGS</a></div><p class="wl-note">Fan predictions for entertainment only. No cash wagering or purchase required.</p></section>
+<section class="wl-panel"><p class="wl-kicker">SEND US YOUR TAKE</p><h2>What should make the <span>lineup?</span></h2><p>Have a sports question, a Washington or national story tip, a community sports event or a topic Kenneth should tackle? Send it to the Tacoma Nights production team for consideration.</p><div class="wl-links"><a class="wl-btn" href="mailto:crowrulesentertainment@gmail.com?subject=The%20Weekly%20Lineup%20-%20Topic%20Suggestion">SEND A TOPIC SUGGESTION ↗</a><a class="wl-btn alt" href="https://sodasportsunited.com" target="_blank" rel="noopener noreferrer">FOLLOW SSU ↗</a></div></section>
 <a class="wl-back" href="./index.html">← BACK TO TACOMA NIGHTS SPORTS</a>
 </div></main><div id="site-footer"></div></body></html>
