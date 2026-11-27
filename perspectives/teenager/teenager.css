@@ -1,5 +1,5 @@
 /* Teenager Perspective 2.0 — cinematic CrowRules visual system */
-:root{--tp-red:#c52f40;--tp-gold:#d1ad72;--tp-ink:#07090d;--tp-panel:#111720;--tp-muted:#aab2bd;--tp-line:#ffffff20}
+:root{--tp-red:#078dff;--tp-gold:#f2b72c;--tp-blue:#08aaff;--tp-ink:#07090d;--tp-panel:#111720;--tp-muted:#aab2bd;--tp-line:#ffffff20}
 .tp-page{background:#080a0e;color:#f5f4f1}
 .tp-wrap{width:min(1180px,calc(100% - 40px));margin:auto}
 .tp-hero{min-height:660px;position:relative;display:flex;align-items:center;overflow:hidden;background:#0a0d12}
@@ -13,7 +13,7 @@
 .tp-hero h1 span{color:var(--tp-red);display:block}
 .tp-lede{max-width:630px;color:#d0d2d6;font-size:18px;line-height:1.7}
 .tp-hostline{display:flex;align-items:center;gap:13px;margin:30px 0 0;color:#e5e1da}
-.tp-hostmark{width:46px;height:46px;border:1px solid #d1ad7280;border-radius:50%;display:grid;place-items:center;color:var(--tp-gold);font:800 13px Manrope}
+.tp-hostmark{width:46px;height:46px;border:1px solid #f2b72c80;border-radius:50%;display:grid;place-items:center;color:var(--tp-gold);font:800 13px Manrope}
 .tp-hostline strong{display:block;font:800 12px Manrope;letter-spacing:.13em;text-transform:uppercase}
 .tp-hostline small{display:block;color:#aeb4bd;font-size:11px}
 .tp-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:28px}
@@ -30,7 +30,7 @@
 .tp-card{background:linear-gradient(145deg,#151c26,#0d1118);border:1px solid var(--tp-line);padding:23px;min-width:0}
 .tp-card h3{font:800 17px Manrope;margin:7px 0 9px}
 .tp-card p{color:var(--tp-muted);font-size:13px;margin:0}
-.tp-icon{width:38px;height:38px;border:1px solid #c52f4060;color:#e15b68;display:grid;place-items:center;font-size:17px}
+.tp-icon{width:38px;height:38px;border:1px solid #078dff60;color:#16baff;display:grid;place-items:center;font-size:17px}
 .tp-feature{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:stretch}
 .tp-feature-art{min-height:330px;position:relative;overflow:hidden;background:linear-gradient(0deg,#080a0eaa,transparent),url("https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=85") center/cover}
 .tp-feature-art:after{content:"ON THE RECORD";position:absolute;left:22px;bottom:20px;font:800 12px Manrope;letter-spacing:.2em;color:#fff}
@@ -85,3 +85,56 @@
 .tp-footer-note{color:#818994;font-size:11px;margin-top:22px}
 @media(max-width:850px){.tp-grid,.tp-feed{grid-template-columns:repeat(2,minmax(0,1fr))}.tp-feature{grid-template-columns:1fr}.tp-feature-art{min-height:260px}.tp-hero{min-height:600px}.tp-section{padding:58px 0}}
 @media(max-width:580px){.tp-wrap{width:min(100% - 28px,1180px)}.tp-hero{min-height:590px}.tp-hero-inner{padding:75px 0 85px}.tp-hero h1{font-size:clamp(46px,15vw,72px)}.tp-lede{font-size:15px}.tp-section-head{display:block}.tp-section-head p{margin-top:12px}.tp-grid,.tp-feed,.tp-form-grid{grid-template-columns:1fr}.tp-card,.tp-feature-copy{padding:19px}.tp-section{padding:48px 0}.tp-admin-item{grid-template-columns:1fr}.tp-btn{flex:1}.tp-actions{display:grid;grid-template-columns:1fr 1fr}}
+
+/* Teenager Perspective — electric-blue broadcast masthead */
+.tp-page{background:#030811!important;color:#f5f8ff;overflow-x:hidden}
+.tp-broadcast-hero{width:min(1672px,100%);margin:0 auto;background:#02060d;border:1px solid #087fff;box-shadow:0 0 34px #087fff45;overflow:hidden}
+.tp-broadcast-top{height:82px;display:flex;align-items:center;justify-content:space-between;padding:12px 3%;background:linear-gradient(105deg,#02050a,#07182a 55%,#02050a);border-bottom:4px solid #078dff}
+.tp-broadcast-brand{display:flex;flex-direction:column;color:#fff;text-decoration:none;line-height:.85}
+.tp-broadcast-brand strong{font:900 clamp(24px,3.5vw,43px)/.9 Manrope,sans-serif;letter-spacing:-.08em}
+.tp-broadcast-brand span{font:800 10px Manrope;letter-spacing:.43em;margin:9px 0 0 4px}
+.tp-broadcast-location{font:900 clamp(12px,2vw,25px) 'Barlow Condensed',Manrope,sans-serif;letter-spacing:.17em;color:#fff;text-align:right}
+.tp-broadcast-location:before,.tp-broadcast-location:after{content:"";display:inline-block;width:28px;height:3px;background:#08baff;vertical-align:middle;margin:0 12px;box-shadow:0 0 12px #08baff}
+.tp-broadcast-stage{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(270px,1fr) minmax(0,1.08fr);min-height:clamp(430px,52vw,735px);background:#02060d}
+.tp-broadcast-side{position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(18px,3vw,44px);overflow:hidden;isolation:isolate}
+.tp-broadcast-side:before{content:"";position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center}
+.tp-broadcast-side:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#02071328 0%,#02071312 42%,#020713e8 100%)}
+.tp-broadcast-left{border-right:1px solid #168cff88}
+.tp-broadcast-left:before{background-image:url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85")}
+.tp-broadcast-right{border-left:1px solid #168cff88}
+.tp-broadcast-right:before{background-image:url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=85")}
+.tp-lockup{margin:auto 0;filter:drop-shadow(0 5px 7px #000)}
+.tp-the{display:block;font:italic 900 clamp(25px,3vw,42px) 'Barlow Condensed',Manrope,sans-serif;color:#fff}
+.tp-lockup h1{font:italic 900 clamp(48px,6.8vw,100px)/.8 'Barlow Condensed',Manrope,sans-serif;letter-spacing:-.045em;color:#09aaff;text-shadow:3px 4px 0 #063b78,-2px -2px 0 #d7f5ff,0 10px 20px #000;margin:6px 0;transform:skew(-5deg)}
+.tp-lockup h2{font:italic 900 clamp(34px,4.8vw,70px)/.88 'Barlow Condensed',Manrope,sans-serif;color:#fff;text-shadow:0 5px 8px #000;margin:0}
+.tp-host-script{display:flex;flex-direction:column;align-items:flex-start;text-shadow:0 4px 8px #000}
+.tp-host-script small{font:italic 700 clamp(20px,2.4vw,32px) 'Kaushan Script',cursive;color:#fff}
+.tp-host-script strong{font:italic 700 clamp(27px,3.5vw,49px) 'Kaushan Script',cursive;color:#f4b928;text-shadow:0 3px 0 #7a4b00,0 5px 12px #000}
+.tp-broadcast-screen{padding:12px;background:linear-gradient(135deg,#0c2239,#02060d 48%,#0b1d32);display:flex;align-items:stretch;justify-content:center}
+.tp-screen-inner{width:100%;min-height:100%;background:#000;border:7px solid #071321;outline:2px solid #279fff;box-shadow:inset 0 0 0 2px #7de0ff,0 0 20px #008cff,0 0 42px #007bff66;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;position:relative}
+.tp-screen-inner:before{content:"";position:absolute;inset:5px;border:1px solid #0d83df;pointer-events:none}
+.tp-screen-play{width:76px;height:76px;border:3px solid #08aaff;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:29px;box-shadow:0 0 20px #078dff;margin-bottom:20px}
+.tp-screen-inner>strong{font:900 clamp(14px,1.5vw,20px) 'Barlow Condensed',Manrope,sans-serif;letter-spacing:.12em;color:#fff}
+.tp-screen-inner>span{font-size:11px;color:#829bb5;margin-top:9px}
+.tp-screen-link{margin-top:22px;padding:11px 15px;border:1px solid #078dff;color:#bfeaff;text-decoration:none;font:800 10px Manrope;letter-spacing:.12em}
+.tp-lakewood-caption{align-self:flex-end;margin-top:40%;padding:14px 20px;background:#d9d9d0dd;color:#101820;text-align:center;transform:rotate(-2deg);box-shadow:0 8px 20px #0008;font:800 13px Manrope;letter-spacing:.1em}
+.tp-lakewood-caption strong{display:block;font:900 clamp(21px,2.7vw,36px) 'Barlow Condensed',Manrope,sans-serif;letter-spacing:.04em}
+.tp-lakewood-caption span{font-size:10px;letter-spacing:.2em}
+.tp-motto{margin-top:auto;font:italic 900 clamp(23px,3vw,43px)/1.02 'Barlow Condensed',Manrope,sans-serif;text-shadow:0 4px 10px #000}
+.tp-motto strong{display:block}.tp-motto em{display:block;color:#08baff;font-style:italic;margin-top:5px}
+.tp-broadcast-bottom{min-height:84px;display:flex;align-items:center;gap:20px;padding:12px 2.2%;background:#02060d;border-top:4px solid #078dff;box-shadow:0 -5px 18px #078dff55}
+.tp-submit-cta{display:flex;align-items:center;gap:13px;color:#fff;text-decoration:none;white-space:nowrap}
+.tp-submit-cta strong{font:italic 900 clamp(13px,2vw,26px) 'Barlow Condensed',Manrope,sans-serif}
+.tp-cta-play{width:56px;height:56px;border:3px solid #08aaff;border-radius:50%;display:grid;place-items:center;color:#fff;box-shadow:0 0 15px #078dff;font-size:19px}
+.tp-bottom-divider{height:44px;width:3px;background:#08aaff}
+.tp-bottom-words{font:italic 900 clamp(13px,1.7vw,23px) 'Barlow Condensed',Manrope,sans-serif;white-space:nowrap}
+.tp-bottom-words i{color:#08baff;font-style:normal;margin:0 7px}
+.tp-bottom-hash{margin-left:auto;font:italic 700 clamp(16px,2.4vw,31px) 'Kaushan Script',cursive;color:#fff;white-space:nowrap}
+.tp-eyebrow{color:#28baff}.tp-kicker{color:#28baff}
+.tp-btn.primary{background:linear-gradient(110deg,#0878d8,#09baff);border-color:#20aaff}
+.tp-btn:hover{border-color:#08baff}
+.tp-question{background:linear-gradient(110deg,#071d32,#111720 65%);border-color:#078dff70}
+.tp-consent input{accent-color:#078dff}.tp-admin{border-color:#078dff70;background:#081421}
+@media(max-width:900px){.tp-broadcast-stage{grid-template-columns:1fr 1fr}.tp-broadcast-screen{grid-column:1/-1;grid-row:1;min-height:420px}.tp-broadcast-left,.tp-broadcast-right{min-height:420px}}
+@media(max-width:620px){.tp-broadcast-top{height:66px;padding:10px 12px}.tp-broadcast-location:before,.tp-broadcast-location:after{width:10px;margin:0 5px}.tp-broadcast-stage{grid-template-columns:1fr}.tp-broadcast-screen{grid-column:auto;grid-row:auto;min-height:350px}.tp-broadcast-left,.tp-broadcast-right{min-height:360px;border-inline:0}.tp-broadcast-bottom{align-items:flex-start;flex-wrap:wrap;gap:10px;padding:12px}.tp-submit-cta{width:100%}.tp-bottom-divider{display:none}.tp-bottom-hash{margin-left:0}}
+@media(prefers-reduced-motion:reduce){.tp-btn{transition:none}}
