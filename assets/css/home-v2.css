@@ -1,0 +1,39 @@
+/* Tacoma Nights homepage 2.0 — cinematic network presentation */
+:root{--tn2-gold:#e6c987;--tn2-red:#b92c35;--tn2-ink:#070a10}
+html{scroll-behavior:smooth}
+body{background:#080b11}
+.tn2-hero{isolation:isolate;min-height:clamp(590px,72vh,790px);border-bottom:1px solid #e6c98744}
+.tn2-hero-content{padding-top:clamp(100px,13vw,170px);padding-bottom:clamp(90px,12vw,140px)}
+.tn2-hero h1{font-size:clamp(52px,8vw,112px);line-height:.88;letter-spacing:-.065em;text-wrap:balance}
+.tn2-hero-lede{max-width:760px}.tn2-hero-copy{max-width:680px;line-height:1.8}
+.tn2-actions{gap:11px;flex-wrap:wrap}
+.tn2-btn{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.tn2-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px #0006}
+.tn2-hero-controls{backdrop-filter:blur(12px);background:#080b11a8;border:1px solid #ffffff1a;border-radius:999px;padding:7px 12px}
+.tn2-hero-dots button{transition:width .25s ease,background .25s ease}
+.tn2-ticker{letter-spacing:.17em;border-bottom:1px solid #e6c98733}
+.tn2-section{padding:clamp(62px,8vw,108px) 0}
+.tn2-section-dark{background:linear-gradient(135deg,#0b111b,#090c13 65%,#10131a);border-top:1px solid #ffffff0d;border-bottom:1px solid #ffffff0d}
+.tn2-heading{margin-bottom:30px}.tn2-heading h2,.tn2-feature-copy h2{letter-spacing:-.045em}
+.tn2-card{position:relative;min-height:230px;padding:28px 26px;background:linear-gradient(145deg,#151d29,#0b1018 76%);border:1px solid #ffffff20;border-top:2px solid #c8a56a;border-radius:5px;transition:transform .25s ease,border-color .25s ease,background .25s ease}
+.tn2-card:hover{transform:translateY(-5px);border-color:#e6c98799;background:linear-gradient(145deg,#1b2635,#0b1018 76%)}
+.tn2-card h3{font-size:clamp(21px,2vw,27px)}.tn2-card p{line-height:1.7;color:#b6c0cc}.tn2-card b{letter-spacing:.1em;color:#e6c987}
+.tn2-live-layout{gap:22px}.tn2-video{border:1px solid #ffffff20;box-shadow:0 24px 65px #0008}
+.tn2-live-panel{border:1px solid #ffffff20;background:linear-gradient(160deg,#151d29,#090d14)}
+.tn2-question{border:1px solid #e6c98766;background:linear-gradient(145deg,#1b2029,#0b1018);box-shadow:0 18px 45px #0005}
+.tn2-feature{gap:clamp(28px,5vw,70px)}.tn2-feature-copy p{line-height:1.8}
+.tn-visitor-bar-v2{padding:38px 0;background:radial-gradient(ellipse at 50% 0,#253043 0%,#111923 52%,#0b1018 100%)}
+.tn-visitor-bar-v2 .tn-visitor-wrap{max-width:1320px}.tn-visitor-bar-v2 .tn-visitor-heading{margin-bottom:22px}
+.tn-visitor-bar-v2 .tn-visitor-heading h2{font-size:clamp(24px,3vw,36px);letter-spacing:-.04em}
+.tn-visitor-grid{grid-template-columns:1fr 1fr 1fr}
+.tn-visitor-card{min-height:174px;border-color:#ffffff24;background:linear-gradient(145deg,#111b28,#090e15);box-shadow:0 12px 35px #0003}
+.tn-live-card{display:flex;flex-direction:column;justify-content:center;border-color:#e6c98766}
+.tn-live-presence-v2{margin-top:0;padding:0;border:0;gap:12px}
+.tn-live-presence-v2 .tn-live-number{font-size:clamp(36px,5vw,54px)}
+.tn-live-presence-v2 .tn-live-dot{width:10px;height:10px;flex-basis:10px}
+.tn-live-presence-v2 .tn-live-label{max-width:145px;line-height:1.5}
+.tn-live-explainer{margin:16px 0 0;color:#9ba7b5;font-size:11px;line-height:1.6}
+.tn-visitor-foot{max-width:900px}
+@media(max-width:760px){.tn2-hero{min-height:650px}.tn2-hero-content{padding-top:105px;padding-bottom:95px}.tn-visitor-grid{grid-template-columns:1fr 1fr}.tn-live-card{grid-column:1/-1}.tn-visitor-heading{align-items:flex-start}.tn2-section{padding:58px 0}}
+@media(max-width:480px){.tn-visitor-grid{grid-template-columns:1fr}.tn-live-card{grid-column:auto}.tn2-hero-controls{max-width:calc(100% - 24px);left:12px;right:12px}.tn2-actions .tn2-btn{width:100%;justify-content:center}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.tn2-btn,.tn2-card{transition:none}.tn2-btn:hover,.tn2-card:hover{transform:none}}
