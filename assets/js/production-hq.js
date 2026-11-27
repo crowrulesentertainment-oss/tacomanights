@@ -17,7 +17,7 @@ function syncWeekOptions(){
 }
 function filterWeeklyLists(){
  const option=weekSelect?.selectedOptions?.[0],label=option?.textContent?.trim();
- ["assignmentList","uploadList","adminUploads"].forEach(id=>{
+ ["assignmentList","uploadList","adminUploads","episodePlanList","questionWeekList"].forEach(id=>{
   const host=$("#"+id);if(!host)return;
   [...host.children].forEach(card=>{card.hidden=!!(label&&option.value)&&!(card.textContent||"").includes(label.split(" · ")[0]);});
  });
@@ -28,7 +28,7 @@ function updateWeekContext(){
 }
 function applyWeek(){
  const id=weekSelect?.value;if(!id)return false;
- ["uploadEpisode","assignmentEpisode","h3StudioEpisode"].forEach(key=>{const el=$("#"+key);if(el&&[...el.options].some(o=>o.value===id))el.value=id;});
+ ["uploadEpisode","assignmentEpisode","planEpisode","questionEpisode","h3StudioEpisode"].forEach(key=>{const el=$("#"+key);if(el&&[...el.options].some(o=>o.value===id))el.value=id;});
  updateWeekContext();return true;
 }
 weekSelect?.addEventListener("change",applyWeek);
