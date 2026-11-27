@@ -49,4 +49,20 @@ const tabs=$$(".ph-tab");tabs.forEach(b=>{b.addEventListener("click",()=>{tabs.f
 const form=$("#uploadForm");if(form){form.classList.add("hq-upload-drop");const input=form.querySelector('input[type="file"]');if(input){input.setAttribute("aria-describedby","uploadDropHint");input.setAttribute("aria-label","Choose segment recording files");}}
 const notice=$("#connectionNotice");if(notice){const observer=new MutationObserver(()=>notice.classList.toggle("is-error",/error|failed|could not|denied/i.test(notice.textContent||"")));observer.observe(notice,{childList:true,subtree:true,characterData:true});}
 const hero=$(".ph-hero");if(hero){const wrap=hero.querySelector(".ph-wrap");if(wrap&&!wrap.querySelector(".hq-scroll-cue")){const a=document.createElement("a");a.className="hq-scroll-cue";a.href="#workspace";a.textContent="ENTER THE TEAM WORKSPACE ↓";a.style.cssText="display:inline-block;margin-top:24px;color:#e5c797;font-size:10px;font-weight:800;letter-spacing:.16em;text-decoration:none";wrap.append(a);}}
+
+/* Quick actions route into existing, permission-protected production forms. */
+$("[data-hq-jump]").forEach(button=>button.addEventListener("click",()=>{
+ const tabName=button.dataset.hqJump,targetId=button.dataset.hqTarget;
+ if(!applyWeek()&&weekSelect?.options.length>1){weekContext.textContent="Choose an episode first. The task will open with that episode selected.";}
+ openTab(tabName);
+ if(button.hasAttribute("data-hq-create-episode")){
+  const toggle=$("#newEpisodeBtn"),card=$("#episodeFormCard");
+  if(card?.classList.contains("hidden"))toggle?.click();
+ }
+ window.setTimeout(()=>{
+  const target=$("#"+targetId);
+  if(target){target.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"center"});const field=target.querySelector("input,select,textarea");field?.focus({preventScroll:true});}
+ },80);
+}));
+
 })();
