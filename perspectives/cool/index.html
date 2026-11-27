@@ -27,7 +27,7 @@
 .cool-left{border-right:1px solid #159bff55}
 .cool-right{border-left:1px solid #159bff55}
 .cool-title-lockup{margin:auto 0;max-width:590px}
-.cool-glasses{font-size:clamp(38px,5vw,70px);line-height:1;filter:drop-shadow(0 5px 8px #000);margin:0 0 8px 26%}
+.cool-glasses{width:clamp(105px,14vw,180px);line-height:1;filter:drop-shadow(0 5px 8px #000);margin:0 0 8px 26%}.cool-glasses svg{display:block;width:100%;height:auto}
 .cool-the{font:900 clamp(25px,3vw,42px)/.9 'Barlow Condensed';font-style:italic;text-transform:uppercase;text-shadow:0 5px 5px #000}
 .cool-title{font:900 clamp(52px,7.1vw,104px)/.78 'Barlow Condensed';font-style:italic;letter-spacing:-.045em;text-transform:uppercase;color:#16aaff;text-shadow:3px 4px 0 #063b78,-2px -2px 0 #d7f5ff,0 10px 20px #000;transform:skew(-5deg);margin:5px 0}
 .cool-perspective{font:900 clamp(37px,5.1vw,72px)/.86 'Barlow Condensed';font-style:italic;text-transform:uppercase;color:#fff;text-shadow:0 5px 8px #000;margin:0}
@@ -58,8 +58,8 @@
 .cool-intro{padding:74px 24px 30px;background:radial-gradient(ellipse at 50% 0,#0b2a48 0%,#080f1a 48%,#050a12 100%)}
 .cool-wrap{width:min(1120px,calc(100% - 38px));margin:auto}
 .cool-eyebrow{font:800 10px 'DM Sans';letter-spacing:.25em;color:#28bdff;text-transform:uppercase;margin:0 0 14px}
-.cool-intro h1{font:900 clamp(40px,6vw,72px)/.94 'Barlow Condensed';text-transform:uppercase;margin:0 0 16px;letter-spacing:-.02em}
-.cool-intro h1 span{color:#13b5ff}
+.cool-intro h2{font:900 clamp(40px,6vw,72px)/.94 'Barlow Condensed';text-transform:uppercase;margin:0 0 16px;letter-spacing:-.02em}
+.cool-intro h2 span{color:#13b5ff}
 .cool-intro p{max-width:760px;color:#b9cce0;line-height:1.8}
 .cool-topics{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:30px}
 .cool-topic{padding:22px;background:linear-gradient(145deg,#10253a,#080f19);border:1px solid #168ee655;min-height:145px}
@@ -80,7 +80,7 @@
 .cool-contact h2 span{color:#19baff}
 .cool-contact p{max-width:600px;color:#c0d2e5;font-size:13px}
 .cool-button{display:inline-flex;align-items:center;justify-content:center;padding:14px 20px;background:linear-gradient(110deg,#0878d8,#09baff);border:1px solid #7bdfff;color:white;font:900 11px 'DM Sans';letter-spacing:.12em;text-transform:uppercase;box-shadow:0 0 18px #008cff55;white-space:nowrap}
-.cool-button:hover{filter:brightness(1.15);transform:translateY(-2px)}
+.cool-button:hover{filter:brightness(1.15);transform:translateY(-2px)}.cool-button:focus-visible{outline:3px solid #fff;outline-offset:4px}
 @media(max-width:980px){.cool-hero{grid-template-columns:1fr 1fr}.cool-left{min-height:480px}.cool-video-column{grid-column:1/-1;grid-row:1;padding:14px}.cool-video-frame{min-height:330px;max-width:560px}.cool-right{min-height:430px}.cool-topics{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.cool-shell{width:calc(100% - 14px);margin-top:10px}.cool-top{padding:12px;min-height:62px}.cool-location:before,.cool-location:after{width:12px;margin:0 5px}.cool-hero{grid-template-columns:1fr}.cool-video-column{grid-column:auto;grid-row:auto;min-height:360px}.cool-video-frame{min-height:330px;width:100%}.cool-left,.cool-right{min-height:410px}.cool-left{border-right:0;border-bottom:1px solid #159bff55}.cool-right{border-left:0;border-top:1px solid #159bff55}.cool-share{grid-template-columns:76px 1fr}.cool-play-badge{width:70px;height:70px;font-size:28px}.cool-bottom{align-items:flex-start;flex-direction:column;padding:13px}.cool-categories{justify-content:flex-start;row-gap:9px}.cool-categories span{padding:0 10px 0 0;margin-right:10px}.cool-signature{align-self:flex-end}.cool-intro{padding:55px 0 25px}.cool-topics{grid-template-columns:1fr 1fr}.cool-topic{padding:16px;min-height:130px}.cool-page [data-content-feed="cool"]{grid-template-columns:1fr}.cool-feed-head,.cool-contact-inner{align-items:flex-start;flex-direction:column}.cool-contact{padding:38px 0}}
 @media(max-width:390px){.cool-topics{grid-template-columns:1fr}.cool-glasses{margin-left:15%}.cool-title{font-size:50px}.cool-perspective{font-size:36px}}
@@ -94,10 +94,10 @@
   <header class="cool-top"><div class="cool-brand">CrowRules<small>ENTERTAINMENT</small></div><div class="cool-location">Vaughn, New Mexico</div></header>
   <div class="cool-hero">
     <section class="cool-panel cool-left" aria-label="The Cool Perspective show identity">
-      <div class="cool-title-lockup"><div class="cool-glasses" aria-hidden="true">🕶️</div><div class="cool-the">The</div><div class="cool-title">Cool</div><h1 class="cool-perspective">Perspective</h1><div class="cool-with">with <span>JonCool123</span></div></div>
+      <div class="cool-title-lockup"><div class="cool-glasses" aria-hidden="true"><svg viewBox="0 0 180 64" role="img" aria-label="" focusable="false"><path d="M8 12 Q48 2 82 14 L88 46 Q85 58 69 58 H34 Q17 56 12 39 Z M172 12 Q132 2 98 14 L92 46 Q95 58 111 58 H146 Q163 56 168 39 Z M84 20 Q90 14 96 20" fill="#07101b" stroke="#f4bd38" stroke-width="5"/><path d="M20 17 Q48 8 75 18 L79 40 Q76 49 65 49 H38 Q25 47 20 34 Z M160 17 Q132 8 105 18 L101 40 Q104 49 115 49 H142 Q155 47 160 34 Z" fill="#0b4f8d" opacity=".85"/><path d="M26 22 L68 17 M108 17 L151 22" stroke="#a9e8ff" stroke-width="3" opacity=".85"/></svg></div><div class="cool-the">The</div><div class="cool-title">Cool</div><h1 class="cool-perspective">Perspective</h1><div class="cool-with">with <span>JonCool123</span></div></div>
       <p class="cool-motto">Real Opinions. Fresh Perspective.<strong>A Cooler Look at Life.</strong></p>
     </section>
-    <div class="cool-video-column"><div class="cool-video-frame"><div class="cool-video-inner"><div class="play" aria-hidden="true">▶</div><strong>JonCool123 · Featured Perspective</strong><span>Video feature coming soon</span></div></div></div>
+    <div class="cool-video-column"><div class="cool-video-frame" role="status" aria-label="Featured video placeholder"><div class="cool-video-inner"><div class="play" aria-hidden="true">▶</div><strong>JonCool123 · Featured Perspective</strong><span>Featured video will appear here when published.</span></div></div></div>
     <section class="cool-panel cool-right" aria-label="Share your perspective">
       <div></div>
       <div class="cool-share"><div class="cool-play-badge" aria-hidden="true">▶</div><div><h2>Share Your <span>Perspective!</span></h2><p>Be Part of the Show!</p></div></div>
@@ -107,7 +107,7 @@
 </section>
 <section class="cool-intro"><div class="cool-wrap">
 <p class="cool-eyebrow">A TACOMA NIGHTS FEATURE · CROWRULES ENTERTAINMENT</p>
-<h1>Real opinions. <span>Fresh perspective.</span></h1>
+<h2>Real opinions. <span>Fresh perspective.</span></h2>
 <p>The Cool Perspective with JonCool123 brings a different angle to the conversations happening around us. From community and culture to entertainment, news, lifestyle and everyday life, JonCool123 shares honest reactions, personal opinions and a cooler look at the world — from Vaughn, New Mexico.</p>
 <div class="cool-topics">
 <article class="cool-topic"><b>01 / COMMUNITY</b><h3>People & Places</h3><p>Small towns, big ideas and the things that connect us.</p></article>
