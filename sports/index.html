@@ -4,9 +4,9 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080a0e">
 <meta name="description" content="Make your weekly sports predictions with Tacoma Nights. Free to play. No membership or account required.">
-<title>Weekly Pick'em Challenge | The Weekly Lineup | Tacoma Nights</title>
+<title>Tacoma Nights Sports | Weekly Pick'em Challenge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/v3.css">
 <script src="../assets/js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script defer src="../assets/js/v3.js"></script>
@@ -16,16 +16,57 @@
 .pe-section{margin-top:30px;border:1px solid #ffffff18;border-radius:18px;background:linear-gradient(145deg,#151a23,#0e1219);padding:clamp(20px,4vw,34px)}.pe-section h2{font:800 clamp(1.45rem,4vw,2.1rem)/1.1 Manrope;margin:0 0 10px}.pe-muted{color:#aab2bf;line-height:1.65}.pe-status{display:inline-flex;align-items:center;gap:8px;border-radius:999px;background:#ffffff0d;padding:7px 11px;color:#d8dde5;font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.pe-status:before{content:"";width:7px;height:7px;border-radius:50%;background:#8b929e}.pe-status.live:before{background:#55d69a;box-shadow:0 0 12px #55d69a}
 .pe-game-list{display:grid;gap:14px;margin-top:24px}.pe-game{border:1px solid #ffffff18;border-radius:14px;padding:18px;background:#090d14}.pe-game-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#9da7b5;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.pe-matchup{font:800 1.1rem Manrope;margin:12px 0 16px}.pe-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pe-choice{display:flex;align-items:center;justify-content:center;gap:9px;min-height:48px;border:1px solid #ffffff24;border-radius:10px;padding:10px;background:#151b25;color:#f6f7f9;font-weight:700;cursor:pointer;transition:.18s}.pe-choice input{accent-color:var(--pe-red)}.pe-choice:has(input:checked){border-color:var(--pe-red);background:#6e1822;color:#fff}.pe-form{display:grid;gap:14px;margin-top:24px}.pe-label{display:block;font-size:.78rem;color:#c5cbd4;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}.pe-input{width:100%;max-width:420px;border:1px solid #ffffff28;border-radius:10px;padding:13px 14px;background:#080c12;color:#fff;font:inherit}.pe-submit{border:0;border-radius:10px;background:var(--pe-red);color:#fff;font-weight:900;letter-spacing:.06em;padding:15px 22px;cursor:pointer;min-height:50px}.pe-submit:disabled{opacity:.55;cursor:not-allowed}.pe-note{font-size:.85rem;color:#9ea8b6;line-height:1.6}.pe-message{min-height:24px;color:#f2c979;font-size:.9rem}.pe-table-wrap{overflow-x:auto;margin-top:18px}.pe-table{width:100%;border-collapse:collapse;min-width:420px}.pe-table th,.pe-table td{text-align:left;padding:13px 12px;border-bottom:1px solid #ffffff16}.pe-table th{color:#9fa8b6;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em}.pe-table td:last-child,.pe-table th:last-child{text-align:right;font-variant-numeric:tabular-nums}.pe-rank{color:var(--pe-gold);font-weight:900}.pe-rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.pe-rule{padding:16px;border-radius:12px;background:#ffffff08;border:1px solid #ffffff12}.pe-rule b{display:block;margin-bottom:6px}.pe-rule p{margin:0;color:#aab2bf;font-size:.85rem;line-height:1.55}.pe-back{display:inline-flex;margin-top:22px;color:#e8bd70;text-decoration:none;font-weight:800}.pe-empty{padding:24px;border:1px dashed #ffffff30;border-radius:12px;color:#b8c0cc;line-height:1.7}.pe-boards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:22px}.pe-board{border:1px solid #ffffff18;border-radius:13px;background:#090d14;padding:16px}.pe-board h3{font:800 1rem Manrope;margin:0 0 10px;text-transform:capitalize}.pe-board .pe-table{min-width:0}.pe-board .pe-table th,.pe-board .pe-table td{padding:9px 7px}.pe-board-empty{color:#aab2bf;font-size:.85rem;line-height:1.5}
 @media(max-width:650px){.pe-options{grid-template-columns:1fr}.pe-rules{grid-template-columns:1fr}.pe-hero{border-radius:14px}.pe-game{padding:14px}}
+
+/* Perspective-inspired sports identity */
+.pickem{padding:0 0 88px;background:#07090d}
+.pickem .wrap{width:min(1180px,calc(100% - 40px))}
+.pe-hero{min-height:590px;display:flex;align-items:center;justify-content:space-between;gap:28px;padding:clamp(34px,7vw,86px);border:0;border-radius:0;background:linear-gradient(90deg,rgba(3,5,9,.96) 0%,rgba(3,5,9,.82) 48%,rgba(3,5,9,.28) 100%),linear-gradient(0deg,rgba(3,5,9,.38),rgba(3,5,9,.1)),url("https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=2400&q=90") center 43%/cover no-repeat;box-shadow:inset 0 -1px #ffffff22;position:relative}
+.pe-hero:after{content:"";inset:0;right:auto;bottom:auto;width:100%;height:100%;background:linear-gradient(90deg,transparent 55%,rgba(5,8,13,.15));font:inherit;color:transparent}
+.pe-hero-copy{position:relative;z-index:2;max-width:720px}
+.pe-hero .pe-kicker,.pe-kicker{font-family:"DM Sans",sans-serif;color:#e8bd70;letter-spacing:.24em}
+.pe-hero h1{font:900 clamp(4rem,10vw,8.4rem)/.78 "Barlow Condensed",sans-serif;letter-spacing:-.025em;text-transform:uppercase;margin:20px 0 24px;text-shadow:0 8px 35px #000}
+.pe-hero h1 span{color:#e3343f}
+.pe-hero p{max-width:620px;font-size:clamp(1rem,1.5vw,1.12rem);line-height:1.8;color:#e0e4e9}
+.pe-pills{margin-top:25px}
+.pe-pill{border-color:#ffffff42;background:#07090d88;backdrop-filter:blur(8px);letter-spacing:.08em;text-transform:uppercase}
+.pe-hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.pe-action-primary,.pe-action-secondary{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:14px 19px;text-decoration:none;font:900 .75rem "DM Sans",sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.pe-action-primary{background:#d72d3a;color:white;border:1px solid #f16b73;box-shadow:0 8px 28px #0007}
+.pe-action-primary:hover{background:#f04450;transform:translateY(-2px)}
+.pe-action-secondary{color:#fff;border:1px solid #ffffff70;background:#080b10a8}
+.pe-action-secondary:hover{background:#ffffff18}
+.pe-hero-mark{position:relative;z-index:1;align-self:flex-end;display:flex;flex-direction:column;align-items:center;margin:0 1vw 5px 0;opacity:.8;transform:skew(-8deg)}
+.pe-hero-mark span{font:900 clamp(5rem,12vw,11rem)/.72 "Barlow Condensed";color:#ffffff20;-webkit-text-stroke:2px #ffffff90}
+.pe-hero-mark small{font:800 .7rem "DM Sans";letter-spacing:.5em;color:#e8bd70;margin-top:18px}
+.pe-section{position:relative;margin-top:28px;border:1px solid #ffffff20;border-radius:4px;background:linear-gradient(145deg,#171b22,#0b0e13);box-shadow:0 18px 45px #0004}
+.pe-section h2,.pe-board h3{font-family:"Barlow Condensed","Manrope",sans-serif;text-transform:uppercase;letter-spacing:.015em}
+.pe-section h2{font-size:clamp(2rem,4vw,3rem)}
+.pe-section[style*="8c6bda"]{border-color:#9c2838!important;background:linear-gradient(110deg,rgba(8,10,15,.94),rgba(12,15,22,.92)),url("https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1800&q=85") center/cover!important}
+.pe-game{border-radius:4px;background:#080b10;border-color:#ffffff25}
+.pe-choice{border-radius:3px;background:#151a22}
+.pe-choice:focus-within,.pe-input:focus-visible,.pe-submit:focus-visible,.pe-action-primary:focus-visible,.pe-action-secondary:focus-visible{outline:3px solid #e8bd70;outline-offset:3px}
+.pe-submit{border-radius:3px;background:#d72d3a}
+.pe-rule,.pe-board{border-radius:3px}
+.pe-back{font-family:"DM Sans",sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.pe-status{border:1px solid #ffffff20}
+.pe-table th{font-family:"DM Sans",sans-serif}
+@media(max-width:760px){.pe-hero{min-height:560px;padding:40px 24px;background-position:58% center}.pe-hero-mark{display:none}.pe-hero h1{font-size:clamp(4rem,17vw,6.5rem)}.pe-hero-actions{align-items:stretch;flex-direction:column;max-width:340px}.pe-action-primary,.pe-action-secondary{width:100%}.pickem .wrap{width:min(100% - 28px,1180px)}}
+@media(max-width:480px){.pe-hero{min-height:600px;padding:34px 20px}.pe-pills{gap:7px}.pe-pill{font-size:.67rem;padding:7px 9px}.pe-section{padding:20px 16px}.pe-table{min-width:360px}}
+@media(prefers-reduced-motion:reduce){.pe-choice,.pe-action-primary,.pe-action-secondary{transition:none}.pe-action-primary:hover{transform:none}}
+
 </style>
 </head>
 <body data-root="../">
 <a class="skip-link" href="#main">Skip to content</a><div id="site-header"></div>
 <main id="main" class="pickem"><div class="wrap">
-<section class="pe-hero">
-<p class="pe-kicker">THE WEEKLY LINEUP · TACOMA NIGHTS SPORTS</p>
-<h1>MAKE YOUR<br><span>WEEKLY PICKS.</span></h1>
-<p>Call the games. Climb the leaderboard. Represent your sports knowledge. The Tacoma Nights Pick'em Challenge is free, open to everyone, and does not require a membership or account.</p>
-<div class="pe-pills"><span class="pe-pill">FREE TO PLAY</span><span class="pe-pill">NO LOGIN REQUIRED</span><span class="pe-pill">NEW PICKS EVERY WEEK</span></div>
+<section class="pe-hero" aria-labelledby="sports-hero-title">
+<div class="pe-hero-copy">
+<p class="pe-kicker">TACOMA NIGHTS SPORTS · THE WEEKLY LINEUP</p>
+<h1 id="sports-hero-title">THE GAME<br><span>IS YOURS.</span></h1>
+<p>Every matchup has a story. Bring your knowledge, make your call and see where you land. The Tacoma Nights Pick’em Challenge is free, open to everyone and built for fans.</p>
+<div class="pe-pills"><span class="pe-pill">FREE TO PLAY</span><span class="pe-pill">NO LOGIN REQUIRED</span><span class="pe-pill">FAN-POWERED</span></div>
+<div class="pe-hero-actions"><a class="pe-action-primary" href="#week-heading">MAKE YOUR PICKS <span aria-hidden="true">↗</span></a><a class="pe-action-secondary" href="weekly-lineup.html">EXPLORE THE WEEKLY LINEUP</a></div>
+</div><div class="pe-hero-mark" aria-hidden="true"><span>TN</span><small>GAME ON</small></div>
 </section>
 <section class="pe-section" style="border-color:#8c6bda66;background:radial-gradient(ellipse at 90% 10%,#6543a533,transparent 45%),linear-gradient(145deg,#171727,#10131c)">
 <div style="display:flex;gap:22px;align-items:center;justify-content:space-between;flex-wrap:wrap">
@@ -59,7 +100,7 @@
 <div class="pe-rule"><b>03 · Earn points</b><p>Correct picks earn points. Weekly results and leaderboard standings appear after picks close and scores are updated.</p></div>
 </div>
 <p class="pe-note" style="margin-top:18px">This is a free fan-prediction challenge for entertainment. No purchase necessary. No cash wagering or prizes are implied. Picks must be submitted before the deadline shown for each week.</p>
-<a class="pe-back" href="../sports/">← BACK TO THE WEEKLY LINEUP</a>
+<a class="pe-back" href="weekly-lineup.html">← BACK TO THE WEEKLY LINEUP</a>
 </section>
 </div></main>
 <div id="site-footer"></div>
