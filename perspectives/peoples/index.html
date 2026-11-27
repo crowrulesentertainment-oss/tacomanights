@@ -1,1 +1,117 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080a0e"><meta name="description" content="Everyday people, neighborhood stories and questions that matter to the community."><title>THE PEOPLE'S PERSPECTIVE | Tacoma Nights</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../assets/css/v3.css"><script src="../../assets/js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="../../assets/js/v3.js"></script></head><body data-root="../../"><a class="skip-link" href="#main">Skip to content</a><div id="site-header"></div><main id="main"><section class="page-hero"><div class="wrap"><div class="breadcrumbs"><a href="../../">HOME</a> / THE PEOPLE'S PERSPECTIVE</div><p class="eyebrow">COMMUNITY VOICES</p><h1>Real people. Real experiences.</h1><p class="lede">Everyday people, neighborhood stories and questions that matter to the community.</p></div></section><section class="page-body"><div class="wrap"><div class="notice">Community conversations, interviews, local experiences and public questions.</div><div class="content-grid" data-content-feed="peoples"><div class="empty-state">New stories and programs will appear here as they are published.</div></div></div></section></main><div id="site-footer"></div></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080a0e">
+<meta name="description" content="Every Voice. Every Story. Every Perspective. Share a vertical video with The People's Perspective on Tacoma Nights.">
+<title>The People's Perspective | Tacoma Nights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/v3.css"><link rel="stylesheet" href="../../assets/css/v2.css">
+<script src="../../assets/js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js" defer></script>
+<script defer src="../../assets/js/v3.js"></script><script defer src="../../assets/js/v2.js"></script>
+<style>
+.pp-hero{position:relative;isolation:isolate;min-height:610px;display:flex;align-items:center;overflow:hidden;background:#090c12}
+.pp-hero:before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(3,7,12,.96) 0%,rgba(3,7,12,.82) 48%,rgba(3,7,12,.2) 100%),url("https://images.unsplash.com/photo-1517457373958-b7앨?auto=format&fit=crop&w=2000&q=85") center 42%/cover no-repeat}
+.pp-hero:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#080a0e 0%,transparent 34%),linear-gradient(90deg,transparent 70%,rgba(185,47,61,.15))}
+.pp-hero-inner{width:min(1240px,calc(100% - 44px));margin:auto;padding:95px 0 105px}
+.pp-kicker{font:800 10px Manrope;letter-spacing:.24em;color:#d4b77d}
+.pp-hero h1{max-width:850px;font:800 clamp(48px,8vw,94px)/.94 Manrope;letter-spacing:-.065em;margin:20px 0}
+.pp-hero h1 span{color:#d0aa72}
+.pp-hero p{max-width:650px;color:#d0d3d8;font-size:clamp(15px,1.7vw,19px);line-height:1.65}
+.pp-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.pp-button{display:inline-flex;padding:14px 20px;background:#b92f3d;border:1px solid #b92f3d;color:#fff;font:800 10px Manrope;letter-spacing:.12em}
+.pp-button.secondary{background:#ffffff0d;border-color:#ffffff55}
+.pp-tagline{margin-top:38px!important;color:#d0aa72!important;font:800 10px Manrope!important;letter-spacing:.18em}
+.pp-wrap{width:min(1120px,calc(100% - 44px));margin:auto}
+.pp-section{padding:76px 0}
+.pp-heading{max-width:740px;margin-bottom:30px}
+.pp-heading .eyebrow{color:#d0aa72}
+.pp-heading h2{font:800 clamp(32px,5vw,52px)/1.05 Manrope;letter-spacing:-.045em;margin:0 0 12px}
+.pp-heading p{color:#aeb8c4}
+.pp-question{display:grid;grid-template-columns:1.1fr .9fr;gap:26px;align-items:stretch}
+.pp-question-main{padding:36px;background:linear-gradient(135deg,#202a36,#111720);border:1px solid #ffffff20}
+.pp-question-main h3{font:800 clamp(27px,4vw,42px)/1.1 Manrope;margin:15px 0}
+.pp-question-aside{padding:30px;background:linear-gradient(145deg,#3b2029,#15151c);border:1px solid #c34b5866;display:flex;flex-direction:column;justify-content:center}
+.pp-question-aside strong{font:800 24px Manrope;color:#e4c58f}
+.pp-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.pp-steps article{padding:24px;background:#141a23;border:1px solid #ffffff20}
+.pp-steps b{color:#d0aa72;font:800 10px Manrope;letter-spacing:.16em}
+.pp-steps h3{font:800 19px Manrope;margin:12px 0 8px}
+.pp-steps p{font-size:12px;color:#aeb8c4;line-height:1.7}
+.pp-submit{background:linear-gradient(180deg,#111720,#090c11);border-block:1px solid #ffffff1c}
+.pp-form{max-width:900px;margin:auto;padding:clamp(22px,4vw,42px);background:#141a23;border:1px solid #ffffff24;border-radius:8px;box-shadow:0 24px 70px #0006}
+.pp-form h2{font:800 clamp(28px,4vw,40px) Manrope;margin:0 0 8px}
+.pp-form .tn2-form-lede{color:#aeb8c4;line-height:1.7}
+.pp-form .tn2-field input,.pp-form .tn2-field textarea,.pp-form .tn2-field select{width:100%;padding:13px;background:#090d13;color:#f4f2ee;border:1px solid #ffffff30;border-radius:4px}
+.pp-form .tn2-field label{display:block;font-size:11px;font-weight:800;margin-bottom:7px}
+.pp-form .tn2-field small{display:block;color:#aeb8c4;font-size:11px;line-height:1.6;margin-top:8px}
+.pp-form .tn2-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pp-form .tn2-field.full{grid-column:1/-1}
+.pp-form .tn2-field textarea{min-height:110px}
+.pp-form .tn2-consent{display:flex;align-items:flex-start;gap:10px;margin:17px 0;color:#c2c8d0;font-size:11px;line-height:1.6}
+.pp-form .tn2-consent input{margin-top:3px;accent-color:#b92f3d}
+.pp-form .tn2-status{min-height:24px;color:#e4c58f;font-size:12px}
+.pp-form .tn2-upload-status{padding:13px 15px;background:#0b111a;border-left:3px solid #b92f3d;color:#c4ccd5;font-size:11px;line-height:1.65}
+.pp-guidelines{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
+.pp-guidelines ul{padding-left:20px;color:#b7c0ca;font-size:13px;line-height:2}
+.pp-phone{max-width:340px;margin:auto;padding:13px;border:1px solid #d0aa72aa;border-radius:30px;background:#05070a;box-shadow:0 20px 60px #0008}
+.pp-phone-screen{aspect-ratio:9/16;border-radius:20px;background:radial-gradient(ellipse at 50% 30%,#56313a,#17202b 58%,#080a0e);display:flex;flex-direction:column;justify-content:end;padding:24px;text-align:center}
+.pp-phone-screen strong{font:800 22px Manrope}.pp-phone-screen span{font-size:10px;color:#d0aa72;letter-spacing:.15em;margin-top:8px}
+.pp-footer-note{font-size:11px;color:#8993a0;line-height:1.7}
+@media(max-width:760px){.pp-hero{min-height:560px}.pp-hero-inner{padding:75px 0}.pp-question,.pp-guidelines{grid-template-columns:1fr}.pp-steps{grid-template-columns:1fr}.pp-form .tn2-form-grid{grid-template-columns:1fr}.pp-form .tn2-field.full{grid-column:auto}.pp-wrap{width:calc(100% - 32px)}}
+</style>
+</head>
+<body data-root="../../">
+<a class="skip-link" href="#main">Skip to content</a><div id="site-header"></div>
+<main id="main">
+<section class="pp-hero"><div class="pp-hero-inner">
+<div class="pp-kicker">TACOMA NIGHTS · A CROWRULES ENTERTAINMENT COMMUNITY FEATURE</div>
+<h1>YOUR VOICE.<br><span>YOUR STORY.</span><br>YOUR PERSPECTIVE.</h1>
+<p>Everyday people across Tacoma and Pierce County deserve to be heard. Share a short vertical video and tell us what matters to you. Your words could become part of the next community conversation.</p>
+<div class="pp-actions"><a class="pp-button" href="#submit">SUBMIT YOUR VIDEO ↓</a><a class="pp-button secondary" href="#how-it-works">HOW IT WORKS</a></div>
+<p class="pp-tagline">EVERY VOICE. EVERY STORY. EVERY PERSPECTIVE.</p>
+</div></section>
+<section class="pp-section"><div class="pp-wrap">
+<div class="pp-question">
+<div class="pp-question-main"><p class="eyebrow">QUESTION OF THE WEEK · TACOMA & PIERCE COUNTY</p><h3 id="tn2-active-question">What makes a community strong?</h3><p style="color:#b7c0ca">There is no single right answer. Tell us what you have experienced, what you believe, or what you hope will change.</p><a class="pp-button" href="#submit">ANSWER THE QUESTION ↗</a></div>
+<div class="pp-question-aside"><span class="pp-kicker">THE PEOPLE'S PERSPECTIVE</span><strong>One community.<br>Many points of view.</strong><p style="color:#c6cbd2;font-size:13px">A recurring Tacoma Nights feature built around real conversations with the people who make this region home.</p></div>
+</div>
+</div></section>
+<section class="pp-section" id="how-it-works" style="background:#0d1219">
+<div class="pp-wrap"><div class="pp-heading"><p class="eyebrow">A SIMPLE WAY TO TAKE PART</p><h2>How it works.</h2><p>Record on your phone, send it to our production team, and let us know how you would like to be identified.</p></div>
+<div class="pp-steps">
+<article><b>01 / RECORD</b><h3>Speak in your own words</h3><p>Record vertically, look toward the camera, find a quiet spot and answer the current question in 30–60 seconds.</p></article>
+<article><b>02 / SUBMIT</b><h3>Send it for review</h3><p>Upload your video through the secure form. Media submissions require a signed-in Tacoma Nights account; written responses are also welcome.</p></article>
+<article><b>03 / BE HEARD</b><h3>Our team reviews it</h3><p>Nothing is posted automatically. Selected submissions may be followed up with you and considered for a future Tacoma Nights episode.</p></article>
+</div></div></section>
+<section class="pp-section pp-submit" id="submit"><div class="pp-wrap">
+<div class="pp-heading"><p class="eyebrow">COMMUNITY SUBMISSION · PRIVATE PRODUCTION REVIEW</p><h2>Share your perspective.</h2><p>We want to hear from people throughout Tacoma and Pierce County. Your submission goes to the production team privately and is not automatically published.</p></div>
+<form class="tn2-form pp-form" data-tn2-perspective-form>
+<input type="hidden" name="question_id" value="">
+<p class="pp-kicker">YOUR VOICE BELONGS HERE</p><h2>Submit your response</h2>
+<p class="tn2-form-lede">Video is our featured format. You can also submit a written response if you prefer.</p>
+<div class="tn2-form-grid">
+<div class="tn2-field"><label for="tn2-name">Name or display name (optional)</label><input id="tn2-name" name="name" maxlength="100" autocomplete="name" placeholder="How should we identify you?"></div>
+<div class="tn2-field"><label for="tn2-email">Email for production follow-up (optional)</label><input id="tn2-email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="you@example.com"></div>
+<div class="tn2-field"><label for="tn2-title">Your community (optional)</label><input id="tn2-title" name="title" maxlength="140" placeholder="Tacoma, Lakewood, Puyallup…"></div>
+<div class="tn2-field"><label for="tn2-type">How would you like to respond?</label><select id="tn2-type" name="media_type" required><option value="video" selected>Vertical video response</option><option value="written">Written response</option></select></div>
+<div class="tn2-field full"><label for="tn2-media">Choose your video</label><input id="tn2-media" name="media" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v"><small>Vertical 9:16 is preferred · MP4, WebM or MOV · resumable private upload. Video uploads require a signed-in Tacoma Nights account. <a href="../../membership/login/" style="color:#e4c58f;text-decoration:underline">Member sign in ↗</a></small><p class="tn2-upload-status" data-tn2-upload-status>Choose a vertical video from your phone or computer. Your file is uploaded to private storage for production review.</p></div>
+<div class="tn2-field full"><label for="tn2-message">Your answer / introduction</label><textarea id="tn2-message" name="message" maxlength="5000" required placeholder="What do you want Tacoma Nights viewers to hear?"></textarea></div>
+</div>
+<label class="tn2-consent"><input type="checkbox" name="consent" required> I confirm I have the right to submit this material and give CrowRules Entertainment permission to review it and contact me if needed. I understand submission does not guarantee publication and nothing will be published without editorial approval and any required release.</label>
+<label class="tn2-consent"><input type="checkbox" name="contact_permission"> You may contact me about this submission (optional).</label>
+<label class="tn2-consent"><input type="checkbox" name="guardian_consent"> I am a parent or legal guardian submitting or authorizing participation for a minor (if applicable).</label>
+<p class="tn2-status" aria-live="polite"></p><button class="pp-button" type="submit">SUBMIT FOR PRIVATE REVIEW ↗</button>
+<p class="pp-footer-note">Please do not include confidential information or footage of anyone who has not agreed to be recorded. If you are under 18, have a parent or legal guardian contact the production team before submitting. Faces, voices and location details can identify you even if you do not provide your name.</p>
+</form></div></section>
+<section class="pp-section"><div class="pp-wrap pp-guidelines">
+<div><div class="pp-heading"><p class="eyebrow">MAKE YOUR VIDEO COUNT</p><h2>Keep it real. Keep it vertical.</h2><p>A polished studio is not required. We want to hear you clearly and understand what you want to share.</p></div>
+<ul><li>Hold your phone vertically (9:16).</li><li>Frame your face comfortably and look toward the camera.</li><li>Choose a quiet place with good natural light.</li><li>Speak clearly; 30–60 seconds is a great target.</li><li>Answer the question in your own words—there is no scripted response.</li><li>Only include people who have agreed to be filmed.</li></ul>
+</div>
+<div class="pp-phone" aria-label="Illustration of a vertical phone video frame"><div class="pp-phone-screen"><strong>YOUR VOICE<br>MATTERS.</strong><span>9:16 · VERTICAL VIDEO</span></div></div>
+</div></section>
+<section class="pp-section" style="background:#101720"><div class="pp-wrap"><div class="pp-heading"><p class="eyebrow">THE PEOPLE'S PERSPECTIVE</p><h2>Real people. Real experiences.</h2><p>Hosted by Jonathan Riehle. Produced by CrowRules Entertainment as part of Tacoma Nights. Our goal is to listen respectfully, make room for different experiences and let people speak for themselves.</p></div><p class="pp-footer-note">Submissions are reviewed privately. Only approved material may be featured in a future episode or public gallery. The production team may contact contributors for clarification or additional permission before publication.</p></div></section>
+</main><div id="site-footer"></div>
+</body></html>
