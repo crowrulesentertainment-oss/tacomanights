@@ -1,0 +1,16 @@
+/* Tacoma Nights Homepage CMS modules */
+.tn2-cms-hero-slide{position:absolute;inset:0;min-height:520px;overflow:hidden;background:linear-gradient(125deg,#080e18,#171d29 55%,#080a10)}
+.tn2-cms-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.58) saturate(.82);transform:scale(1.02)}
+.tn2-cms-hero-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,8,16,.94),rgba(3,8,16,.7) 48%,rgba(3,8,16,.18)),linear-gradient(0deg,rgba(3,8,16,.55),transparent 68%)}
+.tn2-cms-hero-slide .tn2-hero-slide-content{position:relative;z-index:2;max-width:1320px;padding-top:clamp(70px,9vw,125px);padding-bottom:clamp(70px,9vw,125px)}
+.tn2-cms-hero-slide h2{max-width:920px;font-size:clamp(42px,6.2vw,84px);line-height:.94;letter-spacing:-.055em;text-transform:uppercase}
+.tn2-cms-hero-slide .tn2-hero-copy{max-width:700px;font-size:clamp(15px,1.6vw,19px);line-height:1.75;color:#d5dce5}
+.tn-cms-announcement{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:18px max(24px,calc((100% - 1240px)/2));background:linear-gradient(100deg,#341319,#15151b 65%,#111923);border-top:1px solid #d9b87966;border-bottom:1px solid #d9b87955;color:#f5f2ec}
+.tn-cms-announcement-kicker{display:block;margin-bottom:5px;color:#e6c987;font-size:9px;font-weight:800;letter-spacing:.16em}
+.tn-cms-announcement strong{font:800 17px Manrope,sans-serif}.tn-cms-announcement p{margin:5px 0 0;color:#c3cbd4;font-size:12px;line-height:1.6}
+.tn-cms-announcement-link{flex:0 0 auto;color:#f0d69f;font-size:11px;font-weight:800;text-decoration:none;letter-spacing:.1em}
+.tn-cms-section{background:linear-gradient(145deg,#0d1420,#080b11);border-top:1px solid #ffffff12;border-bottom:1px solid #ffffff12}
+.tn-cms-section h2{font:800 clamp(28px,4vw,48px)/1.05 Manrope,sans-serif;letter-spacing:-.045em;color:#f5f2ec}
+.tn-cms-section-body{max-width:850px;color:#b7c1ce;line-height:1.8;margin:18px 0 25px}
+@media(max-width:680px){.tn2-cms-hero-slide{min-height:590px}.tn-cms-announcement{align-items:flex-start;flex-direction:column;padding:18px 20px}.tn2-cms-hero-slide .tn2-hero-slide-content{padding-top:70px;padding-bottom:80px}}
+@media(prefers-reduced-motion:reduce){.tn2-cms-hero-bg{transform:none}}
