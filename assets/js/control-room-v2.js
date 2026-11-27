@@ -12,8 +12,8 @@ async function init(){
   if(membershipError)throw membershipError;
   if(!membership||membership.status!=="active"||!["administrator","producer","editor","moderator"].includes(membership.role)){say($("[data-cr2-global-status]"),"This account does not have active Tacoma Nights management permissions.");return}
   say($("[data-cr2-global-status]"),"Signed in as "+(membership.display_name||user.email)+" · "+membership.role+". Database permissions are still enforced for each workspace.");
-  await Promise.allSettled([loadContent(),loadSettings(),loadVideo("tn_homepage_featured_video"),loadVideo("tn_homepage_hero_video")]);
-  wireContent(user);wireSettings();wireVideo(user);wirePageEditor();
+  await Promise.allSettled([loadContent(),loadSettings(),loadVideo("tn_homepage_featured_video"),loadVideo("tn_homepage_hero_video"),loadHomepageModules()]);
+  wireContent(user);wireSettings();wireVideo(user);wirePageEditor();wireHomepageModules(user);
  }catch(e){say($("[data-cr2-global-status]"),"Access check failed: "+(e.message||"Please reload and try again."));}
 }
 async function loadContent(){
@@ -101,5 +101,28 @@ function wireVideo(user){
   say(status,"Video setting saved.");await loadVideo(table);
  }));
 }
+async function loadHomepageModules(){
+ const list=$("[data-cr2-home-list]");if(!list)return;list.textContent="Loading homepage content…";
+ const {data,error}=await db.from("tn_homepage_modules").select("id,module_type,slug,title,eyebrow,body,cta_label,cta_url,media_url,background_image_url,sort_order,metadata,status,is_active,publish_at,expire_at").order("module_type").order("sort_order").limit(200);
+ if(error){list.textContent="Homepage CMS unavailable: "+error.message;return}
+ list.replaceChildren();if(!data?.length){list.append(node("p","No homepage CMS records yet. Create your first slide, program or announcement above.","cr2-muted"));return}
+ for(const item of data){const card=node("article",undefined,"cr2-item"),head=node("div"),pill=node("span",item.module_type.replaceAll("_"," "),"cr2-pill"),title=node("h3",item.title||item.slug),meta=node("p",item.slug+" · "+item.status+" · "+(item.is_active?"active":"inactive")+" · order "+item.sort_order),body=node("p",item.body||"");head.append(pill);card.append(head,title,meta);if(item.body)card.append(body);if(item.publish_at||item.expire_at)card.append(node("p","Schedule: "+(item.publish_at||"immediate")+" → "+(item.expire_at||"no expiry")));
+ const actions=node("div",undefined,"cr2-actions"),edit=node("button","Edit"),toggle=node("button",item.is_active?"Deactivate":"Activate"),del=node("button","Delete");edit.type=toggle.type=del.type="button";
+ edit.addEventListener("click",()=>{const f=$("[data-cr2-home-module-form]");for(const k of ["id","module_type","slug","title","eyebrow","body","cta_label","cta_url","media_url","background_image_url","sort_order","status"])if(f.elements[k])f.elements[k].value=item[k]??"";f.elements.is_active.checked=!!item.is_active;f.elements.metadata.value=JSON.stringify(item.metadata||{},null,2);f.elements.publish_at.value=item.publish_at?new Date(item.publish_at).toISOString().slice(0,16):"";f.elements.expire_at.value=item.expire_at?new Date(item.expire_at).toISOString().slice(0,16):"";say($("[data-cr2-home-status]"),"Editing "+item.title);f.scrollIntoView({behavior:"smooth",block:"start"})});
+ toggle.addEventListener("click",async()=>{toggle.disabled=true;const r=await db.from("tn_homepage_modules").update({is_active:!item.is_active,updated_at:new Date().toISOString()}).eq("id",item.id);toggle.disabled=false;if(r.error){say($("[data-cr2-home-status]"),r.error.message);return}say($("[data-cr2-home-status]"),"Homepage module updated.");await loadHomepageModules()});
+ del.addEventListener("click",async()=>{if(!confirm("Delete homepage content “"+item.title+"”?"))return;del.disabled=true;const r=await db.from("tn_homepage_modules").delete().eq("id",item.id);del.disabled=false;if(r.error){say($("[data-cr2-home-status]"),r.error.message);return}say($("[data-cr2-home-status]"),"Homepage content deleted.");await loadHomepageModules()});actions.append(edit,toggle,del);card.append(actions);list.append(card);
+ }
+}
+function wireHomepageModules(user){
+ const f=$("[data-cr2-home-module-form]");if(!f)return;
+ f.addEventListener("submit",async e=>{e.preventDefault();const b=f.querySelector('button[type="submit"]'),status=$("[data-cr2-home-status]");b.disabled=true;say(status,"Saving homepage content…");
+ const d=Object.fromEntries(new FormData(f));let metadata={};try{metadata=JSON.parse(d.metadata||"{}");if(!metadata||Array.isArray(metadata)||typeof metadata!=="object")throw Error("Metadata must be a JSON object.")}catch(err){b.disabled=false;say(status,"Invalid metadata JSON: "+err.message);return}
+ const toIso=v=>v?new Date(v).toISOString():null;const record={module_type:d.module_type,slug:d.slug.trim(),title:d.title.trim(),eyebrow:d.eyebrow||"",body:d.body||"",cta_label:d.cta_label||null,cta_url:d.cta_url||null,media_url:d.media_url||null,background_image_url:d.background_image_url||null,sort_order:Number(d.sort_order)||100,metadata,status:d.status,is_active:f.elements.is_active.checked,publish_at:toIso(d.publish_at),expire_at:toIso(d.expire_at),updated_by:user.id,updated_at:new Date().toISOString()};
+ if(d.id){const r=await db.from("tn_homepage_modules").update(record).eq("id",d.id);if(r.error){b.disabled=false;say(status,"Save failed: "+r.error.message);return}}else{record.created_by=user.id;const r=await db.from("tn_homepage_modules").insert(record);if(r.error){b.disabled=false;say(status,"Save failed: "+r.error.message);return}}
+ b.disabled=false;f.reset();f.elements.id.value="";f.elements.sort_order.value="100";f.elements.is_active.checked=true;f.elements.metadata.value="{}";say(status,"Homepage content saved. Published records will appear on the public homepage.");await loadHomepageModules();
+ });
+ $("[data-cr2-home-reset]")?.addEventListener("click",()=>{f.reset();f.elements.id.value="";f.elements.sort_order.value="100";f.elements.is_active.checked=true;f.elements.metadata.value="{}";say($("[data-cr2-home-status]"),"Form cleared.")});
+}
+
 init();
 })();
