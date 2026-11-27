@@ -93,6 +93,12 @@
 @media(max-width:680px){.pe-form{grid-template-columns:1fr}.pe-entry-panel{grid-row:auto}.pe-submit-area{grid-column:auto;align-items:stretch;flex-direction:column}.pe-submit-action{text-align:left}.pe-submit{width:100%;min-width:0}.pe-picks-heading h3{font-size:2rem}.pe-game-list{grid-template-columns:1fr}.pe-game{padding:15px}}
 @media(prefers-reduced-motion:reduce){.pe-game{transition:none}.pe-game:hover{transform:none}}
 
+.pe-leaderboard-top{margin:0 0 22px;border-top:3px solid #d72d3a}
+.pe-leaderboard-controls{display:flex;align-items:end;gap:14px;flex-wrap:wrap;margin:18px 0 14px}
+.pe-leaderboard-controls .pe-label{margin:0}
+.pe-sport-select{min-width:min(100%,280px);padding:13px 42px 13px 14px;border:1px solid #e8bd7070;border-radius:3px;background:#090d14;color:#fff;font:800 .9rem "DM Sans",sans-serif;cursor:pointer}
+.pe-sport-select:focus-visible{outline:3px solid #e8bd70;outline-offset:3px}
+@media(max-width:520px){.pe-leaderboard-controls{align-items:stretch;flex-direction:column}.pe-sport-select{width:100%}}
 </style>
 </head>
 <body data-root="../">
@@ -170,7 +176,7 @@ async function renderGames(week,db){
   const tieOption=g.allow_tie?'<label class="pe-choice"><input type="radio" name="pick-'+esc(id)+'" value="tie"'+(locked?' disabled':'')+'> DRAW / TIE</label>':'';
   return '<article class="pe-game"><div class="pe-game-top"><span>'+esc(sport)+'</span><span>'+esc(timing)+'</span></div><h3 class="pe-matchup">'+esc(matchup)+'</h3><div class="pe-options"><label class="pe-choice"><input '+(locked?'disabled':'required')+' type="radio" name="pick-'+esc(id)+'" value="away"> '+esc(g.away||"Away")+'</label><label class="pe-choice"><input '+(locked?'disabled':'required')+' type="radio" name="pick-'+esc(id)+'" value="home"> '+esc(g.home||"Home")+'</label>'+tieOption+'</div></article>';
  }).join("");
- content.innerHTML='<form class="pe-form" id="pickem-form"><aside class="pe-entry-panel"><span class="pe-step">YOUR ENTRY</span><div class="pe-entry-icon" aria-hidden="true">01</div><label class="pe-label" for="pickem-name">Choose your nickname</label><input class="pe-input" id="pickem-name" name="nickname" minlength="2" maxlength="24" required autocomplete="nickname" placeholder="Your leaderboard name"><p class="pe-note">2–24 characters. Your nickname and score are public; your browser token and picks are not.</p><div class="pe-entry-divider"></div><strong class="pe-entry-promise">No account. No cost. Just sports.</strong><p class="pe-note">Your picks are saved securely and tied to this browser.</p></aside><div class="pe-picks-area"><div class="pe-picks-heading"><div><span class="pe-step">MAKE YOUR CALLS</span><h3>Pick the winners.</h3><p class="pe-note">Choose one team in every matchup that is still open.</p></div><div class="pe-pick-count"><strong>'+games.length+'</strong><span>MATCHUPS</span></div></div><div class="pe-game-list">'+cards+'</div></div><div class="pe-submit-area"><div><strong>Ready to lock in your picks?</strong><p class="pe-note">You can update your entry before each game starts.</p></div><div class="pe-submit-action"><button class="pe-submit" type="submit">SUBMIT MY PICKS <span aria-hidden="true">↗</span></button><p class="pe-message" id="pickem-message" role="status"></p></div></div></form><div id="season-board"></div><div id="weekly-boards" aria-live="polite"></div>';
+ content.innerHTML='<div id="weekly-boards" aria-live="polite"></div><div id="season-board"></div><form class="pe-form" id="pickem-form"><aside class="pe-entry-panel"><span class="pe-step">YOUR ENTRY</span><div class="pe-entry-icon" aria-hidden="true">01</div><label class="pe-label" for="pickem-name">Choose your nickname</label><input class="pe-input" id="pickem-name" name="nickname" minlength="2" maxlength="24" required autocomplete="nickname" placeholder="Your leaderboard name"><p class="pe-note">2–24 characters. Your nickname and score are public; your browser token and picks are not.</p><div class="pe-entry-divider"></div><strong class="pe-entry-promise">No account. No cost. Just sports.</strong><p class="pe-note">Your picks are saved securely and tied to this browser.</p></aside><div class="pe-picks-area"><div class="pe-picks-heading"><div><span class="pe-step">MAKE YOUR CALLS</span><h3>Pick the winners.</h3><p class="pe-note">Choose one team in every matchup that is still open.</p></div><div class="pe-pick-count"><strong>'+games.length+'</strong><span>MATCHUPS</span></div></div><div class="pe-game-list">'+cards+'</div></div><div class="pe-submit-area"><div><strong>Ready to lock in your picks?</strong><p class="pe-note">You can update your entry before each game starts.</p></div><div class="pe-submit-action"><button class="pe-submit" type="submit">SUBMIT MY PICKS <span aria-hidden="true">↗</span></button><p class="pe-message" id="pickem-message" role="status"></p></div></div></form>';
  const form=document.getElementById("pickem-form");
  form.addEventListener("submit",async e=>{
   e.preventDefault();
@@ -200,18 +206,27 @@ async function renderGames(week,db){
 async function renderSportBoards(week,db){
  const target=document.getElementById("weekly-boards");
  if(!target)return;
- target.innerHTML='<p class="pe-note">Loading overall and sport leaderboards…</p>';
+ target.innerHTML='<section class="pe-section pe-leaderboard-top"><p class="pe-kicker">THE STANDINGS</p><h2>Pick’em leaderboard</h2><p class="pe-note">Choose a sport to see the current weekly standings. Rankings update as results are confirmed.</p><div class="pe-leaderboard-controls"><label class="pe-label" for="pe-sport-select">SELECT A SPORT</label><select class="pe-sport-select" id="pe-sport-select" disabled><option>Loading standings…</option></select></div><div id="pe-sport-board" aria-live="polite" class="pe-empty">Loading leaderboard…</div></section>';
  const {data,error}=await db.from("tn_pickem_sport_leaderboard").select("sport,display_name,points,correct_picks").eq("week_id",week.id).order("points",{ascending:false}).order("correct_picks",{ascending:false}).limit(500);
- if(error){target.innerHTML='<div class="pe-empty">Sport leaderboards are temporarily unavailable. Please refresh shortly.</div>';return}
+ const select=document.getElementById("pe-sport-select"),board=document.getElementById("pe-sport-board");
+ if(!select||!board)return;
+ if(error){select.innerHTML='<option value="">Standings unavailable</option>';board.textContent="Sport leaderboards are temporarily unavailable. Please refresh shortly.";return}
  const groups=new Map();
  for(const row of (data||[])){const key=String(row.sport||"other").toLowerCase();if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row)}
  const order=["overall","nfl","cfb","ncaaf","american-football","basketball","nba","hockey","nhl","baseball","mlb","soccer"];
  const keys=[...groups.keys()].sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return (ai<0?99:ai)-(bi<0?99:bi)||a.localeCompare(b)});
- if(!keys.length){target.innerHTML='<div class="pe-empty">Leaderboards will populate as players submit picks and games receive final results.</div>';return}
- target.innerHTML='<div style="margin-top:26px"><p class="pe-kicker">THE STANDINGS</p><h2>Overall + sport leaderboards</h2><p class="pe-note">Rankings update as game results are confirmed. Points are awarded for correct picks.</p><div class="pe-boards">'+keys.map(key=>{
-  const rows=groups.get(key);
-  return '<section class="pe-board"><h3>'+(key==="overall"?"Overall leaderboard":esc(key)+" leaderboard")+'</h3>'+(rows.length?'<div class="pe-table-wrap"><table class="pe-table"><thead><tr><th>#</th><th>Player</th><th>Pts</th></tr></thead><tbody>'+rows.slice(0,25).map((e,i)=>'<tr><td class="pe-rank">'+(i+1)+'</td><td>'+esc(e.display_name)+'</td><td>'+Number(e.points||0)+'</td></tr>').join("")+'</tbody></table></div>':'<p class="pe-board-empty">No scores yet.</p>')+'</section>';
- }).join("")+'</div></div>';
+ if(!keys.length){select.innerHTML='<option value="">No sports available</option>';select.disabled=true;board.textContent="Leaderboards will populate as players submit picks and games receive final results.";return}
+ const labels={nfl:"NFL",cfb:"College Football",ncaaf:"College Football","american-football":"American Football",nba:"NBA",nhl:"NHL",mlb:"MLB"};
+ const label=key=>labels[key]||key.replace(/\b\w/g,ch=>ch.toUpperCase());
+ select.innerHTML=keys.map(key=>'<option value="'+esc(key)+'">'+esc(key==="overall"?"Overall":label(key))+'</option>').join("");
+ select.disabled=false;
+ const show=key=>{
+  const rows=groups.get(key)||[];
+  board.innerHTML=rows.length?'<div class="pe-table-wrap"><table class="pe-table"><thead><tr><th>Rank</th><th>Player</th><th>Points</th><th>Correct</th></tr></thead><tbody>'+rows.slice(0,100).map((e,i)=>'<tr><td class="pe-rank">#'+(i+1)+'</td><td>'+esc(e.display_name)+'</td><td>'+Number(e.points||0)+'</td><td>'+Number(e.correct_picks||0)+'</td></tr>').join("")+'</tbody></table></div>':'<div class="pe-empty">No scores yet for '+esc(label(key))+'.</div>';
+ };
+ select.addEventListener("change",()=>show(select.value));
+ select.value=groups.has("overall")?"overall":keys[0];
+ show(select.value);
 }
 async function renderSeasonBoard(week,db){
  const target=document.getElementById("season-board");
@@ -225,7 +240,7 @@ async function renderBoard(week,db){
  const {data,error}=await db.from("tn_pickem_leaderboard").select("display_name,points,updated_at").eq("week_id",week.id).order("points",{ascending:false}).order("updated_at",{ascending:true}).limit(100);
  if(error){showError("The leaderboard is temporarily unavailable.");return}
  const weekly=data?.length?'<div class="pe-table-wrap"><table class="pe-table"><thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead><tbody>'+data.map((e,i)=>'<tr><td class="pe-rank">#'+(i+1)+'</td><td>'+esc(e.display_name)+'</td><td>'+Number(e.points||0)+'</td></tr>').join("")+'</tbody></table></div>':'<div class="pe-empty">The weekly picks are locked. Scores will appear here when the results have been entered.</div>';
- content.innerHTML='<p class="pe-muted">Final or current standings for '+esc(week.title)+'.</p>'+weekly+'<div id="season-board"></div><div id="weekly-boards" aria-live="polite"></div>';
+ content.innerHTML='<div id="weekly-boards" aria-live="polite"></div><div id="season-board"></div><section class="pe-section" style="margin-top:20px"><p class="pe-kicker">WEEKLY RESULTS</p><h2>'+esc(week.title)+'</h2><p class="pe-muted">Final or current standings for this week.</p>'+weekly+'</section>';
  await renderSeasonBoard(week,db);
  await renderSportBoards(week,db);
 }
