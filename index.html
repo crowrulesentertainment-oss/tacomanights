@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><link rel="icon" href="./favicon.svg" type="image/svg+xml"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#070a10"><meta name="description" content="Tacoma Nights — cinematic television, real Tacoma stories and community voices from CrowRules Entertainment."><title>Tacoma Nights | The City Has a Voice</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="./assets/css/v3.css"><link rel="stylesheet" href="./assets/css/v2.css"><link rel="stylesheet" href="./assets/css/visitor-dashboard.css"><script src="./assets/js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./assets/js/v3.js?v=22.8.1-shared"></script><script defer src="./assets/js/v2.js?v=2.0.1-static-question"></script><script defer src="./assets/js/visitor-dashboard.js?v=25.0.2-local-viewer-fix"></script><script defer src="./assets/js/home-hero.js?v=1.0.6-six-slides"></script>
+<html lang="en"><head><link rel="icon" href="./favicon.svg" type="image/svg+xml"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#070a10"><meta name="description" content="Tacoma Nights — cinematic television, real Tacoma stories and community voices from CrowRules Entertainment."><title>Tacoma Nights | The City Has a Voice</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="./assets/css/v3.css"><link rel="stylesheet" href="./assets/css/v2.css"><link rel="stylesheet" href="./assets/css/visitor-dashboard.css"><script src="./assets/js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./assets/js/v3.js?v=22.8.1-shared"></script><script defer src="./assets/js/v2.js?v=2.0.1-static-question"></script><script defer src="./assets/js/visitor-dashboard.js?v=25.0.2-local-viewer-fix"></script><script defer src="./assets/js/home-hero.js?v=1.0.7-seven-slides"></script>
 <style>
 .tn2-hero-tcc-slide{position:absolute;inset:0;min-height:520px;overflow:hidden;background:#09111d}
 .tn2-hero-tcc-slide .tn2-tcc-photo{position:absolute;inset:0;background-image:url("https://upload.wikimedia.org/wikipedia/commons/a/a7/Tacoma_Community_College_and_Mount_Rainier.jpg");background-size:cover;background-position:center 54%;filter:saturate(.72) contrast(1.08) brightness(.72)}
@@ -58,6 +58,25 @@
 @keyframes tn2-cool-drift{from{transform:scale(1.025) translateX(0)}to{transform:scale(1.085) translateX(-1.1%)}}
 @media(max-width:720px){.tn2-hero-cool-slide{min-height:590px}.tn2-hero-cool-slide .tn2-cool-photo{background-position:56% center}.tn2-hero-cool-slide .tn2-cool-shade{background:linear-gradient(90deg,rgba(2,8,17,.95),rgba(2,8,17,.7)),linear-gradient(0deg,rgba(2,8,17,.65),transparent)}.tn2-hero-cool-slide .tn2-hero-slide-content{padding-top:65px;padding-bottom:78px}.tn2-hero-cool-slide h2{font-size:clamp(35px,9vw,52px)}}
 @media(prefers-reduced-motion:reduce){.tn2-hero-cool-slide .tn2-cool-photo{animation:none}}
+</style>
+
+<style>
+.tn2-hero-people-slide{position:absolute;inset:0;min-height:520px;overflow:hidden;background:#090a0d}
+.tn2-hero-people-slide .tn2-people-photo{position:absolute;inset:0;background-image:url("https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=2200&q=88");background-size:cover;background-position:center 43%;filter:saturate(.78) contrast(1.12) brightness(.62);transform:scale(1.025);animation:tn2-people-drift 27s ease-in-out infinite alternate}
+.tn2-hero-people-slide .tn2-people-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,7,11,.96) 0%,rgba(5,7,11,.84) 40%,rgba(5,7,11,.28) 100%),linear-gradient(0deg,rgba(5,7,11,.68),transparent 72%)}
+.tn2-hero-people-slide .tn2-hero-slide-content{position:relative;z-index:2;padding-top:clamp(54px,8vw,100px);padding-bottom:clamp(54px,8vw,100px);max-width:1320px}
+.tn2-hero-people-slide .tn2-eyebrow{color:#e6c987}
+.tn2-hero-people-slide h2{font-size:clamp(42px,5.7vw,78px);line-height:.92;letter-spacing:-.05em;max-width:950px;text-transform:uppercase}
+.tn2-hero-people-slide h2 span{color:#e6c987;text-shadow:0 0 24px #d49a3b55}
+.tn2-hero-people-slide .tn2-hero-lede{font-size:clamp(18px,2vw,25px);font-weight:700;color:#fff4df}
+.tn2-hero-people-slide .tn2-hero-copy{max-width:700px;color:#e0d9ce}
+.tn2-people-tag{display:inline-flex;align-items:center;gap:9px;margin:14px 0 18px;padding:9px 14px;border:1px solid #e6c98788;background:#090a0dd9;color:#f5dfb0;font:800 11px Manrope;letter-spacing:.14em;text-transform:uppercase}
+.tn2-people-tag:before{content:"";width:7px;height:7px;border-radius:50%;background:#e6c987;box-shadow:0 0 12px #e6c987}
+.tn2-hero-people-slide .tn2-btn-red{background:linear-gradient(110deg,#8f1f25,#bd3334);border-color:#e6a7a0}
+.tn2-people-note{font-size:10px;letter-spacing:.18em;color:#e6c987;margin-top:20px;font-weight:800}
+@keyframes tn2-people-drift{from{transform:scale(1.025) translateX(0)}to{transform:scale(1.085) translateX(-1.1%)}}
+@media(max-width:720px){.tn2-hero-people-slide{min-height:590px}.tn2-hero-people-slide .tn2-people-photo{background-position:55% center}.tn2-hero-people-slide .tn2-people-shade{background:linear-gradient(90deg,rgba(5,7,11,.95),rgba(5,7,11,.7)),linear-gradient(0deg,rgba(5,7,11,.65),transparent)}.tn2-hero-people-slide .tn2-hero-slide-content{padding-top:65px;padding-bottom:78px}.tn2-hero-people-slide h2{font-size:clamp(35px,9vw,52px)}}
+@media(prefers-reduced-motion:reduce){.tn2-hero-people-slide .tn2-people-photo{animation:none}}
 </style>
 </head>
 <body data-root="./"><a class="skip-link" href="#main">Skip to content</a><div id="site-header"></div><main id="main">
@@ -118,7 +137,21 @@
   <p class="tn2-cool-note">REAL OPINIONS. FRESH PERSPECTIVE. A COOLER LOOK AT LIFE.</p>
  </div>
 </div>
-<div class="tn2-hero-controls" aria-label="Hero slides"><button type="button" class="tn2-hero-arrow" data-hero-prev aria-label="Previous slide">‹</button><div class="tn2-hero-dots"><button type="button" data-hero-dot="0" aria-label="Show slide 1" aria-current="true"></button><button type="button" data-hero-dot="1" aria-label="Show slide 2: The Teenager Perspective" aria-current="false"></button><button type="button" data-hero-dot="2" aria-label="Show slide 3: CrowRules community" aria-current="false"></button><button type="button" data-hero-dot="3" aria-label="Show slide 4: My educational future" aria-current="false"></button><button type="button" data-hero-dot="4" aria-label="Show slide 5: Apply to be a remote host" aria-current="false"></button><button type="button" data-hero-dot="5" aria-label="Show slide 6: The Cool Perspective" aria-current="false"></button></div><button type="button" class="tn2-hero-arrow" data-hero-next aria-label="Next slide">›</button><button type="button" class="tn2-hero-pause" data-hero-pause aria-pressed="false">PAUSE</button></div></section>
+
+<div class="tn2-hero-slide tn2-hero-people-slide" data-hero-slide="6" aria-hidden="true">
+ <div class="tn2-people-photo" role="img" aria-label="A group of young people and friends sharing a moment outdoors"></div>
+ <div class="tn2-people-shade"></div>
+ <div class="tn2-hero-slide-content tn2-wrap">
+  <p class="tn2-eyebrow">TACOMA NIGHTS · COMMUNITY VOICES</p>
+  <h2>EVERY VOICE<br><span>HAS A STORY.</span></h2>
+  <p class="tn2-hero-lede">Different generations. Different experiences. One community.</p>
+  <p class="tn2-hero-copy">The People’s Perspective brings real people into the conversation — sharing honest experiences, fresh viewpoints and the stories behind what matters in our neighborhoods, schools, families and everyday lives.</p>
+  <div class="tn2-people-tag">REAL PEOPLE · REAL EXPERIENCES · REAL PERSPECTIVES</div>
+  <div class="tn2-actions"><a class="tn2-btn tn2-btn-red" href="./people-perspective/">EXPLORE THE PEOPLE’S PERSPECTIVE ↗</a><a class="tn2-btn tn2-btn-outline" href="./perspectives/">MEET MORE VOICES</a></div>
+  <p class="tn2-people-note">YOUR STORY MATTERS. YOUR VOICE BELONGS HERE.</p>
+ </div>
+</div>
+<div class="tn2-hero-controls" aria-label="Hero slides"><button type="button" class="tn2-hero-arrow" data-hero-prev aria-label="Previous slide">‹</button><div class="tn2-hero-dots"><button type="button" data-hero-dot="0" aria-label="Show slide 1" aria-current="true"></button><button type="button" data-hero-dot="1" aria-label="Show slide 2: The Teenager Perspective" aria-current="false"></button><button type="button" data-hero-dot="2" aria-label="Show slide 3: CrowRules community" aria-current="false"></button><button type="button" data-hero-dot="3" aria-label="Show slide 4: My educational future" aria-current="false"></button><button type="button" data-hero-dot="4" aria-label="Show slide 5: Apply to be a remote host" aria-current="false"></button><button type="button" data-hero-dot="5" aria-label="Show slide 6: The Cool Perspective" aria-current="false"><button type="button" data-hero-dot="6" aria-label="Show slide 7: The People’s Perspective" aria-current="false"></button></div><button type="button" class="tn2-hero-arrow" data-hero-next aria-label="Next slide">›</button><button type="button" class="tn2-hero-pause" data-hero-pause aria-pressed="false">PAUSE</button></div></section>
 <div class="tn2-ticker">THE CITY HAS A VOICE <span>✳</span> REAL PEOPLE. REAL STORIES. <span>✳</span> BUILT IN TACOMA <span>✳</span> ONE NETWORK · MANY PERSPECTIVES</div>
 <section class="tn-visitor-bar" aria-label="Visitor local time, weather and page views">
  <div class="tn-visitor-wrap">
