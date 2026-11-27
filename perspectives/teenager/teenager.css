@@ -138,3 +138,12 @@
 @media(max-width:900px){.tp-broadcast-stage{grid-template-columns:1fr 1fr}.tp-broadcast-screen{grid-column:1/-1;grid-row:1;min-height:420px}.tp-broadcast-left,.tp-broadcast-right{min-height:420px}}
 @media(max-width:620px){.tp-broadcast-top{height:66px;padding:10px 12px}.tp-broadcast-location:before,.tp-broadcast-location:after{width:10px;margin:0 5px}.tp-broadcast-stage{grid-template-columns:1fr}.tp-broadcast-screen{grid-column:auto;grid-row:auto;min-height:350px}.tp-broadcast-left,.tp-broadcast-right{min-height:360px;border-inline:0}.tp-broadcast-bottom{align-items:flex-start;flex-wrap:wrap;gap:10px;padding:12px}.tp-submit-cta{width:100%}.tp-bottom-divider{display:none}.tp-bottom-hash{margin-left:0}}
 @media(prefers-reduced-motion:reduce){.tp-btn{transition:none}}
+
+/* Featured Teenager Perspective video player */
+.tp-screen-inner.has-video{padding:0;overflow:hidden;display:block}
+.tp-screen-inner video,.tp-screen-inner iframe{display:block;width:100%;height:100%;min-height:clamp(390px,50vw,700px);border:0;background:#000;object-fit:contain;position:relative;z-index:1}
+.tp-episode-card video,.tp-episode-card iframe{display:block;width:100%;aspect-ratio:16/9;border:0;background:#000;margin-top:14px}
+.tp-episode-card video{object-fit:contain}
+.tp-screen-inner video:focus-visible,.tp-screen-inner iframe:focus-visible{outline:3px solid #1abaff;outline-offset:-3px}
+@media(max-width:900px){.tp-screen-inner video,.tp-screen-inner iframe{min-height:390px}}
+@media(max-width:620px){.tp-screen-inner video,.tp-screen-inner iframe{min-height:320px}}
