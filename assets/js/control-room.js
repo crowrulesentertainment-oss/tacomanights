@@ -2,21 +2,22 @@
 const cfg=window.TACOMA_NIGHTS_CONFIG||{},db=window.__tnSupabaseClient||(window.supabase?.createClient&&cfg.supabaseUrl&&cfg.supabaseAnonKey?window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null);
 const $=s=>document.querySelector(s),all=s=>[...document.querySelectorAll(s)],node=(tag,txt,cls)=>{const n=document.createElement(tag);if(txt!==undefined)n.textContent=txt;if(cls)n.className=cls;return n;};
 const say=(el,msg)=>{if(el)el.textContent=msg;};
+const accessMessage=msg=>{const el=$("[data-control-status] .access-card p");if(el)el.textContent=msg;};
 async function init(){
  const root=$(".cr2");if(!root)return;
- if(!db){say($("[data-cr2-global-status]"),"Supabase is unavailable. Check the public configuration.");return}
+ if(!db){accessMessage("Supabase is unavailable. Check the public configuration and reload.");return}
  try{
   const {data:sessionData,error:sessionError}=await db.auth.getSession();if(sessionError)throw sessionError;
-  const user=sessionData.session?.user;if(!user){say($("[data-cr2-global-status]"),"Sign in with an authorized Tacoma Nights account to manage the site.");return}
+  const user=sessionData.session?.user;if(!user){accessMessage("Sign in with an authorized Tacoma Nights account to access this workspace.");return}
   const {data:membership,error:membershipError}=await db.from("tn_memberships").select("display_name,role,status").eq("user_id",user.id).maybeSingle();
   if(membershipError)throw membershipError;
-  if(!membership||membership.status!=="active"||!["administrator","producer","editor","moderator"].includes(membership.role)){say($("[data-cr2-global-status]"),"This account does not have active Tacoma Nights management permissions.");return}
+  if(!membership||membership.status!=="active"||!["administrator","producer","editor","moderator"].includes(membership.role)){accessMessage("This account does not have active Tacoma Nights management permissions.");return}
   say($("[data-cr2-global-status]"),"SIGNED IN · "+(membership.display_name||user.email)+" · "+membership.role.toUpperCase()+" · database security active");
   root.hidden=false;const access=$("[data-control-status]");if(access)access.hidden=true;
   wireFilters();wireNavigation();
   await Promise.allSettled([loadContent(),loadSettings(),loadVideo("tn_homepage_featured_video"),loadVideo("tn_homepage_hero_video"),loadHomepageModules()]);
   wireContent(user);wireSettings();wireVideo(user);wirePageEditor();wireHomepageModules(user);
- }catch(e){say($("[data-cr2-global-status]"),"Access check failed: "+(e.message||"Please reload and try again."));}
+ }catch(e){accessMessage("Access check failed: "+(e.message||"Please reload and try again."));}
 }
 async function loadContent(){
  const list=$("[data-cr2-content-list]"),count=$("[data-cr2-content-count]");if(!list)return;
