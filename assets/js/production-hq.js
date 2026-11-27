@@ -15,8 +15,16 @@ function syncWeekOptions(){
  else if(source.options[1])weekSelect.value=source.options[1].value;
  updateWeekContext();
 }
+function filterWeeklyLists(){
+ const option=weekSelect?.selectedOptions?.[0],label=option?.textContent?.trim();
+ ["assignmentList","uploadList","adminUploads"].forEach(id=>{
+  const host=$("#"+id);if(!host)return;
+  [...host.children].forEach(card=>{card.hidden=!!(label&&option.value)&&!(card.textContent||"").includes(label.split(" · ")[0]);});
+ });
+}
 function updateWeekContext(){
- const option=weekSelect?.selectedOptions?.[0];if(weekContext)weekContext.textContent=option&&option.value?"Selected production: "+option.textContent:"Choose an episode to open its production workspace.";
+ const option=weekSelect?.selectedOptions?.[0];if(weekContext)weekContext.textContent=option&&option.value?"Selected production: "+option.textContent+" · Lists and new submissions are scoped to this episode.":"Choose an episode to open its production workspace.";
+ filterWeeklyLists();
 }
 function applyWeek(){
  const id=weekSelect?.value;if(!id)return false;
