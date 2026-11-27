@@ -99,6 +99,9 @@
 .pe-sport-select{min-width:min(100%,280px);padding:13px 42px 13px 14px;border:1px solid #e8bd7070;border-radius:3px;background:#090d14;color:#fff;font:800 .9rem "DM Sans",sans-serif;cursor:pointer}
 .pe-sport-select:focus-visible{outline:3px solid #e8bd70;outline-offset:3px}
 @media(max-width:520px){.pe-leaderboard-controls{align-items:stretch;flex-direction:column}.pe-sport-select{width:100%}}
+.pe-sport-filter{margin:18px 0 20px;padding:16px;border:1px solid #ffffff20;border-left:3px solid #d72d3a;background:#ffffff07}
+.pe-sport-filter .pe-sport-select{display:block;width:min(100%,420px);margin-top:8px}
+.pe-sport-filter .pe-note{margin:9px 0 0}
 </style>
 </head>
 <body data-root="../">
@@ -166,40 +169,52 @@ function showError(message){content.innerHTML='<div class="pe-empty">'+esc(messa
 async function renderGames(week,db){
  const games=Array.isArray(week.games)?week.games:[];
  if(!games.length){showError("The next weekly slate is being prepared. Check back soon for the next set of matchups.");return}
- const cards=games.map((g,i)=>{
-  const id=String(g.id||("game-"+i));
-  const sport=g.league||g.sport||"FEATURED MATCHUP";
-  const matchup=(g.away||"Away team")+" @ "+(g.home||"Home team");
-  const kickoff=g.starts_at?date(g.starts_at):"";
-  const locked=!!(g.starts_at&&new Date(g.starts_at).getTime()<=Date.now())||!!(g.result&&g.result!=="pending");
-  const timing=locked?"LOCKED · GAME STARTED":kickoff;
-  const tieOption=g.allow_tie?'<label class="pe-choice"><input type="radio" name="pick-'+esc(id)+'" value="tie"'+(locked?' disabled':'')+'> DRAW / TIE</label>':'';
-  return '<article class="pe-game"><div class="pe-game-top"><span>'+esc(sport)+'</span><span>'+esc(timing)+'</span></div><h3 class="pe-matchup">'+esc(matchup)+'</h3><div class="pe-options"><label class="pe-choice"><input '+(locked?'disabled':'required')+' type="radio" name="pick-'+esc(id)+'" value="away"> '+esc(g.away||"Away")+'</label><label class="pe-choice"><input '+(locked?'disabled':'required')+' type="radio" name="pick-'+esc(id)+'" value="home"> '+esc(g.home||"Home")+'</label>'+tieOption+'</div></article>';
- }).join("");
- content.innerHTML='<div id="weekly-boards" aria-live="polite"></div><div id="season-board"></div><form class="pe-form" id="pickem-form"><aside class="pe-entry-panel"><span class="pe-step">YOUR ENTRY</span><div class="pe-entry-icon" aria-hidden="true">01</div><label class="pe-label" for="pickem-name">Choose your nickname</label><input class="pe-input" id="pickem-name" name="nickname" minlength="2" maxlength="24" required autocomplete="nickname" placeholder="Your leaderboard name"><p class="pe-note">2–24 characters. Your nickname and score are public; your browser token and picks are not.</p><div class="pe-entry-divider"></div><strong class="pe-entry-promise">No account. No cost. Just sports.</strong><p class="pe-note">Your picks are saved securely and tied to this browser.</p></aside><div class="pe-picks-area"><div class="pe-picks-heading"><div><span class="pe-step">MAKE YOUR CALLS</span><h3>Pick the winners.</h3><p class="pe-note">Choose one team in every matchup that is still open.</p></div><div class="pe-pick-count"><strong>'+games.length+'</strong><span>MATCHUPS</span></div></div><div class="pe-game-list">'+cards+'</div></div><div class="pe-submit-area"><div><strong>Ready to lock in your picks?</strong><p class="pe-note">You can update your entry before each game starts.</p></div><div class="pe-submit-action"><button class="pe-submit" type="submit">SUBMIT MY PICKS <span aria-hidden="true">↗</span></button><p class="pe-message" id="pickem-message" role="status"></p></div></div></form>';
- const form=document.getElementById("pickem-form");
- form.addEventListener("submit",async e=>{
-  e.preventDefault();
-  const btn=form.querySelector("button[type=submit]"),msg=document.getElementById("pickem-message");
-  const picks={};
-  for(let i=0;i<games.length;i++){
-   const id=String(games[i].id||("game-"+i));
-   const game=games[i];
-   if(game.starts_at&&new Date(game.starts_at).getTime()<=Date.now())continue;
-   if(game.result&&game.result!=="pending")continue;
-   const selected=form.querySelector('input[name="pick-'+CSS.escape(id)+'"]:checked');
-   if(!selected){msg.textContent="Please make a pick for every matchup that has not started.";return}
-   picks[id]=selected.value;
-  }
-  if(!Object.keys(picks).length){msg.textContent="All matchups have started. Picks are locked.";return}
-  btn.disabled=true;msg.textContent="Submitting your picks…";
-  try{
-   const {error}=await db.rpc("tn_pickem_submit",{p_week_slug:week.slug,p_display_name:form.elements.nickname.value.trim(),p_picks:picks,p_entry_token:getToken()});
-   if(error)throw error;
-   msg.textContent="Your picks are in! You can return on this browser to update them before the deadline.";
-   btn.textContent="PICKS SAVED ✓";
-  }catch(err){msg.textContent=err.message||"We couldn't save your picks. Please try again.";btn.disabled=false}
- });
+ const sportKey=g=>String(g.league||g.sport||"Other").trim().toLowerCase();
+ const sports=[...new Set(games.map(sportKey))].sort((a,b)=>a.localeCompare(b));
+ const sportNames=new Map();
+ for(const g of games){const key=sportKey(g);sportNames.set(key,String(g.league||g.sport||"Other").trim())}
+ const savedPicks={};
+ let selectedSport="all";
+ const sportLabel=key=>sportNames.get(key)||key.replace(/\b\w/g,ch=>ch.toUpperCase());
+ function renderPicker(){
+  const visibleGames=selectedSport==="all"?games:games.filter(g=>sportKey(g)===selectedSport);
+  const cards=visibleGames.map(g=>{
+   const id=String(g.id||("game-"+games.indexOf(g)));
+   const sport=g.league||g.sport||"FEATURED MATCHUP";
+   const matchup=(g.away||"Away team")+" @ "+(g.home||"Home team");
+   const kickoff=g.starts_at?date(g.starts_at):"";
+   const locked=!!(g.starts_at&&new Date(g.starts_at).getTime()<=Date.now())||!!(g.result&&g.result!=="pending");
+   const timing=locked?"LOCKED · GAME STARTED":kickoff;
+   const tieOption=g.allow_tie?'<label class="pe-choice"><input type="radio" name="pick-'+esc(id)+'" value="tie"'+(locked?' disabled':'')+(savedPicks[id]==="tie"?' checked':'')+'> DRAW / TIE</label>':'';
+   return '<article class="pe-game"><div class="pe-game-top"><span>'+esc(sport)+'</span><span>'+esc(timing)+'</span></div><h3 class="pe-matchup">'+esc(matchup)+'</h3><div class="pe-options"><label class="pe-choice"><input type="radio" name="pick-'+esc(id)+'" value="away"'+(locked?' disabled':'')+(savedPicks[id]==="away"?' checked':'')+'> '+esc(g.away||"Away")+'</label><label class="pe-choice"><input type="radio" name="pick-'+esc(id)+'" value="home"'+(locked?' disabled':'')+(savedPicks[id]==="home"?' checked':'')+'> '+esc(g.home||"Home")+'</label>'+tieOption+'</div></article>';
+  }).join("");
+  const options='<option value="all">All sports · '+games.length+' matchups</option>'+sports.map(key=>'<option value="'+esc(key)+'">'+esc(sportLabel(key))+' · '+games.filter(g=>sportKey(g)===key).length+' matchups</option>').join("");
+  content.innerHTML='<div id="weekly-boards" aria-live="polite"></div><div id="season-board"></div><form class="pe-form" id="pickem-form"><aside class="pe-entry-panel"><span class="pe-step">YOUR ENTRY</span><div class="pe-entry-icon" aria-hidden="true">01</div><label class="pe-label" for="pickem-name">Choose your nickname</label><input class="pe-input" id="pickem-name" name="nickname" minlength="2" maxlength="24" required autocomplete="nickname" placeholder="Your leaderboard name"><p class="pe-note">2–24 characters. Your nickname and score are public; your browser token and picks are not.</p><div class="pe-entry-divider"></div><strong class="pe-entry-promise">No account. No cost. Just sports.</strong><p class="pe-note">Choose the sport you follow. You only need to submit picks for the sport selected.</p></aside><div class="pe-picks-area"><div class="pe-picks-heading"><div><span class="pe-step">MAKE YOUR CALLS</span><h3>Pick your sport.</h3><p class="pe-note">Select one sport to see only those matchups. You do not have to enter every sport.</p></div><div class="pe-pick-count"><strong>'+visibleGames.length+'</strong><span>MATCHUPS</span></div></div><div class="pe-sport-filter"><label class="pe-label" for="pe-challenge-sport">CHOOSE YOUR CHALLENGE</label><select class="pe-sport-select" id="pe-challenge-sport">'+options+'</select><p class="pe-note">Only matchups for your selected sport are shown and submitted.</p></div><div class="pe-game-list">'+(cards||'<div class="pe-empty">There are no matchups for this sport.</div>')+'</div></div><div class="pe-submit-area"><div><strong>Ready to lock in your picks?</strong><p class="pe-note">Only the currently selected sport will be included in this entry.</p></div><div class="pe-submit-action"><button class="pe-submit" type="submit">SUBMIT '+(selectedSport==="all"?"PICKS":esc(sportLabel(selectedSport).toUpperCase()))+' <span aria-hidden="true">↗</span></button><p class="pe-message" id="pickem-message" role="status"></p></div></div></form>';
+  const form=document.getElementById("pickem-form");
+  form.querySelectorAll('input[type="radio"]').forEach(input=>input.addEventListener("change",()=>{savedPicks[input.name.slice(5)]=input.value;}));
+  form.querySelector("#pe-challenge-sport").addEventListener("change",e=>{selectedSport=e.target.value;renderPicker()});
+  form.addEventListener("submit",async e=>{
+   e.preventDefault();
+   const btn=form.querySelector("button[type=submit]"),msg=document.getElementById("pickem-message");
+   const picks={};
+   for(const game of visibleGames){
+    const id=String(game.id||("game-"+games.indexOf(game)));
+    if(game.starts_at&&new Date(game.starts_at).getTime()<=Date.now())continue;
+    if(game.result&&game.result!=="pending")continue;
+    if(!savedPicks[id]){msg.textContent="Please make a pick for every open matchup in the selected sport.";return}
+    picks[id]=savedPicks[id];
+   }
+   if(!Object.keys(picks).length){msg.textContent="There are no open matchups to enter for this sport.";return}
+   btn.disabled=true;msg.textContent="Submitting your picks…";
+   try{
+    const {error}=await db.rpc("tn_pickem_submit",{p_week_slug:week.slug,p_display_name:form.elements.nickname.value.trim(),p_picks:picks,p_entry_token:getToken()});
+    if(error)throw error;
+    msg.textContent="Your "+(selectedSport==="all"?"picks":sportLabel(selectedSport)+" picks")+" are in!";
+    btn.textContent="PICKS SAVED ✓";
+   }catch(err){msg.textContent=err.message||"We couldn't save your picks. Please try again.";btn.disabled=false}
+  });
+ }
+ renderPicker();
  await renderSeasonBoard(week,db);
  await renderSportBoards(week,db);
 }
