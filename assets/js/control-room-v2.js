@@ -13,7 +13,7 @@ async function init(){
   if(!membership||membership.status!=="active"||!["administrator","producer","editor","moderator"].includes(membership.role)){say($("[data-cr2-global-status]"),"This account does not have active Tacoma Nights management permissions.");return}
   say($("[data-cr2-global-status]"),"Signed in as "+(membership.display_name||user.email)+" · "+membership.role+". Database permissions are still enforced for each workspace.");
   await Promise.allSettled([loadContent(),loadSettings(),loadVideo("tn_homepage_featured_video"),loadVideo("tn_homepage_hero_video")]);
-  wireContent(user);wireSettings();wireVideo(user);
+  wireContent(user);wireSettings();wireVideo(user);wirePageEditor();
  }catch(e){say($("[data-cr2-global-status]"),"Access check failed: "+(e.message||"Please reload and try again."));}
 }
 async function loadContent(){
@@ -71,6 +71,24 @@ async function loadVideo(table){
  const {data,error}=await db.from(table).select("id,youtube_video_id,title,description,is_active").eq("id",1).maybeSingle();
  if(error){say(f.querySelector('[role="status"]'),"Read unavailable: "+error.message);return}
  if(data){f.elements.youtube_video_id.value=data.youtube_video_id||"";f.elements.title.value=data.title||"";f.elements.description.value=data.description||"";f.elements.is_active.checked=!!data.is_active}
+}
+function wirePageEditor(){
+ const f=$("[data-cr2-page-form]");if(!f)return;
+ f.addEventListener("submit",async e=>{
+  e.preventDefault();const b=f.querySelector('button[type="submit"]'),status=f.querySelector('[role="status]');b.disabled=true;say(status,"Saving page text…");
+  const d=Object.fromEntries(new FormData(f));let path=d.page_path.trim();
+  if(!path.startsWith("/"))path="/"+path;
+  if(!path.endsWith("/"))path+="/";
+  if(path.includes("..")||path.includes("?")||path.includes("#")){b.disabled=false;say(status,"Enter a site-relative page path without query strings.");return}
+  const selector=d.selector.trim();try{document.querySelector(selector)}catch{b.disabled=false;say(status,"That CSS selector is not valid.");return}
+  const key="page:"+path+":"+selector;
+  const r=await db.from("tacoma_nights_site_settings").upsert({setting_key:key,setting_value:d.setting_value,updated_at:new Date().toISOString()},{onConflict:"setting_key"});
+  b.disabled=false;if(r.error){say(status,"Save blocked: "+r.error.message);return}
+  say(status,"Page text saved. Visitors will see it after the page refreshes.");
+  const current=location.pathname.replace(/index\\.html$/,"").replace(/\\/{2,}/g,"/");
+  if(current===path){try{document.querySelectorAll(selector).forEach(el=>{if(!/^(SCRIPT|STYLE|INPUT|TEXTAREA|SELECT)$/i.test(el.tagName))el.textContent=d.setting_value})}catch{}}
+  await loadSettings();
+ });
 }
 function wireVideo(user){
  all("[data-cr2-video-form]").forEach(f=>f.addEventListener("submit",async e=>{
