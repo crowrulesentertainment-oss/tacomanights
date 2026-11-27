@@ -2,213 +2,124 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#090b10">
-<meta name="description" content="Tacoma Nights Network Control Room — the central publishing and operations workspace.">
-<title>NETWORK CONTROL ROOM 3.1 | Tacoma Nights</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/v3.css">
-<script src="../assets/js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="../assets/js/v3.js?v=22.8.2-page-cms"></script><script defer src="../assets/js/control-room-v2.js?v=3.0.0"></script>
-<style>
-:root{color-scheme:dark;--bg:#090b10;--surface:#111720;--surface2:#151e29;--line:#293443;--muted:#9ba8b8;--text:#f3f5f8;--red:#c9363e;--gold:#d9b879}
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;background:radial-gradient(ellipse at 80% -15%,rgba(201,54,62,.12),transparent 34%),var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;overflow-x:hidden}
-#site-header,#site-footer,#main>.page-hero{display:none!important}#main,#main>.page-body,#main>.page-body>.wrap{width:100%;max-width:none;margin:0;padding:0}
-.skip-link{position:absolute;left:-9999px}.skip-link:focus{left:12px;top:12px;z-index:99;background:#fff;color:#000;padding:12px}
-.notice{max-width:100%;margin:12px 24px;padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:#121923;color:#c5ced9}
-.control-shell{width:100%;max-width:none;min-height:100vh}.cr3{min-height:100vh}
-.cr3-top{height:68px;position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 26px;background:rgba(9,11,16,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
-.cr3-brand{display:flex;align-items:center;gap:12px;font-family:Manrope,sans-serif;font-weight:800;letter-spacing:.02em}.cr3-mark{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(145deg,#d84a50,#7e1e27);font-size:18px}.cr3-brand small{display:block;color:var(--muted);font:700 9px "DM Sans";letter-spacing:.17em;text-transform:uppercase;margin-top:2px}
-.cr3-topright{display:flex;align-items:center;gap:12px}.cr3-live{font-size:11px;color:#c7d3c9;display:flex;align-items:center;gap:7px}.cr3-live:before{content:"";width:7px;height:7px;border-radius:50%;background:#68c58a;box-shadow:0 0 12px #68c58a}
-.cr3-public{color:#e9edf4;text-decoration:none;border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:12px;font-weight:700}
-.cr3-layout{display:grid;grid-template-columns:246px minmax(0,1fr);min-height:calc(100vh - 68px)}
-.cr3-side{position:sticky;top:68px;height:calc(100vh - 68px);overflow:auto;padding:24px 14px;border-right:1px solid var(--line);background:#0d1219}
-.cr3-side-label{padding:12px 12px 8px;color:#748194;font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
-.cr3-nav{display:grid;gap:5px}.cr3-nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:9px;color:#b9c4d1;text-decoration:none;font-size:13px;font-weight:650;border:1px solid transparent;transition:.15s}
-.cr3-nav a:hover,.cr3-nav a.active{color:#fff;background:linear-gradient(90deg,rgba(201,54,62,.19),rgba(201,54,62,.04));border-color:rgba(201,54,62,.3)}
-.cr3-nav .ico{width:20px;text-align:center;color:var(--gold);font-size:15px}
-.cr3-side-foot{margin:26px 6px 0;padding:14px;border:1px solid var(--line);border-radius:12px;background:#111923}.cr3-side-foot b{font-size:12px}.cr3-side-foot p{font-size:11px;color:var(--muted);line-height:1.5;margin:6px 0 0}
-.cr3-main{min-width:0;padding:30px clamp(18px,3vw,46px) 70px;max-width:1680px;width:100%;margin:0 auto}
-.cr3-welcome{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:6px 0 28px}
-.cr3-kicker{color:var(--gold);font-size:10px;font-weight:800;letter-spacing:.19em;text-transform:uppercase}
-.cr3-welcome h1{font:800 clamp(27px,3vw,40px)/1.1 Manrope,sans-serif;letter-spacing:-.05em;margin:8px 0}
-.cr3-welcome p{margin:0;color:var(--muted);font-size:14px;max-width:700px;line-height:1.6}
-.cr3-version{border:1px solid #654348;background:rgba(201,54,62,.1);color:#f1b5b8;border-radius:99px;padding:7px 11px;font-size:10px;font-weight:800;letter-spacing:.1em}
-.cr3-section{margin:0 0 34px;scroll-margin-top:90px}.cr3-sectionhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:0 0 15px}.cr3-sectionhead h2{font:800 20px Manrope;margin:4px 0 0;letter-spacing:-.03em}.cr3-sectionhead p{font-size:12px;color:var(--muted);margin:5px 0 0}
-.cr3-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.cr3-stat{position:relative;overflow:hidden;min-height:132px;padding:20px 22px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#171f2b,#10161f);box-shadow:0 12px 30px #0003}
-.cr3-stat:after{content:"";position:absolute;width:120px;height:120px;border:1px solid #d9b8791b;border-radius:50%;right:-36px;bottom:-62px;box-shadow:0 0 0 15px #d9b87908,0 0 0 30px #d9b87906}
-.cr3-statlabel{color:#aeb9c7;font-size:10px;text-transform:uppercase;letter-spacing:.16em;font-weight:800}.cr3-statvalue{font:800 35px Manrope;letter-spacing:-.05em;margin:10px 0 2px}.cr3-statnote{font-size:11px;color:#8794a5}
-.cr3-panel{border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#141c27,#0e141d);padding:clamp(17px,2vw,25px);margin:0 0 18px;min-width:0;box-shadow:0 12px 30px #0002}
-.cr3-panel h2{font:800 20px Manrope;letter-spacing:-.03em;margin:5px 0 7px}.cr3-panel h3{font:750 15px Manrope;margin:0 0 10px}.cr3-help{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 18px}
-.cr3-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.cr3-fieldgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px}.cr3-wide{grid-column:1/-1}
-.cr3 label{display:block;color:#c5ced9;font-size:11px;font-weight:750;margin:12px 0 6px}
-.cr3 input:not([type=checkbox]),.cr3 textarea,.cr3 select{width:100%;background:#090f17;color:#f3f5f8;border:1px solid #354253;border-radius:9px;padding:11px 12px;font:500 13px "DM Sans";outline:none;min-height:42px}
-.cr3 input:focus,.cr3 textarea:focus,.cr3 select:focus{border-color:#c9363e;box-shadow:0 0 0 3px #c9363e22}
-.cr3 textarea{min-height:100px;resize:vertical}.cr3 input[type=checkbox]{accent-color:var(--red);width:16px;height:16px;vertical-align:middle}
-.cr3 button{cursor:pointer;border:1px solid #435064;border-radius:9px;padding:10px 14px;background:#202b39;color:white;font:700 12px "DM Sans";transition:.15s}
-.cr3 button:hover{border-color:var(--gold);transform:translateY(-1px)}.cr3 button.primary{background:linear-gradient(135deg,#d3454c,#a52630);border-color:#d3454c}.cr3 button:disabled{opacity:.5;cursor:wait;transform:none}
-.cr3-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.cr3-status{min-height:20px;color:var(--gold);font-size:12px;margin:12px 0 0}
-.cr3-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(310px,100%),1fr));gap:12px}
-.cr3-item{min-width:0;display:flex;flex-direction:column;gap:6px;padding:16px;border:1px solid #303c4b;border-radius:12px;background:#101823}
-.cr3-item h3{font:750 14px Manrope;margin:0;overflow-wrap:anywhere}.cr3-item p{font-size:11px;color:#aeb9c7;line-height:1.5;margin:0;overflow-wrap:anywhere}
-.cr3-item .cr2-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:auto;padding-top:8px}.cr3-item button{font-size:11px;padding:8px 10px}
-.cr3 .cr2-pill{display:inline-flex;align-self:flex-start;border:1px solid #4a586b;border-radius:99px;padding:4px 8px;color:#d2dbe5;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
-.cr3 .cr2-warning{border-left:3px solid var(--gold);padding:12px 14px;background:#1a1915;color:#d8d0bf;font-size:11px;line-height:1.6}
-.cr3 .cr2-formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px}.cr3 .cr2-wide{grid-column:1/-1}
-.cr3 .cr2-nav{display:none}.cr3 .cr2-head{display:none}
-.cr3 a.cr3-workspace{display:flex;flex-direction:column;gap:9px;min-height:140px;padding:20px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(145deg,#171f2b,#10161f);color:#fff;text-decoration:none;transition:.18s}
-.cr3 a.cr3-workspace:hover{border-color:var(--red);transform:translateY(-3px)}.cr3-workspace .ws-icon{font-size:22px}.cr3-workspace b{font:750 14px Manrope}.cr3-workspace span:last-child{font-size:11px;color:var(--muted);line-height:1.5}
-.cr3-footer{border-top:1px solid var(--line);padding-top:18px;color:#758194;font-size:10px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-@media(max-width:980px){.cr3-layout{grid-template-columns:1fr}.cr3-side{position:sticky;top:68px;z-index:40;height:auto;padding:8px 12px;border-right:0;border-bottom:1px solid var(--line)}.cr3-side-label,.cr3-side-foot{display:none}.cr3-nav{display:flex;overflow:auto;gap:5px}.cr3-nav a{white-space:nowrap;padding:9px 11px;font-size:11px}.cr3-main{padding-top:22px}}
-@media(max-width:650px){.cr3-top{height:58px;padding:0 13px}.cr3-brand{font-size:12px}.cr3-brand small{font-size:8px}.cr3-public{font-size:10px;padding:8px}.cr3-live{display:none}.cr3-side{top:58px}.cr3-layout{min-height:calc(100vh - 58px)}.cr3-main{padding:19px 13px 48px}.cr3-stats{grid-template-columns:1fr}.cr3-stat{min-height:108px}.cr3-grid,.cr3-fieldgrid,.cr3 .cr2-formgrid{grid-template-columns:1fr}.cr3-wide,.cr3 .cr2-wide{grid-column:auto}.cr3-sectionhead{align-items:flex-start;flex-direction:column}.cr3-list{grid-template-columns:1fr}}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
-
-/* 3.2 — management usability and responsive polish */
-.cr3-main{max-width:none!important}
-.cr3-panel{padding:clamp(18px,1.7vw,28px);}
-.cr3-section{scroll-margin-top:105px}
-.cr3-listhead{align-items:center;flex-direction:row}
-.cr3-filter{width:min(100%,390px);min-height:42px;background:#090f17;color:#f3f5f8;border:1px solid #354253;border-radius:9px;padding:10px 12px;font:500 12px "DM Sans";outline:none}
-.cr3-filter:focus{border-color:#c9363e;box-shadow:0 0 0 3px #c9363e22}
-.cr3-item{min-height:150px;gap:9px;padding:17px;background:linear-gradient(145deg,#121c28,#0d141d)}
-.cr3-item h3{font-size:14px;line-height:1.4}
-.cr3-item p{line-height:1.55}
-.cr3 .cr2-actions{gap:8px;flex-wrap:wrap}
-.cr3 .cr2-actions button{min-height:36px}
-.cr3 label{margin-top:14px}
-.cr3 input:not([type=checkbox]),.cr3 textarea,.cr3 select{transition:border-color .15s,box-shadow .15s}
-.cr3-nav a{min-height:42px}
-.cr3-side{scrollbar-width:thin;scrollbar-color:#354253 transparent}
-@media(max-width:760px){.cr3-listhead{align-items:stretch;flex-direction:column}.cr3-filter{width:100%;max-width:none}}
-
-/* 3.1 — edge-to-edge viewport layout */
-html,body{width:100%;min-width:320px;min-height:100%;margin:0}
-body{min-height:100vh}
-#main,#main>.page-body,#main>.page-body>.wrap,#main .page-body .wrap{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
-.notice{width:calc(100% - 32px);max-width:none;margin:10px 16px}
-.control-shell,.cr3{width:100%!important;max-width:none!important;min-height:100vh}
-.cr3-layout{width:100%;max-width:none;grid-template-columns:clamp(210px,17vw,280px) minmax(0,1fr)}
-.cr3-main{width:100%;max-width:none!important;margin:0!important;padding:clamp(22px,2.4vw,42px) clamp(18px,2.2vw,38px) 72px}
-.cr3-welcome{width:100%;margin-top:0}
-.cr3-section{width:100%;max-width:none}
-.cr3-stats{grid-template-columns:repeat(3,minmax(0,1fr));width:100%}
-.cr3-grid{grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
-.cr3-list{grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));width:100%}
-.cr3-panel{width:100%}
-.cr3-sectionhead{width:100%}
-.cr3-top{width:100%;padding-inline:clamp(14px,2vw,32px)}
-.cr3-footer{width:100%}
-@media(min-width:1500px){
- .cr3-layout{grid-template-columns:270px minmax(0,1fr)}
- .cr3-main{padding-inline:clamp(34px,2.6vw,56px)}
- .cr3-list{grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
- .cr3 .cr2-formgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
- .cr3 .cr2-formgrid .cr2-wide{grid-column:1/-1}
-}
-@media(max-width:980px){
- .cr3-layout{grid-template-columns:minmax(0,1fr)}
- .cr3-main{max-width:none;padding-inline:20px}
-}
-@media(max-width:650px){
- .notice{width:calc(100% - 20px);margin:8px 10px}
- .cr3-main{padding-inline:12px}
- .cr3-stats,.cr3-grid,.cr3-list{grid-template-columns:minmax(0,1fr)}
-}
-
-</style>
+<meta name="theme-color" content="#080b10">
+<meta name="description" content="Tacoma Nights cinematic Network Control Room.">
+<title>Network Control Room | Tacoma Nights</title>
+<link rel="stylesheet" href="../assets/css/control-room.css?v=4.0.0">
+<script src="../assets/js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="../assets/js/control-room.js?v=4.0.0"></script>
 </head>
 <body data-root="../">
-<a class="skip-link" href="#cr3-main">Skip to content</a><div id="site-header"></div>
-<main id="main"><section class="page-body"><div class="wrap">
-<div class="notice">Your existing sign-in, Tacoma Nights staff-role checks and Supabase row-level security remain in force. No service-role key is used in this browser.</div>
-<p class="notice" data-control-status role="status">Verifying access…</p>
-<div class="control-shell" data-control-room hidden><div class="cr2 cr3">
-<header class="cr3-top"><div class="cr3-brand"><span class="cr3-mark">TN</span><span>TACOMA NIGHTS<small>NETWORK OPERATIONS</small></span></div><div class="cr3-topright"><span class="cr3-live">SECURE WORKSPACE</span><a class="cr3-public" href="../">View public site ↗</a></div></header>
-<div class="cr3-layout">
-<aside class="cr3-side"><div class="cr3-side-label">Workspace</div><nav class="cr3-nav" aria-label="Control room navigation">
-<a class="active" href="#cr3-overview"><span class="ico">▦</span>Dashboard</a>
-<a href="#cr2-content"><span class="ico">▤</span>Content library</a>
-<a href="#cr2-home-cms"><span class="ico">✦</span>Homepage studio</a>
-<a href="#cr2-homepage"><span class="ico">▶</span>Video & broadcast</a>
-<a href="#cr3-pages"><span class="ico">▧</span>Page editor</a>
-<a href="#cr2-settings"><span class="ico">⚙</span>Site settings</a>
-<a href="#cr2-workspaces"><span class="ico">⌘</span>Workspaces</a>
-</nav><div class="cr3-side-foot"><b>One network. One workspace.</b><p>Manage publishing, homepage storytelling and the Tacoma Nights digital operation from one place.</p></div></aside>
-<div class="cr3-main" id="cr3-main">
-<div class="cr3-welcome"><div><div class="cr3-kicker">CrowRules Entertainment · Tacoma Nights</div><h1>Control Room</h1><p>Your central command center for the public website. Create, update and organize content while keeping publishing permissions protected.</p></div><span class="cr3-version">VERSION 3.2 · MANAGEMENT UPDATE</span></div>
-<section class="cr3-section" id="cr3-overview"><div class="cr3-sectionhead"><div><div class="cr3-kicker">At a glance</div><h2>Operations overview</h2><p>A quick snapshot of the content and systems connected to this workspace.</p></div></div>
-<div class="cr3-stats">
-<article class="cr3-stat"><div class="cr3-statlabel">Publishing library</div><div class="cr3-statvalue" data-cr2-content-count>—</div><div class="cr3-statnote">Content records available to manage</div></article>
-<article class="cr3-stat"><div class="cr3-statlabel">Homepage studio</div><div class="cr3-statvalue" data-cr2-home-module-count>0</div><div class="cr3-statnote">Homepage modules and campaigns</div></article>
-<article class="cr3-stat"><div class="cr3-statlabel">Access protection</div><div class="cr3-statvalue" style="font-size:25px">ACTIVE</div><div class="cr3-statnote">Signed-in staff role + database RLS</div></article>
-</div><p class="cr3-status" data-cr2-global-status role="status"></p></section>
-<section id="cr2-content" class="cr3-section cr3-panel"><div class="cr3-kicker">01 · Publishing</div><h2>Content library</h2><p class="cr3-help">Create and maintain episodes, newsroom articles, community events, spotlights, perspectives and announcements.</p>
-<form data-cr2-content-form><input type="hidden" name="id"><div class="cr2-formgrid">
-<div><label>Content type</label><select name="content_type" required><option value="episode">Episode</option><option value="article">Newsroom article</option><option value="event">Community event</option><option value="original">253 Original</option><option value="spotlight">Spotlight</option><option value="perspective">Perspective</option><option value="announcement">Announcement</option></select></div>
-<div><label>URL slug</label><input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="my-story"></div>
-<div class="cr2-wide"><label>Title</label><input name="title" required maxlength="180"></div>
-<div class="cr2-wide"><label>Short description</label><textarea name="excerpt" maxlength="500"></textarea></div>
-<div class="cr2-wide"><label>Story / episode details</label><textarea name="body" maxlength="20000"></textarea></div>
-<div><label>Image URL</label><input name="image_url" type="url"></div><div><label>Video URL</label><input name="video_url" type="url"></div>
-<div><label>Publication status</label><select name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div></div>
-<div class="cr2-actions"><button class="primary" type="submit">Save content</button><button type="button" data-cr2-reset>Clear form</button></div><p class="cr3-status" data-cr2-content-status role="status"></p></form>
-<div class="cr3-sectionhead cr3-listhead" style="margin-top:28px"><div><h2 style="font-size:16px">Existing content</h2><p>Search and filter records before editing or publishing.</p></div><input class="cr3-filter" type="search" data-cr3-filter="[data-cr2-content-list]" placeholder="Search titles, slugs, descriptions…" aria-label="Search content library"></div><div class="cr2-list cr3-list" data-cr2-content-list><p class="cr2-muted">Loading content…</p></div></section>
-<section id="cr2-home-cms" class="cr3-section cr3-panel"><div class="cr3-kicker">02 · Homepage storytelling</div><h2>Homepage Content Studio</h2><p class="cr3-help">Control hero slides, featured broadcasts, homepage sections, program cards, community questions and announcement banners. Drafts remain unpublished until you publish them.</p>
-<form data-cr2-home-module-form><input type="hidden" name="id"><div class="cr2-formgrid">
-<div><label>Module type</label><select name="module_type" required><option value="hero_slide">Hero slide</option><option value="featured_broadcast">Featured broadcast</option><option value="homepage_section">Homepage section</option><option value="program_card">Program card</option><option value="community_question">Community question</option><option value="announcement">Announcement banner</option></select></div>
-<div><label>URL slug</label><input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="season-two-premiere"></div>
-<div class="cr2-wide"><label>Main headline</label><input name="title" required maxlength="180" placeholder="The City Has a Voice"></div>
-<div><label>Eyebrow / category</label><input name="eyebrow" maxlength="120" placeholder="TACOMA NIGHTS · SEASON TWO"></div>
-<div><label>Sort order</label><input name="sort_order" type="number" value="100"></div>
-<div class="cr2-wide"><label>Description / body</label><textarea name="body" maxlength="3000"></textarea></div>
-<div><label>Button label</label><input name="cta_label" maxlength="80"></div><div><label>Button destination</label><input name="cta_url" placeholder="./shows/ or https://…"></div>
-<div><label>Media URL</label><input name="media_url" type="url" placeholder="YouTube or image URL"></div><div><label>Background image URL</label><input name="background_image_url" type="url"></div>
-<div><label>Publish status</label><select name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div>
-<div><label><input type="checkbox" name="is_active" checked> Active module</label></div>
-<div><label>Schedule publish time</label><input name="publish_at" type="datetime-local"></div><div><label>Schedule expiration</label><input name="expire_at" type="datetime-local"></div>
-<div class="cr2-wide"><label>Advanced metadata (JSON)</label><textarea name="metadata">{}</textarea></div>
-</div><div class="cr2-actions"><button class="primary" type="submit">Save homepage module</button><button type="button" data-cr2-home-reset>Clear form</button></div><p class="cr3-status" data-cr2-home-status role="status"></p></form>
-<div class="cr3-sectionhead cr3-listhead" style="margin-top:28px"><div><h2 style="font-size:16px">Homepage modules</h2><p>Search slides, program cards, announcements and other modules.</p></div><input class="cr3-filter" type="search" data-cr3-filter="[data-cr2-home-list]" placeholder="Search homepage modules…" aria-label="Search homepage modules"></div><div class="cr2-list cr3-list" data-cr2-home-list><p class="cr2-muted">Loading homepage modules…</p></div>
-<p class="cr2-warning" style="margin-top:16px">Published hero slides take over the homepage carousel. If none are published, the existing homepage hero remains as fallback. Visitor analytics are intentionally kept separate.</p></section>
-<section id="cr2-homepage" class="cr3-section"><div class="cr3-sectionhead"><div><div class="cr3-kicker">03 · Broadcast presentation</div><h2>Homepage video controls</h2><p>Manage the featured video and hero video shown on the public homepage.</p></div></div>
-<div class="cr3-grid">
-<form class="cr3-panel" data-cr2-video-form="tn_homepage_featured_video"><div class="cr3-kicker">Featured content</div><h3>Featured video</h3><label>YouTube video ID or URL</label><input name="youtube_video_id" required placeholder="YouTube video ID"><label>Display title</label><input name="title" required><label>Description</label><textarea name="description"></textarea><label><input type="checkbox" name="is_active"> Active on homepage</label><button class="primary" type="submit">Save featured video</button><p class="cr3-status" role="status"></p></form>
-<form class="cr3-panel" data-cr2-video-form="tn_homepage_hero_video"><div class="cr3-kicker">Hero presentation</div><h3>Hero video</h3><label>YouTube video ID or URL</label><input name="youtube_video_id" required placeholder="YouTube video ID"><label>Display title</label><input name="title" required><label>Description</label><textarea name="description"></textarea><label><input type="checkbox" name="is_active"> Active on homepage</label><button class="primary" type="submit">Save hero video</button><p class="cr3-status" role="status"></p></form>
-</div><p class="cr2-warning">YouTube IDs and URLs are validated before saving. Existing database permissions continue to apply.</p></section>
-<section id="cr3-pages" class="cr3-section cr3-panel"><div class="cr3-kicker">04 · Universal page editor</div><h2>Page text editor</h2><p class="cr3-help">Apply a text override to a specific page and CSS selector. This editor changes text only; it does not change layout, media, links, forms or application logic.</p>
-<form data-cr2-page-form><div class="cr2-formgrid"><div><label>Page path</label><input name="page_path" required placeholder="/perspectives/teenager/"></div><div><label>CSS selector</label><input name="selector" required placeholder="main h1"></div><div class="cr2-wide"><label>Replacement text</label><textarea name="setting_value" required maxlength="5000"></textarea></div></div><div class="cr2-actions"><button class="primary" type="submit">Save page text</button></div><p class="cr3-status" role="status"></p></form></section>
-<section id="cr2-settings" class="cr3-section cr3-panel"><div class="cr3-kicker">05 · Configuration</div><h2>Site settings</h2><p class="cr3-help">Manage key/value settings stored in the existing Tacoma Nights site settings table.</p>
-<form data-cr2-setting-form><div class="cr2-formgrid"><div><label>Setting key</label><input name="setting_key" required maxlength="120" placeholder="homepage_tagline"></div><div><label>Setting value</label><input name="setting_value" required maxlength="2000"></div></div><div class="cr2-actions"><button class="primary" type="submit">Save setting</button></div><p class="cr3-status" role="status"></p></form>
-<div class="cr3-sectionhead cr3-listhead" style="margin-top:25px"><div><h2 style="font-size:16px">Saved settings</h2><p>Find a setting by key or value.</p></div><input class="cr3-filter" type="search" data-cr3-filter="[data-cr2-settings-list]" placeholder="Search settings…" aria-label="Search site settings"></div><div class="cr2-list cr3-list" data-cr2-settings-list><p class="cr2-muted">Loading settings…</p></div></section>
-<section id="cr2-workspaces" class="cr3-section"><div class="cr3-sectionhead"><div><div class="cr3-kicker">06 · Connected operations</div><h2>Management workspaces</h2><p>Jump into a dedicated production or administration area.</p></div></div>
-<div class="cr3-grid">
-<a class="cr3-workspace" href="broadcasts/"><span class="ws-icon">▶</span><b>Broadcast Manager</b><span>Broadcast operations and distribution.</span></a>
-<a class="cr3-workspace" href="programming/"><span class="ws-icon">▦</span><b>Programming</b><span>Premieres, schedules and planning.</span></a>
-<a class="cr3-workspace" href="content/"><span class="ws-icon">▤</span><b>Content Studio</b><span>Dedicated publishing workspace.</span></a>
-<a class="cr3-workspace" href="community/"><span class="ws-icon">◎</span><b>Community Desk</b><span>Submission review and moderation.</span></a>
-<a class="cr3-workspace" href="contributors/"><span class="ws-icon">♙</span><b>Contributors</b><span>Contributor and team management.</span></a>
-<a class="cr3-workspace" href="settings/"><span class="ws-icon">⚙</span><b>Network Settings</b><span>Administrative configuration.</span></a>
-<a class="cr3-workspace" href="../production/"><span class="ws-icon">◉</span><b>Production Hub</b><span>Existing episode production system.</span></a>
-</div></section>
-<footer class="cr3-footer"><span>CROWRULES ENTERTAINMENT · ONE COMPANY. ONE UNIVERSE.</span><span>TACOMA NIGHTS CONTROL ROOM 3.2</span></footer>
-</div></div></div></div></section></main><div id="site-footer"></div>
-<script>
-(()=>{const links=[...document.querySelectorAll('.cr3-nav a')];const targets=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);if(!('IntersectionObserver'in window))return;const io=new IntersectionObserver(entries=>{const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!visible)return;links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+visible.target.id));},{rootMargin:'-18% 0px -68% 0px',threshold:[0,.1,.3]});targets.forEach(t=>io.observe(t));})();
-</script>
-
-<script>
-(()=>{
- document.querySelectorAll('[data-cr3-filter]').forEach(input=>{
-  input.addEventListener('input',()=>{
-   const list=document.querySelector(input.dataset.cr3Filter);if(!list)return;
-   const q=input.value.trim().toLocaleLowerCase();let shown=0;
-   list.querySelectorAll('.cr3-item').forEach(card=>{const match=!q||card.textContent.toLocaleLowerCase().includes(q);card.hidden=!match;if(match)shown++});
-   let empty=list.querySelector('[data-cr3-empty-filter]');
-   if(!empty){empty=document.createElement('p');empty.dataset.cr3EmptyFilter='';empty.className='cr2-muted';list.append(empty)}
-   empty.textContent=q&&shown===0?'No matching records. Try another search.':'';empty.hidden=!q||shown>0;
-  });
- });
-})();
-</script>
+<a class="skip-link" href="#control-main">Skip to content</a>
+<div class="access-state" data-control-status role="status">
+ <div class="access-card"><div class="crest">CROWRULES ENTERTAINMENT · TACOMA NIGHTS</div><h1>Network Control Room</h1><p>Verifying your secure access…</p></div>
+</div>
+<div class="cr2 shell" data-control-room hidden>
+<header class="topbar">
+ <a class="brand" href="../" aria-label="Tacoma Nights public website"><span class="brand-mark">TN</span><span><strong>TACOMA NIGHTS</strong><small>NETWORK OPERATIONS · CONTROL ROOM</small></span></a>
+ <div class="top-actions"><span class="secure">SECURE STAFF WORKSPACE</span><a class="top-link" href="../">PUBLIC SITE ↗</a><button class="nav-toggle" type="button" data-nav-toggle aria-label="Toggle navigation">MENU ☰</button></div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+ <div class="side-label">Command center</div>
+ <nav class="nav" aria-label="Control Room navigation">
+  <a class="active" data-cr-nav href="#overview"><span class="nav-icon">◈</span>Overview</a>
+  <a data-cr-nav href="#content"><span class="nav-icon">▤</span>Publishing library</a>
+  <a data-cr-nav href="#homepage"><span class="nav-icon">✦</span>Homepage studio</a>
+  <a data-cr-nav href="#broadcast"><span class="nav-icon">▶</span>Broadcast controls</a>
+  <a data-cr-nav href="#page-editor"><span class="nav-icon">▧</span>Page editor</a>
+  <a data-cr-nav href="#settings"><span class="nav-icon">⚙</span>Site settings</a>
+  <a data-cr-nav href="#workspaces"><span class="nav-icon">⌘</span>Workspaces</a>
+ </nav>
+ <div class="side-label">The Pacific Northwest</div>
+ <div class="sidebar-scene"><span>COMMENCEMENT BAY · TACOMA, WA</span></div>
+</aside>
+<main class="main" id="control-main">
+ <section class="hero">
+  <div class="hero-copy"><div class="eyebrow">CROWRULES ENTERTAINMENT · ONE COMPANY. ONE UNIVERSE.</div><h1>Network<br>Control Room.</h1><p>The central command center for Tacoma Nights. Publish stories, shape the homepage, manage broadcasts and keep every part of the network moving.</p><div class="hero-meta"><span>VERSION 4.0 · COMPLETE REBUILD</span><span>STAFF ACCESS ONLY</span><span>LIVE DATABASE CONNECTION</span></div></div>
+ </section>
+ <section class="section" id="overview">
+  <div class="section-head"><div><div class="section-kicker">Command overview</div><h2>At a glance</h2><p>Live counts from the connected Tacoma Nights publishing systems.</p></div></div>
+  <div class="stats">
+   <article class="stat"><small>Publishing records</small><strong data-cr2-content-count>—</strong><span>Stories, episodes and announcements</span></article>
+   <article class="stat"><small>Homepage modules</small><strong data-cr2-home-module-count>—</strong><span>Slides, programs and campaigns</span></article>
+   <article class="stat"><small>Security status</small><strong style="font-size:23px;color:var(--green)">ACTIVE</strong><span>Staff role checks + database RLS</span></article>
+   <article class="stat"><small>Scenic camera</small><strong style="font-size:23px">TACOMA</strong><span>Real-world Pacific Northwest scenery</span></article>
+  </div>
+  <p class="status" data-cr2-global-status role="status"></p>
+ </section>
+ <section class="section" id="scenery">
+  <div class="section-head"><div><div class="section-kicker">A window on the city</div><h2>Tacoma · live scenery</h2><p>A real-world view of the South Sound, not an artificial backdrop.</p></div></div>
+  <div class="scene-panel">
+   <div class="live-window"><iframe src="https://www.youtube-nocookie.com/embed/g16PRUWiKgo?rel=0" title="PCTV live Tacoma and Mount Rainier scenic camera" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+   <div class="scene-copy"><div class="section-kicker">PCTV · Pierce County Mountain Cam</div><h3>Mount Rainier. Tacoma. Commencement Bay.</h3><p>Live scenic window featuring the Tacoma skyline, Thea Foss Waterway, Commencement Bay and Mount Rainier. The camera is provided by Pierce County Television.</p><a class="top-link" href="https://www.youtube.com/watch?v=g16PRUWiKgo" target="_blank" rel="noopener noreferrer">OPEN LIVE SCENIC FEED ↗</a></div>
+  </div>
+ </section>
+ <section class="section panel" id="content">
+  <div class="section-kicker">01 · Publishing operations</div><h2 class="panel-title">Content library</h2><p class="help">Create, edit, publish, unpublish or archive episodes, newsroom articles, events, 253 Originals, spotlights, perspectives and announcements.</p>
+  <form data-cr2-content-form><input type="hidden" name="id"><div class="form-grid">
+   <div class="field"><label>Content type</label><select name="content_type" required><option value="episode">Episode</option><option value="article">Newsroom article</option><option value="event">Community event</option><option value="original">253 Original</option><option value="spotlight">Spotlight</option><option value="perspective">Perspective</option><option value="announcement">Announcement</option></select></div>
+   <div class="field"><label>URL slug</label><input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="my-story"></div>
+   <div class="field wide"><label>Title</label><input name="title" required maxlength="180" placeholder="Story or episode title"></div>
+   <div class="field wide"><label>Short description</label><textarea name="excerpt" maxlength="500" placeholder="A short summary for visitors…"></textarea></div>
+   <div class="field wide"><label>Story / episode details</label><textarea name="body" maxlength="20000" placeholder="Full story or episode details…"></textarea></div>
+   <div class="field"><label>Image URL</label><input name="image_url" type="url" placeholder="https://…"></div><div class="field"><label>Video URL</label><input name="video_url" type="url" placeholder="https://…"></div>
+   <div class="field"><label>Publication status</label><select name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div>
+  </div><div class="actions"><button class="primary" type="submit">SAVE CONTENT</button><button type="button" data-cr2-reset>CLEAR FORM</button></div><p class="status" data-cr2-content-status role="status"></p></form>
+  <div class="list-head"><div><h3>Existing content</h3><p>Search the library, then edit or change its publishing status.</p></div><input class="filter" type="search" data-cr-filter="[data-cr2-content-list]" placeholder="Search content…"></div>
+  <div class="cr2-list" data-cr2-content-list><p>Loading content…</p></div>
+ </section>
+ <section class="section panel" id="homepage">
+  <div class="section-kicker">02 · Homepage storytelling</div><h2 class="panel-title">Homepage Content Studio</h2><p class="help">Manage hero slides, featured broadcasts, homepage sections, program cards, community questions and announcement banners. Drafts remain unpublished until published.</p>
+  <form data-cr2-home-module-form><input type="hidden" name="id"><div class="form-grid">
+   <div class="field"><label>Module type</label><select name="module_type" required><option value="hero_slide">Hero slide</option><option value="featured_broadcast">Featured broadcast</option><option value="homepage_section">Homepage section</option><option value="program_card">Program card</option><option value="community_question">Community question</option><option value="announcement">Announcement banner</option></select></div>
+   <div class="field"><label>URL slug</label><input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="season-two-premiere"></div>
+   <div class="field wide"><label>Main headline</label><input name="title" required maxlength="180" placeholder="The City Has a Voice"></div>
+   <div class="field"><label>Eyebrow / category</label><input name="eyebrow" maxlength="120" placeholder="TACOMA NIGHTS · SEASON TWO"></div>
+   <div class="field"><label>Sort order</label><input name="sort_order" type="number" value="100"></div>
+   <div class="field wide"><label>Description / body</label><textarea name="body" maxlength="3000"></textarea></div>
+   <div class="field"><label>Button label</label><input name="cta_label" maxlength="80"></div><div class="field"><label>Button destination</label><input name="cta_url" placeholder="./shows/ or https://…"></div>
+   <div class="field"><label>Media URL</label><input name="media_url" type="url" placeholder="YouTube or image URL"></div><div class="field"><label>Background image URL</label><input name="background_image_url" type="url"></div>
+   <div class="field"><label>Publish status</label><select name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div>
+   <div class="field"><label><input type="checkbox" name="is_active" checked> Active module</label></div>
+   <div class="field"><label>Schedule publish time</label><input name="publish_at" type="datetime-local"></div><div class="field"><label>Schedule expiration</label><input name="expire_at" type="datetime-local"></div>
+   <div class="field wide"><label>Advanced metadata (JSON)</label><textarea name="metadata">{}</textarea></div>
+  </div><div class="actions"><button class="primary" type="submit">SAVE HOMEPAGE MODULE</button><button type="button" data-cr2-home-reset>CLEAR FORM</button></div><p class="status" data-cr2-home-status role="status"></p></form>
+  <div class="list-head"><div><h3>Homepage modules</h3><p>Find and manage existing slides, cards and announcements.</p></div><input class="filter" type="search" data-cr-filter="[data-cr2-home-list]" placeholder="Search homepage modules…"></div>
+  <div class="cr2-list" data-cr2-home-list><p>Loading homepage modules…</p></div>
+  <div class="cr2-warning">Published hero slides take over the homepage carousel. If none are published, the existing homepage hero remains as fallback. Homepage analytics remain separate.</div>
+ </section>
+ <section class="section" id="broadcast">
+  <div class="section-head"><div><div class="section-kicker">03 · Broadcast presentation</div><h2>Homepage video controls</h2><p>Update the featured video and homepage hero video without editing code.</p></div></div>
+  <div class="grid-two">
+   <form class="panel video-panel" data-cr2-video-form="tn_homepage_featured_video"><div class="section-kicker">Featured content</div><h3 class="panel-title">Featured video</h3><label>YouTube video ID or URL</label><input name="youtube_video_id" required placeholder="YouTube video ID"><label>Display title</label><input name="title" required><label>Description</label><textarea name="description"></textarea><label><input type="checkbox" name="is_active"> Active on homepage</label><div class="actions"><button class="primary" type="submit">SAVE FEATURED VIDEO</button></div><p class="status" role="status"></p></form>
+   <form class="panel video-panel" data-cr2-video-form="tn_homepage_hero_video"><div class="section-kicker">Hero presentation</div><h3 class="panel-title">Hero video</h3><label>YouTube video ID or URL</label><input name="youtube_video_id" required placeholder="YouTube video ID"><label>Display title</label><input name="title" required><label>Description</label><textarea name="description"></textarea><label><input type="checkbox" name="is_active"> Active on homepage</label><div class="actions"><button class="primary" type="submit">SAVE HERO VIDEO</button></div><p class="status" role="status"></p></form>
+  </div><div class="cr2-warning">YouTube IDs and URLs are validated before saving. Existing database permissions continue to apply.</div>
+ </section>
+ <section class="section panel" id="page-editor">
+  <div class="section-kicker">04 · Universal page editor</div><h2 class="panel-title">Page text editor</h2><p class="help">Apply a text override to a specific page and CSS selector. This editor changes text only; it does not change layout, media, links, forms or application logic.</p>
+  <form data-cr2-page-form><div class="form-grid"><div class="field"><label>Page path</label><input name="page_path" required placeholder="/perspectives/teenager/"></div><div class="field"><label>CSS selector</label><input name="selector" required placeholder="main h1"></div><div class="field wide"><label>Replacement text</label><textarea name="setting_value" required maxlength="5000"></textarea></div></div><div class="actions"><button class="primary" type="submit">SAVE PAGE TEXT</button></div><p class="status" role="status"></p></form>
+ </section>
+ <section class="section panel" id="settings">
+  <div class="section-kicker">05 · Configuration</div><h2 class="panel-title">Site settings</h2><p class="help">Manage key/value settings stored in the existing Tacoma Nights site settings table.</p>
+  <form data-cr2-setting-form><div class="form-grid"><div class="field"><label>Setting key</label><input name="setting_key" required maxlength="120" placeholder="homepage_tagline"></div><div class="field"><label>Setting value</label><input name="setting_value" required maxlength="2000"></div></div><div class="actions"><button class="primary" type="submit">SAVE SETTING</button></div><p class="status" role="status"></p></form>
+  <div class="list-head"><div><h3>Saved settings</h3><p>Search existing configuration values.</p></div><input class="filter" type="search" data-cr-filter="[data-cr2-settings-list]" placeholder="Search settings…"></div><div class="cr2-list" data-cr2-settings-list><p>Loading settings…</p></div>
+ </section>
+ <section class="section" id="workspaces">
+  <div class="section-head"><div><div class="section-kicker">06 · Connected operations</div><h2>Management workspaces</h2><p>Jump into a dedicated production or administration area.</p></div></div>
+  <div class="workspace-grid">
+   <a class="workspace" href="broadcasts/"><i>▶</i><b>Broadcast Manager</b><span>Broadcast operations and distribution.</span></a>
+   <a class="workspace" href="programming/"><i>▦</i><b>Programming</b><span>Premieres, schedules and planning.</span></a>
+   <a class="workspace" href="content/"><i>▤</i><b>Content Studio</b><span>Dedicated publishing workspace.</span></a>
+   <a class="workspace" href="community/"><i>◎</i><b>Community Desk</b><span>Submission review and moderation.</span></a>
+   <a class="workspace" href="contributors/"><i>♙</i><b>Contributors</b><span>Contributor and team management.</span></a>
+   <a class="workspace" href="settings/"><i>⚙</i><b>Network Settings</b><span>Administrative configuration.</span></a>
+   <a class="workspace" href="../production/"><i>◉</i><b>Production Hub</b><span>Existing episode production system.</span></a>
+  </div>
+ </section>
+ <footer class="footer"><span>CROWRULES ENTERTAINMENT · ONE COMPANY. ONE UNIVERSE.</span><span>TACOMA NIGHTS CONTROL ROOM · 4.0</span></footer>
+</main>
+</div>
+</div>
 </body></html>
