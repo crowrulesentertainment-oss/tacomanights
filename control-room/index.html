@@ -4,12 +4,12 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080a0e">
 <meta name="description" content="Tacoma Nights Control Room 2.0 — manage website content, homepage media, publishing and community operations.">
-<title>CONTROL ROOM 2.1 | Tacoma Nights</title>
+<title>CONTROL ROOM 2.2 | Tacoma Nights</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/v3.css">
 <script src="../assets/js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="../assets/js/v3.js?v=22.8.2-page-cms"></script><script defer src="../assets/js/control-room-v2.js?v=2.1.0"></script>
+<script defer src="../assets/js/v3.js?v=22.8.2-page-cms"></script><script defer src="../assets/js/control-room-v2.js?v=2.2.0"></script>
 <style>
 .cr2{--cr-red:#c9363e;--cr-gold:#d9b879;color:#eef1f5}
 .cr2 .cr2-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:28px 0}
@@ -39,6 +39,29 @@
 .cr2 .cr2-pill{display:inline-block;border:1px solid #4b5667;border-radius:99px;padding:3px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#cbd4df}
 .cr2 .cr2-warning{border-left:3px solid var(--cr-gold);padding:12px 14px;background:#1b1a16;color:#d8d0bf}
 @media(max-width:650px){.cr2 .cr2-formgrid{grid-template-columns:1fr}.cr2 .cr2-wide{grid-column:auto}}
+
+/* Control Room 2.2 — immersive, full-width workspace */
+html,body{min-height:100%;width:100%;margin:0}
+body{overflow-x:hidden}
+#site-header{display:none!important}
+#main{width:100%;max-width:none;margin:0;padding:0}
+#main>.page-hero{display:none!important}
+#main>.page-body{width:100%;max-width:none;margin:0;padding:0}
+#main>.page-body>.wrap{width:100%;max-width:none;margin:0;padding:18px clamp(16px,2.4vw,40px) 48px;box-sizing:border-box}
+.control-shell{width:100%;max-width:none;min-height:100vh}
+.cr2{width:100%;max-width:none;min-height:calc(100vh - 24px);box-sizing:border-box}
+.cr2 .cr2-head{margin:8px 0 22px;align-items:center}
+.cr2 .cr2-head h2{font-size:clamp(26px,2.5vw,38px);letter-spacing:-.04em}
+.cr2 .cr2-lede{max-width:1000px}
+.cr2 .cr2-nav{position:sticky;top:0;z-index:30;padding:12px 0;margin:0 0 22px;background:rgba(8,10,14,.94);backdrop-filter:blur(14px);border-bottom:1px solid #2b3441}
+.cr2 section[id]{scroll-margin-top:76px}
+.cr2 .cr2-grid{grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr))}
+.cr2 .cr2-panel{padding:clamp(16px,1.5vw,26px);border-radius:14px}
+.cr2 .cr2-formgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cr2 .cr2-wide{grid-column:1/-1}
+@media(min-width:1500px){.cr2 .cr2-formgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){#main>.page-body>.wrap{padding:12px 12px 32px}.cr2 .cr2-formgrid{grid-template-columns:1fr}.cr2 .cr2-wide{grid-column:auto}.cr2 .cr2-nav{top:0;overflow-x:auto;flex-wrap:nowrap;white-space:nowrap}.cr2 .cr2-nav a{flex:0 0 auto}}
+
 </style>
 </head>
 <body data-root="../">
@@ -49,7 +72,7 @@
 <div class="notice">Your existing account, network role checks and Supabase row-level security remain in force. No service-role key is used in this browser.</div>
 <p class="notice" data-control-status role="status">Verifying access…</p>
 <div class="control-shell" data-control-room hidden><div class="cr2">
-<div class="cr2-head"><div><div class="cr2-kicker">CrowRules Entertainment · Tacoma Nights</div><h2>Network Control Room <span class="cr2-pill">2.0</span></h2><p class="cr2-lede">Manage the information that powers the public network without editing page source files.</p></div><a class="button glass" href="../">View public website ↗</a></div>
+<div class="cr2-head"><div><div class="cr2-kicker">CrowRules Entertainment · Tacoma Nights</div><h2>Network Control Room <span class="cr2-pill">2.2 · FULL SCREEN</span></h2><p class="cr2-lede">Manage the information that powers the public network without editing page source files.</p></div><a class="button glass" href="../">View public website ↗</a></div>
 <nav class="cr2-nav"><a href="#cr2-overview">Overview</a><a href="#cr2-content">Content library</a><a href="#cr2-homepage">Homepage media</a><a href="#cr2-home-cms">Homepage CMS</a><a href="#cr2-settings">Site settings</a><a href="#cr2-workspaces">Workspaces</a></nav>
 <section id="cr2-overview"><div class="cr2-grid">
 <article class="cr2-panel"><div class="cr2-kicker">Publishing</div><div class="cr2-stat" data-cr2-content-count>—</div><div class="cr2-muted">Content records</div></article>
