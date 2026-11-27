@@ -56,7 +56,7 @@ async function loadSettings(){
  const list=$("[data-cr2-settings-list]");if(!list)return;list.textContent="Loading settings…";
  const {data,error}=await db.from("tacoma_nights_site_settings").select("setting_key,setting_value,updated_at").order("setting_key").limit(150);
  if(error){list.textContent="Site settings unavailable: "+error.message;return}
- list.replaceChildren();if(!data?.length){list.append(node("p","No site settings have been saved yet.","cr2-muted"));return}
+ if(count)count.textContent=String(data?.length||0);list.replaceChildren();if(!data?.length){list.append(node("p","No site settings have been saved yet.","cr2-muted"));return}
  for(const item of data){const card=node("article",undefined,"cr2-item"),key=node("h3",item.setting_key),value=node("p",item.setting_value),actions=node("div",undefined,"cr2-actions"),edit=node("button","Edit");edit.type="button";edit.addEventListener("click",()=>{const f=$("[data-cr2-setting-form]");f.elements.setting_key.value=item.setting_key;f.elements.setting_value.value=item.setting_value;f.scrollIntoView({behavior:"smooth",block:"center"})});actions.append(edit);card.append(key,value,actions);list.append(card)}
 }
 function wireSettings(){
@@ -102,7 +102,7 @@ function wireVideo(user){
  }));
 }
 async function loadHomepageModules(){
- const list=$("[data-cr2-home-list]");if(!list)return;list.textContent="Loading homepage content…";
+ const list=$("[data-cr2-home-list]"),count=$("[data-cr2-home-module-count]");if(!list)return;list.textContent="Loading homepage content…";
  const {data,error}=await db.from("tn_homepage_modules").select("id,module_type,slug,title,eyebrow,body,cta_label,cta_url,media_url,background_image_url,sort_order,metadata,status,is_active,publish_at,expire_at").order("module_type").order("sort_order").limit(200);
  if(error){list.textContent="Homepage CMS unavailable: "+error.message;return}
  list.replaceChildren();if(!data?.length){list.append(node("p","No homepage CMS records yet. Create your first slide, program or announcement above.","cr2-muted"));return}
