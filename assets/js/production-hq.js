@@ -65,4 +65,18 @@ $("[data-hq-jump]").forEach(button=>button.addEventListener("click",()=>{
  },80);
 }));
 
+
+/* Dedicated production section routes: /production/<section>/ redirects here with ?section=. */
+const sectionPages={overview:"Overview",episodes:"Episodes & Planning",assignments:"My Assignments",uploads:"Segment Uploads",ideas:"Episode Ideas",updates:"Production Updates",chat:"Team Chat",admin:"Producer Headquarters",clips:"Clip Library"};
+const requestedSection=new URLSearchParams(location.search).get("section");
+if(requestedSection&&Object.prototype.hasOwnProperty.call(sectionPages,requestedSection)){
+ document.body.dataset.hqPage=requestedSection;
+ document.title="Tacoma Nights | "+sectionPages[requestedSection];
+ const pageNav=$("#hqPageNav");
+ pageNav?.querySelectorAll("[data-hq-page-link]").forEach(link=>{
+  const active=link.dataset.hqPageLink===requestedSection;
+  link.classList.toggle("active",active);
+  if(active)link.setAttribute("aria-current","page");else link.removeAttribute("aria-current");
+ });
+}
 })();
